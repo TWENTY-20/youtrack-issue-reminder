@@ -69,3 +69,36 @@ export interface APIError {
     message: string,
     status: number
 }
+
+export interface UserDTO {
+    id: string;
+    login: string;
+    fullName?: string;
+    avatarUrl?: string;
+}
+
+export interface UserTagDTO {
+    key: string;
+    label: string;
+    description: string;
+    avatar?: string;
+}
+
+export interface GroupDTO {
+    id: string;
+    name: string;
+    usersCount: number;
+}
+
+export interface GroupTagDTO {
+    key: string;
+    label: string;
+    description: string;
+}
+
+export interface RepeatOption {
+    key: string;
+    label: string;
+}
+
+

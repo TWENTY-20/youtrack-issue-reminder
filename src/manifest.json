@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/youtrack-app.json",
-  "name": "hello",
-  "title": "hello",
-  "description": "hello",
+  "name": "issue_reminder",
+  "title": "Issue reminder",
+  "description": "A tool to setup reminders for an existing issue.",
   "changeNotes": "See ...",
   "version": "1.0.0",
   "icon": "logo.svg",
@@ -10,9 +10,9 @@
   "minYouTrackVersion": "2024.3.0",
   "widgets": [
     {
-      "key": "test",
+      "key": "main",
       "name": "Scheduler",
-      "indexPath": "test/index.html",
+      "indexPath": "main/index.html",
       "extensionPoint": "ISSUE_OPTIONS_MENU_ITEM"
     }
   ]

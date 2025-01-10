@@ -51,9 +51,10 @@ export default defineConfig(({mode}) => {
             target: ['es2022'],
             assetsDir: 'widgets/assets',
             rollupOptions: {
+                external: ['@jetbrains/ring-ui/components/select/select.css'],
                 input: {
                     // List every widget entry point here
-                    test: 'src/widgets/test/index.html'
+                    test: 'src/widgets/main/index.html'
                 }
             }
         },
