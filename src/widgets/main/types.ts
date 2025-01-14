@@ -101,4 +101,15 @@ export interface RepeatOption {
     label: string;
 }
 
+export interface ReminderData {
+    subject: string;
+    date: string;
+    time: string;
+    repeatSchedule: any;
+    selectedUsers: any[];
+    selectedGroups: any[];
+    message: string;
+    issueId: string;
+    uuid: string;
+}
 

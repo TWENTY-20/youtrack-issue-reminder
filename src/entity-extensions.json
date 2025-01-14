@@ -2,7 +2,11 @@
   "entityTypeExtensions": [
     {
       "entityType": "AppGlobalStorage",
-      "properties": {}
+      "properties": {
+        "reminders": {
+          "type": "string"
+        }
+      }
     }
   ]
 }
