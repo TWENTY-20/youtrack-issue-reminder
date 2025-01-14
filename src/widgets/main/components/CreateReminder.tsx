@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import Input, { Size } from "@jetbrains/ring-ui-built/components/input/input";
-import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
+import React, {useState} from "react";
+import Input, {Size} from "@jetbrains/ring-ui-built/components/input/input";
+import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import {GroupTagDTO, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
 import YTApp from "../youTrackApp.ts";
@@ -8,7 +8,7 @@ import {saveReminder} from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
-import { v4 as uuidv4 } from "uuid";
+import {v4 as uuidv4} from "uuid";
 
 export default function CreateReminder() {
     const [subject, setSubject] = useState("");
@@ -19,11 +19,42 @@ export default function CreateReminder() {
     const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>([]);
     const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(null);
 
+    const [touched, setTouched] = useState({
+        subject: false,
+        date: false,
+        time: false,
+        message: false,
+        repeatSchedule: false,
+    });
+
+    const validateFields = () => {
+        return {
+            subject: subject.trim() ? "" : "Subject is required",
+            date: date.trim() ? "" : "Date is required",
+            time: time.trim() ? "" : "Time is required",
+            message: message.trim() ? "" : "Message is required",
+            repeatSchedule: repeatSchedule ? "" : "Repeat schedule is required",
+        };
+    };
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        const issueId = YTApp.entity.id
-        const uuid = uuidv4()
+        setTouched({
+            subject: true,
+            date: true,
+            time: true,
+            message: true,
+            repeatSchedule: true,
+        });
+
+        const errors = validateFields();
+        if (Object.values(errors).some((error) => error)) {
+            return;
+        }
+
+        const issueId = YTApp.entity.id;
+        const uuid = uuidv4();
 
         const formData: ReminderData = {
             subject,
@@ -34,15 +65,16 @@ export default function CreateReminder() {
             selectedGroups,
             message,
             issueId,
-            uuid
+            uuid,
         };
 
         try {
             await saveReminder(formData);
+            handleCancel();
         } catch (error) {
             console.error("Error during reminder submission:", error);
         }
-    }
+    };
 
     const handleCancel = () => {
         setSubject("");
@@ -52,7 +84,16 @@ export default function CreateReminder() {
         setSelectedUsers([]);
         setSelectedGroups([]);
         setRepeatSchedule(null);
+        setTouched({
+            subject: false,
+            date: false,
+            time: false,
+            message: false,
+            repeatSchedule: false,
+        });
     };
+
+    const errors = validateFields();
 
     return (
         <div>
@@ -69,6 +110,7 @@ export default function CreateReminder() {
                         type="text"
                         label="Subject"
                         value={subject}
+                        {...(touched.subject && errors.subject ? { error: errors.subject } : {})}
                         onChange={(e) => setSubject(e.target.value)}
                     />
                 </div>
@@ -81,6 +123,7 @@ export default function CreateReminder() {
                         type="date"
                         label="Date"
                         value={date}
+                        {...(touched.date && errors.date ? { error: errors.date } : {})}
                         onChange={(e) => setDate(e.target.value)}
                     />
                 </div>
@@ -92,12 +135,23 @@ export default function CreateReminder() {
                         type="time"
                         label="Time"
                         value={time}
+                        {...(touched.time && errors.time ? { error: errors.time } : {})}
                         onChange={(e) => setTime(e.target.value)}
                     />
                 </div>
 
                 <div className="col-span-12">
-                    <RepeatScheduleSelector onChange={setRepeatSchedule} />
+                    <RepeatScheduleSelector
+                        onChange={(value) => {
+                            setRepeatSchedule(value);
+                            if (!touched.repeatSchedule) {
+                                setTouched((prev) => ({ ...prev, repeatSchedule: true }));
+                            }
+                        }}
+                    />
+                    {touched.repeatSchedule && errors.repeatSchedule && (
+                        <div className="text-[#e47875] text-xs mt-1">{errors.repeatSchedule}</div>
+                    )}
                 </div>
 
                 <div className="col-span-6">
@@ -115,14 +169,18 @@ export default function CreateReminder() {
                         label="Message"
                         multiline
                         value={message}
+                        {...(touched.message && errors.message ? { error: errors.message } : {})}
                         onChange={(e) => setMessage(e.target.value)}
                     />
                 </div>
 
                 <div className="col-span-12 flex justify-end gap-2 mt-4">
-                    <Button onClick={handleCancel}>Cancel</Button>
-                    {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-                    <Button primary onClick={handleSubmit}>
+                    <Button danger={true} onClick={handleCancel}>Reset Entries</Button>
+                    <Button
+                        primary
+                        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                        onClick={handleSubmit}
+                    >
                         Submit
                     </Button>
                 </div>
