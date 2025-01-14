@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
-import {fetchRemindersForCurrentIssue, removeReminder} from "../globalStorage.ts";
-import {GroupTagDTO, ReminderData, UserTagDTO} from "../types.ts";
+import { fetchRemindersForCurrentIssue, removeReminder } from "../globalStorage.ts";
+import { GroupTagDTO, ReminderData, UserTagDTO } from "../types.ts";
 import YTApp from "../youTrackApp.ts";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
-import pencilIcon from "@jetbrains/icons/pencil-12px";
+import pencilIcon from "@jetbrains/icons/pencil";
 import bellIcon from "@jetbrains/icons/bell";
 import Icon from "@jetbrains/ring-ui-built/components/icon";
+import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
 
 export default function ReminderSettings() {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
 
     useEffect(() => {
         const issueId = YTApp.entity.id;
         void fetchRemindersForCurrentIssue().then((fetchedReminders) => {
             const filteredReminders = fetchedReminders.filter((reminder) => reminder.issueId === issueId);
             setReminders(filteredReminders);
-        })
+        });
     }, []);
 
     if (reminders.length === 0) {
@@ -33,6 +36,23 @@ export default function ReminderSettings() {
         }
     };
 
+    const handleDeleteClick = (reminder: ReminderData) => {
+        setReminderToDelete(reminder);
+        setIsModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (reminderToDelete) {
+            await handleRemoveReminder(reminderToDelete.uuid);
+            setReminderToDelete(null);
+            setIsModalOpen(false);
+        }
+    };
+
+    const cancelDelete = () => {
+        setReminderToDelete(null);
+        setIsModalOpen(false);
+    };
 
     return (
         <div>
@@ -45,17 +65,13 @@ export default function ReminderSettings() {
                         {reminders.map((reminder, index) => (
                             <li key={index} className="flex flex-col gap-2">
                                 <div className="flex gap-4 border border-[#9ea0a9] p-4 rounded-md shadow-sm items-center">
-                                    <Icon glyph={bellIcon} className="ring-icon"/>
+                                    <Icon glyph={bellIcon} className="ring-icon" />
                                     <div className={"flex w-full flex-col"}>
                                         <div className="flex items-center gap-2">
                                             <span className="text-md font-semibold">{reminder.subject}</span>
                                             <div className={"flex w-full justify-end items-center"}>
                                                 <Button
-                                                    onClick={() => {
-                                                        handleRemoveReminder(reminder.uuid).catch((err) => {
-                                                            console.error("Error in removing reminder:", err);
-                                                        });
-                                                    }}
+                                                    onClick={() => handleDeleteClick(reminder)}
                                                     title="Delete"
                                                     icon={pencilIcon}
                                                     danger={true}
@@ -79,8 +95,10 @@ export default function ReminderSettings() {
                                             {reminder.selectedGroups.length > 0 && (
                                                 <div className="flex gap-2 items-center">
                                                     {reminder.selectedGroups.map((group: GroupTagDTO) => (
-                                                        <div key={group.key}
-                                                             className="px-2 py-1 rounded-md bg-neutral-700">
+                                                        <div
+                                                            key={group.key}
+                                                            className="px-2 py-1 rounded-md bg-neutral-700"
+                                                        >
                                                             {group.label}
                                                         </div>
                                                     ))}
@@ -98,6 +116,15 @@ export default function ReminderSettings() {
                     </ul>
                 </div>
             </div>
+
+            {/* Custom Modal for Confirming Deletion */}
+            <ReminderDeleteDialog
+                isOpen={isModalOpen}
+                title="Confirm Deletion"
+                message="Are you sure you want to delete this reminder?"
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
+            />
         </div>
     );
 }
