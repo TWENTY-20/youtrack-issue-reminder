@@ -3,7 +3,7 @@ import Input, { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import { GroupTagDTO, ReminderData, RepeatOption, UserTagDTO } from "../types.ts";
-import YTApp from "../youTrackApp.ts";
+import YTApp, {host} from "../youTrackApp.ts";
 import { saveReminder } from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
@@ -74,6 +74,85 @@ export default function CreateReminder() {
 
         try {
             await saveReminder(formData);
+
+            const customFieldName = 'Reminder6';
+            const bundleName = 'CustomScheduleBundle'
+            let customFieldId = null;
+
+            await host.fetchYouTrack('admin/customFieldSettings/customFields?fields=id,name')
+                .then(response => {
+                    console.log(response)
+                    const existingField = response.find(field => field.name === customFieldName);
+                    if (existingField) {
+                        customFieldId = existingField.id;
+                    }
+                });
+
+            let bundleId = null;
+
+            await host.fetchYouTrack('admin/customFieldSettings/bundles/enum?fields=id,name')
+                .then(response => {
+                    const existingBundle = response.find(bundle => bundle.name === bundleName);
+                    if (existingBundle) {
+                        bundleId = existingBundle.id;
+                    }
+                });
+
+            if (!bundleId) {
+                await host.fetchYouTrack('admin/customFieldSettings/bundles/enum', {
+                    method: 'POST',
+                    body: {
+                        name: bundleName,
+                        values: [
+                            { name: 'Reminder Set' },
+                        ]
+                    }
+                }).then(response => {
+                    bundleId = response.id;
+                });
+            }
+
+            if (!customFieldId) {
+                await host.fetchYouTrack("admin/customFieldSettings/customFields?fields=id,name,fieldType(presentation,id)", {
+                    method: 'POST',
+                    body: {
+                        "fieldType": {
+                            "id": "enum[1]"
+                        },
+                        "name": customFieldName,
+                        "isDisplayedInIssueList": false,
+                        "isAutoAttached": false,
+                        "isPublic": false,
+                    }
+                }).then(response => {
+                    console.log(response)
+                    customFieldId = response.result.id;
+                });
+            }
+
+            await host.fetchYouTrack(`issues/${issueId}?fields=project(id,name)`).then(
+                (issueProject) => {
+                    void host.fetchYouTrack(`admin/projects/${issueProject.project.id}/customFields?fields=id,canBeEmpty,emptyFieldText,project(id,name),field(id,name)`, {
+                        method: 'POST',
+                        body: {
+                            "field": {
+                                "name": "Reminder",
+                                "id": customFieldId,
+                                "$type": "CustomField"
+                            },
+                            "bundle": {
+                                id: bundleId,
+                                $type: 'EnumBundle'
+                            },
+                            "canBeEmpty": true,
+                            "emptyFieldText": 'No reminder set',
+                            "$type": "EnumProjectCustomField"
+                        }
+                    }).then((response) => {
+                        console.log(response)
+                    })
+                }
+            )
             handleCancel();
         } catch (error) {
             console.error(t("createReminder.errors.submitError"), error);
