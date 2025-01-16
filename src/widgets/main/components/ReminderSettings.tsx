@@ -4,14 +4,18 @@ import { GroupTagDTO, ReminderData, UserTagDTO } from "../types.ts";
 import YTApp from "../youTrackApp.ts";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import pencilIcon from "@jetbrains/icons/pencil";
-import bellIcon from "@jetbrains/icons/bell";
+import bellIcon from "@jetbrains/icons/bell-20px";
+import groupIcon from "@jetbrains/icons/group";
 import Icon from "@jetbrains/ring-ui-built/components/icon";
-import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
+import { ReminderDeleteDialog } from "./ReminderDeleteDialog.tsx";
+import { useTranslation } from "react-i18next";
 
 export default function ReminderSettings() {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
+
+    const { t } = useTranslation();
 
     useEffect(() => {
         const issueId = YTApp.entity.id;
@@ -21,9 +25,23 @@ export default function ReminderSettings() {
         });
     }, []);
 
-    if (reminders.length === 0) {
-        return <div>No reminders found for this issue.</div>;
-    }
+    const formatDate = (dateStr: string | undefined): string => {
+        if (!dateStr) return t("reminderSettings.errors.date");
+        const date = new Date(dateStr);
+
+        if (YTApp.locale === "de") {
+            const day = date.getDate().toString().padStart(2, "0");
+            const month = (date.getMonth() + 1).toString().padStart(2, "0");
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        } else {
+            const month = (date.getMonth() + 1).toString().padStart(2, "0");
+            const day = date.getDate().toString().padStart(2, "0");
+            const year = date.getFullYear();
+            return `${month}/${day}/${year}`;
+        }
+    };
+
 
     const handleRemoveReminder = async (reminderId: string) => {
         try {
@@ -32,7 +50,7 @@ export default function ReminderSettings() {
             const updatedReminders = reminders.filter((reminder) => reminder.uuid !== reminderId);
             setReminders(updatedReminders);
         } catch (err) {
-            console.error("Error removing reminder:", err);
+            console.error(t("reminderSettings.errors.errorRemovingReminder"), err);
         }
     };
 
@@ -54,11 +72,15 @@ export default function ReminderSettings() {
         setIsModalOpen(false);
     };
 
+    if (reminders.length === 0) {
+        return <div>{t("reminderSettings.messages.noReminders")}</div>;
+    }
+
     return (
         <div>
             <div className="grid grid-cols-12 w-full h-full gap-4">
                 <div className="col-span-12 flex items-center">
-                    <span className="text-lg">Reminders for Current Issue</span>
+                    <span className="text-lg">{t("reminderSettings.title")}</span>
                 </div>
                 <div className="col-span-12">
                     <ul className="space-y-4">
@@ -67,12 +89,14 @@ export default function ReminderSettings() {
                                 <div className="flex gap-4 border border-[#9ea0a9] p-4 rounded-md shadow-sm items-center">
                                     <Icon glyph={bellIcon} className="ring-icon" />
                                     <div className={"flex w-full flex-col"}>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-md font-semibold">{reminder.subject}</span>
-                                            <div className={"flex w-full justify-end items-center"}>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-md font-semibold w-full overflow-ellipsis">
+                                                {reminder.subject}
+                                            </span>
+                                            <div className={"flex justify-end items-center"}>
                                                 <Button
                                                     onClick={() => handleDeleteClick(reminder)}
-                                                    title="Delete"
+                                                    title={t("reminderSettings.actions.delete")}
                                                     icon={pencilIcon}
                                                     danger={true}
                                                     className="ring-btn-small ring-btn-primary ring-btn-icon-only"
@@ -81,32 +105,55 @@ export default function ReminderSettings() {
                                         </div>
                                         <div className="flex items-center gap-4 text-sm text-gray-600">
                                             {reminder.selectedUsers.length > 0 && (
-                                                <div className="flex gap-2">
-                                                    {reminder.selectedUsers.map((user: UserTagDTO) => (
-                                                        <img
-                                                            key={user.key}
-                                                            src={user.avatar || "https://www.gravatar.com/avatar/?d=mp"}
-                                                            alt={`${user.label}'s avatar`}
-                                                            className="w-6 h-6 rounded-full"
-                                                        />
-                                                    ))}
+                                                <div className="flex items-center">
+                                                    <div className="flex -space-x-2">
+                                                        {reminder.selectedUsers.slice(0, 2).map((user: UserTagDTO, index) => (
+                                                            <div
+                                                                key={user.key}
+                                                                className="relative w-6 h-6 rounded-full bg-gray-300 flex-shrink-0"
+                                                                style={{ zIndex: 10 - index }}
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        user.avatar ||
+                                                                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                                            user.label
+                                                                        )}&background=random&color=fff`
+                                                                    }
+                                                                    alt={t("reminderSettings.messages.userAvatarAlt", { name: user.label })}
+                                                                    className="w-full h-full rounded-full object-cover"
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                        {reminder.selectedUsers.length > 2 && (
+                                                            <span className="flex items-center justify-center w-6 h-6 text-xs font-medium text-gray-600 bg-gray-200 rounded-full">
+                                                                +{reminder.selectedUsers.length - 2}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             )}
                                             {reminder.selectedGroups.length > 0 && (
                                                 <div className="flex gap-2 items-center">
-                                                    {reminder.selectedGroups.map((group: GroupTagDTO) => (
+                                                    {reminder.selectedGroups.slice(0, 1).map((group: GroupTagDTO) => (
                                                         <div
                                                             key={group.key}
-                                                            className="px-2 py-1 rounded-md bg-neutral-700"
+                                                            className="flex items-center gap-1 px-2 py-1 rounded-md bg-neutral-700 text-white"
                                                         >
+                                                            <Icon glyph={groupIcon} className="ring-icon" />
                                                             {group.label}
                                                         </div>
                                                     ))}
+                                                    {reminder.selectedGroups.length > 1 && (
+                                                        <span className="text-gray-500">
+                                                            +{reminder.selectedGroups.length - 1} {t("reminderSettings.messages.moreGroups")}
+                                                        </span>
+                                                    )}
                                                 </div>
                                             )}
-                                            <div>
-                                                <span className="mr-2">{reminder.date || "No date"}</span>
-                                                <span>{reminder.time || "No time"}</span>
+                                            <div className={"px-2 py-1 rounded-md"}>
+                                                <span className="mr-2 text-white">{formatDate(reminder.date)},</span>
+                                                <span className={"text-white"}>{reminder.time || t("reminderSettings.messages.noTime")}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -117,11 +164,10 @@ export default function ReminderSettings() {
                 </div>
             </div>
 
-            {/* Custom Modal for Confirming Deletion */}
             <ReminderDeleteDialog
                 isOpen={isModalOpen}
-                title="Confirm Deletion"
-                message="Are you sure you want to delete this reminder?"
+                title={t("reminderSettings.messages.confirmDeleteTitle")}
+                message={t("reminderSettings.messages.confirmDeleteMessage")}
                 onConfirm={confirmDelete}
                 onCancel={cancelDelete}
             />

@@ -1,14 +1,15 @@
-import React, {useState} from "react";
-import Input, {Size} from "@jetbrains/ring-ui-built/components/input/input";
-import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
+import React, { useState } from "react";
+import Input, { Size } from "@jetbrains/ring-ui-built/components/input/input";
+import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
-import {GroupTagDTO, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
+import { GroupTagDTO, ReminderData, RepeatOption, UserTagDTO } from "../types.ts";
 import YTApp from "../youTrackApp.ts";
-import {saveReminder} from "../globalStorage.ts";
+import { saveReminder } from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
-import {v4 as uuidv4} from "uuid";
+import { v4 as uuidv4 } from "uuid";
+import { useTranslation } from "react-i18next";
 
 export default function CreateReminder() {
     const [subject, setSubject] = useState("");
@@ -18,6 +19,7 @@ export default function CreateReminder() {
     const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>([]);
     const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>([]);
     const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(null);
+    const [resetKey, setResetKey] = useState(0);
 
     const [touched, setTouched] = useState({
         subject: false,
@@ -27,13 +29,15 @@ export default function CreateReminder() {
         repeatSchedule: false,
     });
 
+    const { t } = useTranslation();
+
     const validateFields = () => {
         return {
-            subject: subject.trim() ? "" : "Subject is required",
-            date: date.trim() ? "" : "Date is required",
-            time: time.trim() ? "" : "Time is required",
-            message: message.trim() ? "" : "Message is required",
-            repeatSchedule: repeatSchedule ? "" : "Repeat schedule is required",
+            subject: subject.trim() ? "" : t("createReminder.errors.subject"),
+            date: date.trim() ? "" : t("createReminder.errors.date"),
+            time: time.trim() ? "" : t("createReminder.errors.time"),
+            message: message.trim() ? "" : t("createReminder.errors.message"),
+            repeatSchedule: repeatSchedule ? "" : t("createReminder.errors.repeatSchedule"),
         };
     };
 
@@ -72,7 +76,7 @@ export default function CreateReminder() {
             await saveReminder(formData);
             handleCancel();
         } catch (error) {
-            console.error("Error during reminder submission:", error);
+            console.error(t("createReminder.errors.submitError"), error);
         }
     };
 
@@ -84,6 +88,7 @@ export default function CreateReminder() {
         setSelectedUsers([]);
         setSelectedGroups([]);
         setRepeatSchedule(null);
+        setResetKey((prevKey) => prevKey + 1);
         setTouched({
             subject: false,
             date: false,
@@ -99,16 +104,16 @@ export default function CreateReminder() {
         <div>
             <div className="grid grid-cols-12 w-full h-full gap-4">
                 <div className="col-span-12 flex items-center">
-                    <span className="text-lg">Schedule a Reminder</span>
+                    <span className="text-lg">{t("createReminder.title")}</span>
                 </div>
 
                 <div className="col-span-12">
                     <Input
                         size={Size.FULL}
                         height={ControlsHeight.L}
-                        placeholder="Enter a Subject here..."
+                        placeholder={t("createReminder.placeholders.subject")}
                         type="text"
-                        label="Subject"
+                        label={t("createReminder.labels.subject")}
                         value={subject}
                         {...(touched.subject && errors.subject ? { error: errors.subject } : {})}
                         onChange={(e) => setSubject(e.target.value)}
@@ -119,9 +124,9 @@ export default function CreateReminder() {
                     <Input
                         size={Size.FULL}
                         height={ControlsHeight.L}
-                        placeholder="Enter a Date"
+                        placeholder={t("createReminder.placeholders.date")}
                         type="date"
-                        label="Date"
+                        label={t("createReminder.labels.date")}
                         value={date}
                         {...(touched.date && errors.date ? { error: errors.date } : {})}
                         onChange={(e) => setDate(e.target.value)}
@@ -131,9 +136,9 @@ export default function CreateReminder() {
                     <Input
                         size={Size.FULL}
                         height={ControlsHeight.L}
-                        placeholder="Enter a Time"
+                        placeholder={t("createReminder.placeholders.time")}
                         type="time"
-                        label="Time"
+                        label={t("createReminder.labels.time")}
                         value={time}
                         {...(touched.time && errors.time ? { error: errors.time } : {})}
                         onChange={(e) => setTime(e.target.value)}
@@ -142,6 +147,7 @@ export default function CreateReminder() {
 
                 <div className="col-span-12">
                     <RepeatScheduleSelector
+                        key={resetKey}
                         onChange={(value) => {
                             setRepeatSchedule(value);
                             if (!touched.repeatSchedule) {
@@ -155,18 +161,24 @@ export default function CreateReminder() {
                 </div>
 
                 <div className="col-span-6">
-                    <UserSelector onChange={setSelectedUsers} />
+                    <UserSelector
+                        key={resetKey}
+                        onChange={setSelectedUsers}
+                    />
                 </div>
                 <div className="col-span-6">
-                    <GroupSelector onChange={setSelectedGroups} />
+                    <GroupSelector
+                        key={resetKey}
+                        onChange={setSelectedGroups}
+                    />
                 </div>
 
                 <div className="col-span-12">
                     <Input
-                        placeholder="Enter a Message here..."
+                        placeholder={t("createReminder.placeholders.message")}
                         size={Size.FULL}
                         height={ControlsHeight.L}
-                        label="Message"
+                        label={t("createReminder.labels.message")}
                         multiline
                         value={message}
                         {...(touched.message && errors.message ? { error: errors.message } : {})}
@@ -175,13 +187,13 @@ export default function CreateReminder() {
                 </div>
 
                 <div className="col-span-12 flex justify-end gap-2 mt-4">
-                    <Button danger={true} onClick={handleCancel}>Reset Entries</Button>
+                    <Button danger={true} onClick={handleCancel}>{t("createReminder.actions.reset")}</Button>
                     <Button
                         primary
                         // eslint-disable-next-line @typescript-eslint/no-misused-promises
                         onClick={handleSubmit}
                     >
-                        Submit
+                        {t("createReminder.actions.submit")}
                     </Button>
                 </div>
             </div>

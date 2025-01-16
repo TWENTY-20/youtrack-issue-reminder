@@ -1,2 +1,99 @@
 {
+  "createReminder": {
+    "title": "Schedule a Reminder",
+    "labels": {
+      "subject": "Subject",
+      "date": "Date",
+      "time": "Time",
+      "message": "Message"
+    },
+    "placeholders": {
+      "subject": "Enter a Subject here...",
+      "date": "Enter a Date",
+      "time": "Enter a Time",
+      "message": "Enter a Message here..."
+    },
+    "errors": {
+      "subject": "Subject is required",
+      "date": "Date is required",
+      "time": "Time is required",
+      "message": "Message is required",
+      "repeatSchedule": "Repeat schedule is required",
+      "submitError": "Error during reminder submission"
+    },
+    "actions": {
+      "reset": "Reset Entries",
+      "submit": "Submit"
+    }
+  },
+  "reminderSettings": {
+    "title": "My Reminders",
+    "errors": {
+      "errorRemovingReminder": "Error while removing the reminder."
+    },
+    "actions": {
+      "delete": "Delete Reminder"
+    },
+    "messages": {
+      "noReminders": "No reminders found.",
+      "confirmDeleteTitle": "Confirm Deletion",
+      "confirmDeleteMessage": "Are you sure you want to delete this reminder?",
+      "moreGroups": "more",
+      "noTime": "No specific time",
+      "userAvatarAlt": "Avatar of {name}"
+    }
+  },
+  "groupSelector": {
+    "labels": {
+      "addGroups": "Add Groups"
+    },
+    "messages": {
+      "noGroups": "No groups available",
+      "groupDescription": "{count} members"
+    },
+    "errors": {
+      "fetchGroups": "Error fetching groups"
+    },
+    "actions": {
+      "removeGroup": "Remove Group"
+    }
+  },
+  "repeatScheduleSelector": {
+    "labels": {
+      "repeatSchedule": "Repeat Schedule"
+    },
+    "options": {
+      "1_day": "Every day",
+      "2_days": "Every 2 days",
+      "3_days": "Every 3 days",
+      "1_week": "Every week",
+      "2_weeks": "Every 2 weeks",
+      "1_month": "Every month",
+      "2_months": "Every 2 months",
+      "1_year": "Every year"
+    }
+  },
+  "userSelector": {
+    "labels": {
+      "addUsers": "Add Users"
+    },
+    "messages": {
+      "noUsers": "No users available"
+    },
+    "errors": {
+      "fetchUsers": "Error fetching users"
+    },
+    "actions": {
+      "removeUser": "Remove User"
+    }
+  },
+  "app": {
+    "tabs": {
+      "reminders": "Reminders",
+      "settings": "Settings"
+    },
+    "actions": {
+      "switchLocale": "Switch Language"
+    }
+  }
 }

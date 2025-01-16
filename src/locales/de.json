@@ -1,2 +1,99 @@
 {
+  "createReminder": {
+    "title": "Erinnerung planen",
+    "labels": {
+      "subject": "Betreff",
+      "date": "Datum",
+      "time": "Uhrzeit",
+      "message": "Nachricht"
+    },
+    "placeholders": {
+      "subject": "Betreff hier eingeben...",
+      "date": "Datum eingeben",
+      "time": "Uhrzeit eingeben",
+      "message": "Nachricht hier eingeben..."
+    },
+    "errors": {
+      "subject": "Betreff ist erforderlich",
+      "date": "Datum ist erforderlich",
+      "time": "Uhrzeit ist erforderlich",
+      "message": "Nachricht ist erforderlich",
+      "repeatSchedule": "Wiederholungsplan ist erforderlich",
+      "submitError": "Fehler beim Absenden der Erinnerung"
+    },
+    "actions": {
+      "reset": "Eingaben zurücksetzen",
+      "submit": "Absenden"
+    }
+  },
+  "reminderSettings": {
+    "title": "Meine Erinnerungen",
+    "errors": {
+      "errorRemovingReminder": "Fehler beim Entfernen der Erinnerung."
+    },
+    "actions": {
+      "delete": "Erinnerung löschen"
+    },
+    "messages": {
+      "noReminders": "Keine Erinnerungen gefunden.",
+      "confirmDeleteTitle": "Löschung bestätigen",
+      "confirmDeleteMessage": "Möchten Sie diese Erinnerung wirklich löschen?",
+      "moreGroups": "mehr",
+      "noTime": "Keine spezifische Uhrzeit",
+      "userAvatarAlt": "Avatar von {name}"
+    }
+  },
+  "groupSelector": {
+    "labels": {
+      "addGroups": "Gruppen hinzufügen"
+    },
+    "messages": {
+      "noGroups": "Keine Gruppen verfügbar",
+      "groupDescription": "{count} Mitglieder"
+    },
+    "errors": {
+      "fetchGroups": "Fehler beim Abrufen der Gruppen"
+    },
+    "actions": {
+      "removeGroup": "Gruppe entfernen"
+    }
+  },
+  "repeatScheduleSelector": {
+    "labels": {
+      "repeatSchedule": "Wiederholungsplan"
+    },
+    "options": {
+      "1_day": "Jeden Tag",
+      "2_days": "Alle 2 Tage",
+      "3_days": "Alle 3 Tage",
+      "1_week": "Jede Woche",
+      "2_weeks": "Alle 2 Wochen",
+      "1_month": "Jeden Monat",
+      "2_months": "Alle 2 Monate",
+      "1_year": "Jedes Jahr"
+    }
+  },
+  "userSelector": {
+    "labels": {
+      "addUsers": "Benutzer hinzufügen"
+    },
+    "messages": {
+      "noUsers": "Keine Benutzer verfügbar"
+    },
+    "errors": {
+      "fetchUsers": "Fehler beim Abrufen der Benutzer"
+    },
+    "actions": {
+      "removeUser": "Benutzer entfernen"
+    }
+  },
+  "app": {
+    "tabs": {
+      "reminders": "Erinnerungen",
+      "settings": "Einstellungen"
+    },
+    "actions": {
+      "switchLocale": "Sprache wechseln"
+    }
+  }
 }
