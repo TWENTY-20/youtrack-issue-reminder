@@ -113,3 +113,57 @@ export interface ReminderData {
     uuid: string;
 }
 
+export interface CustomField {
+    name: string;
+    id: string;
+    $type: string;
+}
+
+export type CustomFieldArray = CustomField[];
+
+export interface FieldType {
+    presentation: string;
+    id: string;
+    $type: string;
+}
+
+export interface Result {
+    $type: string;
+    fieldType: FieldType;
+    id: string;
+    name: string;
+}
+
+export interface ResultObject {
+    result: Result;
+    type: string;
+}
+
+interface EnumBundle {
+    name: string;
+    id: string;
+    $type: string;
+}
+
+export type EnumBundleArray = EnumBundle[];
+
+export interface EnumBundleObject {
+    $type: string;
+    id: string;
+}
+
+interface Project {
+    $type: string;
+    id: string;
+    name: string;
+}
+
+export interface Issue {
+    $type: string;
+    project: Project;
+}
+
+
+
+
+
