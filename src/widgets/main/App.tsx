@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useState} from "react";
 import CreateReminder from "./components/CreateReminder.tsx";
 import ReminderSettings from "./components/ReminderSettings.tsx";
 import { useTranslation } from "react-i18next";

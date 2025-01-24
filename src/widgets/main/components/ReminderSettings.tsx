@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchRemindersForCurrentIssue, removeReminder } from "../globalStorage.ts";
+import {fetchRemindersForCurrentIssue, removeReminder, updateReminders} from "../globalStorage.ts";
 import { GroupTagDTO, ReminderData, UserTagDTO } from "../types.ts";
 import YTApp from "../youTrackApp.ts";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
@@ -9,11 +9,14 @@ import groupIcon from "@jetbrains/icons/group";
 import Icon from "@jetbrains/ring-ui-built/components/icon";
 import { ReminderDeleteDialog } from "./ReminderDeleteDialog.tsx";
 import { useTranslation } from "react-i18next";
+import Toggle from "@jetbrains/ring-ui-built/components/toggle/toggle";
+import Alert from "@jetbrains/ring-ui-built/components/alert/alert";
 
 export default function ReminderSettings() {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
+    const [alert, setAlert] = useState({ show: false, isClosing: false, message: "" });
 
     const { t } = useTranslation();
 
@@ -21,6 +24,7 @@ export default function ReminderSettings() {
         const issueId = YTApp.entity.id;
         void fetchRemindersForCurrentIssue().then((fetchedReminders) => {
             const filteredReminders = fetchedReminders.filter((reminder) => reminder.issueId === issueId);
+            console.log(filteredReminders)
             setReminders(filteredReminders);
         });
     }, []);
@@ -40,6 +44,42 @@ export default function ReminderSettings() {
             const year = date.getFullYear();
             return `${month}/${day}/${year}`;
         }
+    };
+
+    const handleToggle = async (reminderId: string, newValue: boolean) => {
+        try {
+            setReminders((prevReminders) =>
+                prevReminders.map((reminder) =>
+                    reminder.uuid === reminderId ? { ...reminder, isActive: newValue } : reminder
+                )
+            );
+
+            await updateReminders(reminderId, { isActive: newValue });
+
+            setAlert({
+                show: true,
+                isClosing: false,
+                message: newValue
+                    ? t("reminderSettings.messages.alerts.activatedMessage")
+                    : t("reminderSettings.messages.alerts.deactivatedMessage"),
+            });
+        } catch (err) {
+            console.error(t("reminderSettings.errors.toggleError"), err);
+
+            setAlert({
+                show: true,
+                isClosing: false,
+                message: t("reminderSettings.messages.alerts.errorMessage"),
+            });
+        }
+    };
+
+    const handleAlertClose = () => {
+        setAlert((prevAlert) => ({ ...prevAlert, show: false }));
+    };
+
+    const handleAlertCloseRequest = () => {
+        setAlert((prevAlert) => ({ ...prevAlert, isClosing: true }));
     };
 
 
@@ -94,6 +134,11 @@ export default function ReminderSettings() {
                                                 {reminder.subject}
                                             </span>
                                             <div className={"flex justify-end items-center"}>
+                                                <Toggle
+                                                    checked={reminder.isActive}
+                                                    onChange={(e) => handleToggle(reminder.uuid, e.target.checked)}
+                                                    className={"mb-2"}
+                                                />
                                                 <Button
                                                     onClick={() => handleDeleteClick(reminder)}
                                                     title={t("reminderSettings.actions.delete")}
@@ -171,6 +216,17 @@ export default function ReminderSettings() {
                 onConfirm={confirmDelete}
                 onCancel={cancelDelete}
             />
+            {alert.show && (
+                <Alert
+                    type={Alert.Type.SUCCESS}
+                    onClose={handleAlertClose}
+                    onCloseRequest={handleAlertCloseRequest}
+                    isClosing={alert.isClosing}
+                    timeout={3000}
+                >
+                    {alert.message}
+                </Alert>
+            )}
         </div>
     );
 }

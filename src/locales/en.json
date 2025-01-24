@@ -29,7 +29,8 @@
   "reminderSettings": {
     "title": "My Reminders",
     "errors": {
-      "errorRemovingReminder": "Error while removing the reminder."
+      "errorRemovingReminder": "Error while removing the reminder.",
+      "toggleError": "Error while toggling the reminder."
     },
     "actions": {
       "delete": "Delete Reminder"
@@ -40,7 +41,14 @@
       "confirmDeleteMessage": "Are you sure you want to delete this reminder?",
       "moreGroups": "more",
       "noTime": "No specific time",
-      "userAvatarAlt": "Avatar of {name}"
+      "userAvatarAlt": "Avatar of {name}",
+      "alerts": {
+        "toggleTitle": "Reminder Status Updated",
+        "activatedMessage": "The reminder has been activated.",
+        "deactivatedMessage": "The reminder has been deactivated.",
+        "errorTitle": "Error",
+        "errorMessage": "Something went wrong while updating the reminder."
+      }
     }
   },
   "groupSelector": {

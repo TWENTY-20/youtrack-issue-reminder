@@ -37,6 +37,8 @@ export default defineConfig(({mode}) => {
                     { src: "./manifest.json", dest: "." },
                     { src: "./entity-extensions.json", dest: "." },
                     { src: "./settings.json", dest: "." },
+                    { src: "./onChangeTagRemove.js", dest: "." },
+                    { src: "./onChangeTagAdd.js", dest: "." }
                 ]
             })
         ],
@@ -54,7 +56,7 @@ export default defineConfig(({mode}) => {
                 external: ['@jetbrains/ring-ui/components/select/select.css'],
                 input: {
                     // List every widget entry point here
-                    test: 'src/widgets/main/index.html'
+                    main: 'src/widgets/main/index.html'
                 }
             }
         },

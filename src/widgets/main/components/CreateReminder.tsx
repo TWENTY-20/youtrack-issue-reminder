@@ -9,8 +9,12 @@ import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
 import { v4 as uuidv4 } from "uuid";
 import { useTranslation } from "react-i18next";
-import { fetchCustomFieldId, fetchBundleId, createBundle, createCustomField, attachCustomFieldToProject } from "../youTrackHandler.ts";
 import YTApp from "../youTrackApp.ts";
+import {
+    addTagToIssue,
+    createTag,
+    isTagPresentGlobal,
+} from "../youTrackHandler.ts";
 
 export default function CreateReminder() {
     const [subject, setSubject] = useState("");
@@ -71,27 +75,51 @@ export default function CreateReminder() {
             message,
             issueId,
             uuid,
+            isActive: true
         };
 
         try {
             await saveReminder(formData);
 
-            const customFieldName = 'Reminder9';
-            const bundleName = 'ReminderCustomBundle';
+            /*const customFieldName = "ReminderSubjects";
+            const bundleName = "ReminderSubjectsBundleTags";
+
+            let bundleId = await fetchBundleId(bundleName);
+            if (!bundleId) {
+                bundleId = await createBundle(bundleName, [subject]);
+                if (!bundleId) {
+                    console.error(`Failed to create bundle '${bundleName}'.`);
+                    return;
+                }
+            } else {
+                await updateBundleValues(bundleId, [subject]);
+            }
 
             let customFieldId = await fetchCustomFieldId(customFieldName);
             if (!customFieldId) {
                 customFieldId = await createCustomField(customFieldName);
+                if (!customFieldId) {
+                    console.error(`Failed to create custom field '${customFieldName}'.`);
+                    return;
+                }
             }
 
-            let bundleId = await fetchBundleId(bundleName);
-            if (!bundleId) {
-                bundleId = await createBundle(bundleName);
+            await attachCustomFieldToProject(issueId, customFieldId, bundleId);*/
+
+            const newTagName = "reminder";
+
+            let existingTag = await isTagPresentGlobal(newTagName)
+
+            if (!existingTag) {
+                const newTagId = await createTag(newTagName);
+                if (!newTagId) {
+                    console.error(`Failed to create tag '${newTagName}'.`);
+                    return;
+                }
+                existingTag = { id: newTagId, name: newTagName };
             }
 
-            if (customFieldId && bundleId) {
-                await attachCustomFieldToProject(issueId, customFieldId, bundleId);
-            }
+            await addTagToIssue(issueId, existingTag.name);
 
             handleCancel();
         } catch (error) {

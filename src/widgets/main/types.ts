@@ -111,6 +111,7 @@ export interface ReminderData {
     message: string;
     issueId: string;
     uuid: string;
+    isActive: boolean;
 }
 
 export interface CustomField {
