@@ -22,16 +22,10 @@ exports.rule = entities.Issue.onChange({
 
       issue.addTag(reminderTag);
       workflow.message(
-          `You attempted to remove the "reminder" tag from issue ${issue.id}, but there are active reminders associated with it. The tag will be re-added.`
+          `You attempted to remove the "reminder" tag from issue ${issue.id}, but there are active reminders associated with it. The tag has been re-added.`
       );
 
       console.log(`Re-added "reminder" tag to issue ${issue.id}`);
-    } else {
-      workflow.message(
-          `The "reminder" tag has been removed from issue ${issue.id}, as there are no active reminders associated with it.`
-      );
-
-      console.log(`"Reminder" tag removed from issue ${issue.id}`);
     }
   },
   requirements: {

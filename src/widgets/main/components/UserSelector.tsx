@@ -1,36 +1,51 @@
 import { useEffect, useState } from "react";
 import Select from "@jetbrains/ring-ui-built/components/select/select";
-import { host } from "../youTrackApp.ts";
+import YTApp, { host } from "../youTrackApp.ts";
 import Tag from "@jetbrains/ring-ui-built/components/tag/tag";
 import { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
-import { UserDTO, UserTagDTO } from "../types.ts";
+import {ReminderData, UserDTO, UserTagDTO} from "../types.ts";
 import { useTranslation } from "react-i18next";
 
-export default function UserSelector({ onChange }: { onChange: (users: UserTagDTO[]) => void }) {
+export default function UserSelector({ onChange, editingReminder, }: { onChange: (users: UserTagDTO[]) => void; editingReminder?: ReminderData | null; }) {
     const [users, setUsers] = useState<UserTagDTO[]>([]);
-    const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>([]);
+    const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers || []);
     const { t } = useTranslation();
 
     useEffect(() => {
-        try {
-            void host.fetchYouTrack("users?fields=id,login,fullName,avatarUrl").then((data: UserDTO[]) => {
-                setUsers(
-                    data.map((user) => ({
-                        key: user.id,
-                        label: user.fullName || user.login,
-                        description: user.login,
-                        avatar: user.avatarUrl,
-                    }))
-                );
-            });
-        } catch (error) {
-            console.error(t("userSelector.errors.fetchUsers"), error);
-        }
-    }, [t]);
+        const fetchUsers = async () => {
+            try {
+                const data: UserDTO[] = await host.fetchYouTrack("users?fields=id,login,fullName,avatarUrl");
+
+                const formattedUsers: UserTagDTO[] = data.map((user) => ({
+                    key: user.id,
+                    label: user.fullName || user.login,
+                    description: user.login,
+                    avatar: user.avatarUrl,
+                }));
+
+                setUsers(formattedUsers);
+
+                if (!editingReminder) {
+                    const currentUser: UserTagDTO = {
+                        key: YTApp.me.id,
+                        label: YTApp.me.name || YTApp.me.login,
+                        description: YTApp.me.login,
+                        avatar: YTApp.me.avatarUrl,
+                    };
+                    setSelectedUsers([currentUser]);
+                    onChange([currentUser]);
+                }
+            } catch (error) {
+                console.error(t("userSelector.errors.fetchUsers"), error);
+            }
+        };
+
+        fetchUsers();
+    }, [t, onChange, editingReminder]);
 
     const handleUserChange = (selected: UserTagDTO | null) => {
-        if (selected && !selectedUsers.find((user) => user.key === selected.key)) {
+        if (selected && !selectedUsers.find((user) => user.description === selected.description)) {
             const newSelectedUsers = [...selectedUsers, selected];
             setSelectedUsers(newSelectedUsers);
             onChange(newSelectedUsers);

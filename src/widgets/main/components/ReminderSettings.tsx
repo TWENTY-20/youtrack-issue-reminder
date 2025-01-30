@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {fetchRemindersForCurrentIssue, removeReminder, updateReminders} from "../globalStorage.ts";
+import {fetchRemindersForCurrentIssue, updateReminders} from "../globalStorage.ts";
 import { GroupTagDTO, ReminderData, UserTagDTO } from "../types.ts";
 import YTApp from "../youTrackApp.ts";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
@@ -7,15 +7,12 @@ import pencilIcon from "@jetbrains/icons/pencil";
 import bellIcon from "@jetbrains/icons/bell-20px";
 import groupIcon from "@jetbrains/icons/group";
 import Icon from "@jetbrains/ring-ui-built/components/icon";
-import { ReminderDeleteDialog } from "./ReminderDeleteDialog.tsx";
 import { useTranslation } from "react-i18next";
 import Toggle from "@jetbrains/ring-ui-built/components/toggle/toggle";
 import Alert from "@jetbrains/ring-ui-built/components/alert/alert";
 
-export default function ReminderSettings() {
+export default function ReminderSettings({ onEditReminder }) {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
     const [alert, setAlert] = useState({ show: false, isClosing: false, message: "" });
 
     const { t } = useTranslation();
@@ -82,36 +79,6 @@ export default function ReminderSettings() {
         setAlert((prevAlert) => ({ ...prevAlert, isClosing: true }));
     };
 
-
-    const handleRemoveReminder = async (reminderId: string) => {
-        try {
-            await removeReminder(reminderId);
-
-            const updatedReminders = reminders.filter((reminder) => reminder.uuid !== reminderId);
-            setReminders(updatedReminders);
-        } catch (err) {
-            console.error(t("reminderSettings.errors.errorRemovingReminder"), err);
-        }
-    };
-
-    const handleDeleteClick = (reminder: ReminderData) => {
-        setReminderToDelete(reminder);
-        setIsModalOpen(true);
-    };
-
-    const confirmDelete = async () => {
-        if (reminderToDelete) {
-            await handleRemoveReminder(reminderToDelete.uuid);
-            setReminderToDelete(null);
-            setIsModalOpen(false);
-        }
-    };
-
-    const cancelDelete = () => {
-        setReminderToDelete(null);
-        setIsModalOpen(false);
-    };
-
     if (reminders.length === 0) {
         return <div>{t("reminderSettings.messages.noReminders")}</div>;
     }
@@ -140,10 +107,9 @@ export default function ReminderSettings() {
                                                     className={"mb-2"}
                                                 />
                                                 <Button
-                                                    onClick={() => handleDeleteClick(reminder)}
-                                                    title={t("reminderSettings.actions.delete")}
+                                                    onClick={() => onEditReminder(reminder)}
+                                                    title={t("reminderSettings.actions.edit")}
                                                     icon={pencilIcon}
-                                                    danger={true}
                                                     className="ring-btn-small ring-btn-primary ring-btn-icon-only"
                                                 />
                                             </div>
@@ -208,14 +174,6 @@ export default function ReminderSettings() {
                     </ul>
                 </div>
             </div>
-
-            <ReminderDeleteDialog
-                isOpen={isModalOpen}
-                title={t("reminderSettings.messages.confirmDeleteTitle")}
-                message={t("reminderSettings.messages.confirmDeleteMessage")}
-                onConfirm={confirmDelete}
-                onCancel={cancelDelete}
-            />
             {alert.show && (
                 <Alert
                     type={Alert.Type.SUCCESS}

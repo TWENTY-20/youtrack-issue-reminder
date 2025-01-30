@@ -4,12 +4,12 @@ import { host } from "../youTrackApp.ts";
 import Tag from "@jetbrains/ring-ui-built/components/tag/tag";
 import { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
-import { GroupDTO, GroupTagDTO } from "../types.ts";
+import {GroupDTO, GroupTagDTO, ReminderData} from "../types.ts";
 import { useTranslation } from "react-i18next";
 
-export default function GroupSelector({ onChange }: { onChange: (groups: any[]) => void }) {
+export default function GroupSelector({ onChange, editingReminder }: { onChange: (groups: any[]) => void; editingReminder?: ReminderData | null; }) {
     const [groups, setGroups] = useState<GroupTagDTO[]>([]);
-    const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>([]);
+    const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
     const { t } = useTranslation();
 
     useEffect(() => {

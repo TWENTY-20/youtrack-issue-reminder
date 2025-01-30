@@ -38,7 +38,7 @@ export default defineConfig(({mode}) => {
                     { src: "./entity-extensions.json", dest: "." },
                     { src: "./settings.json", dest: "." },
                     { src: "./onChangeTagRemove.js", dest: "." },
-                    { src: "./onChangeTagAdd.js", dest: "." }
+                    { src: "./onScheduleMailScheduler.js", dest: "."}
                 ]
             })
         ],

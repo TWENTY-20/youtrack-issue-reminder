@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import Input, { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import { GroupTagDTO, ReminderData, RepeatOption, UserTagDTO } from "../types.ts";
-import { saveReminder } from "../globalStorage.ts";
+import {removeReminder, saveReminder} from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
@@ -15,16 +15,18 @@ import {
     createTag,
     isTagPresentGlobal,
 } from "../youTrackHandler.ts";
+import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
 
-export default function CreateReminder() {
-    const [subject, setSubject] = useState("");
-    const [date, setDate] = useState("");
-    const [time, setTime] = useState("");
-    const [message, setMessage] = useState("");
-    const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>([]);
-    const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>([]);
-    const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(null);
+export default function CreateReminder({editingReminder, onCancelEdit}) {
+    const [subject, setSubject] = useState(editingReminder?.subject || "");
+    const [date, setDate] = useState(editingReminder?.date || "");
+    const [time, setTime] = useState(editingReminder?.time || "");
+    const [message, setMessage] = useState(editingReminder?.message || "");
+    const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers || []);
+    const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
+    const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(editingReminder?.repeatSchedule || null);
     const [resetKey, setResetKey] = useState(0);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const [touched, setTouched] = useState({
         subject: false,
@@ -79,32 +81,10 @@ export default function CreateReminder() {
         };
 
         try {
+            if (editingReminder) {
+                await removeReminder(editingReminder.uuid);
+            }
             await saveReminder(formData);
-
-            /*const customFieldName = "ReminderSubjects";
-            const bundleName = "ReminderSubjectsBundleTags";
-
-            let bundleId = await fetchBundleId(bundleName);
-            if (!bundleId) {
-                bundleId = await createBundle(bundleName, [subject]);
-                if (!bundleId) {
-                    console.error(`Failed to create bundle '${bundleName}'.`);
-                    return;
-                }
-            } else {
-                await updateBundleValues(bundleId, [subject]);
-            }
-
-            let customFieldId = await fetchCustomFieldId(customFieldName);
-            if (!customFieldId) {
-                customFieldId = await createCustomField(customFieldName);
-                if (!customFieldId) {
-                    console.error(`Failed to create custom field '${customFieldName}'.`);
-                    return;
-                }
-            }
-
-            await attachCustomFieldToProject(issueId, customFieldId, bundleId);*/
 
             const newTagName = "reminder";
 
@@ -121,13 +101,16 @@ export default function CreateReminder() {
 
             await addTagToIssue(issueId, existingTag.name);
 
-            handleCancel();
+            await handleCancel();
+            if (editingReminder) {
+                onCancelEdit();
+            }
         } catch (error) {
             console.error(t("createReminder.errors.submitError"), error);
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = async () => {
         setSubject("");
         setDate("");
         setTime("");
@@ -147,11 +130,31 @@ export default function CreateReminder() {
 
     const errors = validateFields();
 
+    const handleDelete = () => {
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!editingReminder) return;
+        try {
+            await removeReminder(editingReminder.uuid);
+            setIsDeleteModalOpen(false);
+            await handleCancel()
+            onCancelEdit();
+        } catch (error) {
+            console.error(t("reminderSettings.errors.errorRemovingReminder"), error);
+        }
+    };
+
+    const cancelDelete = () => {
+        setIsDeleteModalOpen(false);
+    };
+
     return (
         <div>
             <div className="grid grid-cols-12 w-full h-full gap-4">
-                <div className="col-span-12 flex items-center">
-                    <span className="text-lg">{t("createReminder.title")}</span>
+                <div className="col-span-12 text-lg flex items-center">
+                    {editingReminder ? t("createReminder.titleEdit") : t("createReminder.title")}
                 </div>
 
                 <div className="col-span-12">
@@ -201,6 +204,7 @@ export default function CreateReminder() {
                                 setTouched((prev) => ({ ...prev, repeatSchedule: true }));
                             }
                         }}
+                        editingReminder={editingReminder}
                     />
                     {touched.repeatSchedule && errors.repeatSchedule && (
                         <div className="text-[#e47875] text-xs mt-1">{errors.repeatSchedule}</div>
@@ -211,12 +215,14 @@ export default function CreateReminder() {
                     <UserSelector
                         key={resetKey}
                         onChange={setSelectedUsers}
+                        editingReminder={editingReminder}
                     />
                 </div>
                 <div className="col-span-6">
                     <GroupSelector
                         key={resetKey}
                         onChange={setSelectedGroups}
+                        editingReminder={editingReminder}
                     />
                 </div>
 
@@ -234,16 +240,27 @@ export default function CreateReminder() {
                 </div>
 
                 <div className="col-span-12 flex justify-end gap-2 mt-4">
-                    <Button danger={true} onClick={handleCancel}>{t("createReminder.actions.reset")}</Button>
-                    <Button
-                        primary
-                        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                        onClick={handleSubmit}
-                    >
-                        {t("createReminder.actions.submit")}
+                    {editingReminder && (
+                        <Button danger={true} onClick={handleDelete}>
+                            {t("createReminder.actions.delete")}
+                        </Button>
+                    )}
+                    {!editingReminder && (
+                        <Button danger={true} onClick={handleCancel}>{t("createReminder.actions.reset")}</Button>
+                    )}
+                    <Button primary onClick={handleSubmit}>
+                        {editingReminder ? t("createReminder.actions.saveEdit") : t("createReminder.actions.submit")}
                     </Button>
                 </div>
             </div>
+
+            <ReminderDeleteDialog
+                isOpen={isDeleteModalOpen}
+                title={t("reminderSettings.messages.confirmDeleteTitle")}
+                message={t("reminderSettings.messages.confirmDeleteMessage")}
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
+            />
         </div>
     );
 }

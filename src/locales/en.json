@@ -1,6 +1,7 @@
 {
   "createReminder": {
     "title": "Schedule a Reminder",
+    "titleEdit": "Edit a Reminder",
     "labels": {
       "subject": "Subject",
       "date": "Date",
@@ -23,7 +24,9 @@
     },
     "actions": {
       "reset": "Reset Entries",
-      "submit": "Submit"
+      "submit": "Submit",
+      "delete": "Delete",
+      "saveEdit": "Save new reminder"
     }
   },
   "reminderSettings": {

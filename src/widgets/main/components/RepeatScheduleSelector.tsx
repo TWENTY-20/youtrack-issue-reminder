@@ -2,11 +2,11 @@ import { useState } from "react";
 import Select from "@jetbrains/ring-ui-built/components/select/select";
 import { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
-import { RepeatOption } from "../types.ts";
+import {ReminderData, RepeatOption} from "../types.ts";
 import { useTranslation } from "react-i18next";
 
-export default function RepeatScheduleSelector({ onChange }: { onChange: (repeat: RepeatOption | null) => void }) {
-    const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(null);
+export default function RepeatScheduleSelector({ onChange, editingReminder }: { onChange: (repeat: RepeatOption | null) => void; editingReminder?: ReminderData | null; }) {
+    const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(editingReminder?.repeatSchedule || null);
     const { t } = useTranslation();
 
     const repeatOptions: RepeatOption[] = [
