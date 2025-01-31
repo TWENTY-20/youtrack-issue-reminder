@@ -20,44 +20,34 @@ exports.rule = entities.Issue.onSchedule({
             const users = reminder.selectedUsers || [];
 
             users.forEach((user) => {
-                const userEntity = entities.User.findByLogin(user.description);
-                if (!userEntity || !userEntity.timeZoneId) {
-                    console.log(`Skipping user ${user.label}: No time zone found.`);
-                    return;
-                }
-
-                console.log(userEntity)
-
-                const timeZone = userEntity.timeZoneId;
                 const dateTimeString = `${reminder.date}T${reminder.time}:00Z`;
 
-                console.log(dateTimeString)
+                const format = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
-                const userReminderTime = dateTime.parse(dateTimeString, null, timeZone);
-                const currentUserTime = dateTime.now(timeZone);
+                const userReminderTime = dateTime.parse(dateTimeString, format, reminder.timezone);
 
-                console.log(userReminderTime);
+                const currentUserTime = new Date().getTime();
 
-                console.log(`Checking reminder for user ${user.label} in ${timeZone}:`);
+                console.log(`Checking reminder for user ${user.label} in ${reminder.timezone}:`);
                 console.log(`Reminder time: ${userReminderTime}`);
                 console.log(`Current time: ${currentUserTime}`);
 
-                if (!latestReminderTime || userReminderTime.isAfter(latestReminderTime)) {
+                if (!latestReminderTime || latestReminderTime <= userReminderTime) {
                     latestReminderTime = userReminderTime;
+                    console.log("time: " + latestReminderTime);
                 }
 
-                if (currentUserTime.isAfterOrEquals(userReminderTime)) {
+                if (userReminderTime <= currentUserTime) {
                     console.log(`Sending email to ${user.label}`);
                     sendEmail(user, reminder);
                 }
             });
+            const currentGlobalTime = new Date().getTime()
+            if (latestReminderTime && latestReminderTime <= currentGlobalTime) {
+                console.log(`All reminders executed. Handling repeat schedule.`);
+                handleRepeatSchedule(ctx, reminder);
+            }
         });
-
-        const currentGlobalTime = dateTime.now();
-        if (latestReminderTime && currentGlobalTime.isAfterOrEquals(latestReminderTime)) {
-            console.log(`All reminders executed. Handling repeat schedule.`);
-            activeReminders.forEach((reminder) => handleRepeatSchedule(ctx, reminder));
-        }
     },
     requirements: {},
 });
@@ -83,17 +73,27 @@ function handleRepeatSchedule(ctx, reminder) {
 
     const repeatInterval = repeatMap[reminder.repeatSchedule?.key] || 0;
     if (repeatInterval > 0) {
-        const newReminderDate = dateTime.parse(`${reminder.date}T${reminder.time}:00Z`).plusDays(repeatInterval);
+        const newReminderDate = new Date(`${reminder.date}T${reminder.time}`);
+        newReminderDate.setDate(newReminderDate.getDate() + repeatInterval);
 
         const reminders = JSON.parse(ctx.globalStorage.extensionProperties.reminders || '[]');
         const filteredReminders = reminders.filter((r) => r.uuid !== reminder.uuid);
 
-        const updatedReminder = {
-            ...reminder,
-            date: newReminderDate.toString().split('T')[0],
+        const formData = {
+            subject: reminder.subject,
+            date: newReminderDate.toISOString().split('T')[0],
+            time: reminder.time,
+            repeatSchedule: reminder.repeatSchedule,
+            selectedUsers: reminder.selectedUsers,
+            selectedGroups: reminder.selectedGroups,
+            message: reminder.message,
+            issueId: reminder.issueId,
+            uuid: reminder.uuid,
+            isActive: reminder.isActive,
+            timezone: reminder.timezone,
         };
 
-        const updatedReminders = [...filteredReminders, updatedReminder];
+        const updatedReminders = [...filteredReminders, formData];
         ctx.globalStorage.extensionProperties.reminders = JSON.stringify(updatedReminders);
 
         console.log(`Reminder for issue ${ctx.issue.id} rescheduled to ${newReminderDate}`);

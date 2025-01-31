@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import YTApp from "../youTrackApp.ts";
 import {
     addTagToIssue,
-    createTag,
+    createTag, getUserTimeZone,
     isTagPresentGlobal,
 } from "../youTrackHandler.ts";
 import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
@@ -66,6 +66,7 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
 
         const issueId = YTApp.entity.id;
         const uuid = uuidv4();
+        const timeZone = await getUserTimeZone(YTApp.me.id);
 
         const formData: ReminderData = {
             subject,
@@ -77,7 +78,8 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
             message,
             issueId,
             uuid,
-            isActive: true
+            isActive: true,
+            timezone: timeZone
         };
 
         try {

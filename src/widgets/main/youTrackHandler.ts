@@ -221,3 +221,8 @@ export async function removeTagFromIssue(issueId: string, tagName: string): Prom
     }
 }
 
+export async function getUserTimeZone(userId: string) {
+    const timeZoneResponse =  await host.fetchYouTrack(`users/${userId}/profiles/general?fields=timezone(id,presentation,offset)`);
+    return timeZoneResponse.timezone.id
+}
+

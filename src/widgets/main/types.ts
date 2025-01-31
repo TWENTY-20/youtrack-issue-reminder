@@ -112,6 +112,7 @@ export interface ReminderData {
     issueId: string;
     uuid: string;
     isActive: boolean;
+    timezone: string;
 }
 
 export interface CustomField {
