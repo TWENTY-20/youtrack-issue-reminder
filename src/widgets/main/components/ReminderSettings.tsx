@@ -163,9 +163,12 @@ export default function ReminderSettings({ onEditReminder }) {
                                                 </div>
                                             )}
                                             <div className={"px-2 py-1 rounded-md"}>
-                                                <span className="mr-2 text-white">{formatDate(reminder.date)},</span>
+                                                <span className="mr-2 text-white">{formatDate(reminder.date, reminder.timezone)},</span>
                                                 <span className={"text-white"}>{reminder.time || t("reminderSettings.messages.noTime")}</span>
                                             </div>
+                                        </div>
+                                        <div className={"mt-2"}>
+                                            <span className={"text-white"}>Timezone of creator: {reminder.timezone}</span>
                                         </div>
                                     </div>
                                 </div>

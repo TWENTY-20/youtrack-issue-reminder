@@ -27,17 +27,21 @@ exports.rule = entities.Issue.onSchedule({
                 const userReminderTime = dateTime.parse(dateTimeString, format, reminder.timezone);
 
                 const currentUserTime = new Date().getTime();
+                const formattedCurrentUserTime = dateTime.format(currentUserTime, format, reminder.timezone)
+                const dateOfCurrentUserTime = new Date(formattedCurrentUserTime).getTime()
 
-                console.log(`Checking reminder for user ${user.label} in ${reminder.timezone}:`);
+                console.log(userReminderTime)
+                console.log(dateOfCurrentUserTime)
+
+                console.log(`Checking reminder for user ${user.label}" in "${reminder.timezone}":`);
                 console.log(`Reminder time: ${userReminderTime}`);
-                console.log(`Current time: ${currentUserTime}`);
+                console.log(`Current time: ${dateOfCurrentUserTime}`);
 
                 if (!latestReminderTime || latestReminderTime <= userReminderTime) {
                     latestReminderTime = userReminderTime;
-                    console.log("time: " + latestReminderTime);
                 }
 
-                if (userReminderTime <= currentUserTime) {
+                if (userReminderTime <= dateOfCurrentUserTime) {
                     console.log(`Sending email to ${user.label}`);
                     sendEmail(user, reminder);
                 }

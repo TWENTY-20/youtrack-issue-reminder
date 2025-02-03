@@ -66,7 +66,7 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
 
         const issueId = YTApp.entity.id;
         const uuid = uuidv4();
-        const timeZone = await getUserTimeZone(YTApp.me.id);
+        const timeZone = editingReminder?.timezone || await getUserTimeZone(YTApp.me.id);
 
         const formData: ReminderData = {
             subject,
