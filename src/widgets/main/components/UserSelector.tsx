@@ -20,7 +20,7 @@ export default function UserSelector({ onChange, editingReminder, }: { onChange:
                 const formattedUsers: UserTagDTO[] = data.map((user) => ({
                     key: user.id,
                     label: user.fullName || user.login,
-                    description: user.login,
+                    login: user.login,
                     avatar: user.avatarUrl,
                 }));
 
@@ -30,7 +30,7 @@ export default function UserSelector({ onChange, editingReminder, }: { onChange:
                     const currentUser: UserTagDTO = {
                         key: YTApp.me.id,
                         label: YTApp.me.name || YTApp.me.login,
-                        description: YTApp.me.login,
+                        login: YTApp.me.login,
                         avatar: YTApp.me.avatarUrl,
                     };
                     setSelectedUsers([currentUser]);
@@ -45,7 +45,7 @@ export default function UserSelector({ onChange, editingReminder, }: { onChange:
     }, [t, onChange, editingReminder]);
 
     const handleUserChange = (selected: UserTagDTO | null) => {
-        if (selected && !selectedUsers.find((user) => user.description === selected.description)) {
+        if (selected && !selectedUsers.find((user) => user.login === selected.login)) {
             const newSelectedUsers = [...selectedUsers, selected];
             setSelectedUsers(newSelectedUsers);
             onChange(newSelectedUsers);

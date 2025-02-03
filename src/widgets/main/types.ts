@@ -80,7 +80,7 @@ export interface UserDTO {
 export interface UserTagDTO {
     key: string;
     label: string;
-    description: string;
+    login: string;
     avatar?: string;
 }
 

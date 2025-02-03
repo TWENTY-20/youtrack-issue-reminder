@@ -1,5 +1,6 @@
 const entities = require('@jetbrains/youtrack-scripting-api/entities');
 const dateTime = require('@jetbrains/youtrack-scripting-api/date-time');
+const notifications = require('@jetbrains/youtrack-scripting-api/notifications');
 
 exports.rule = entities.Issue.onSchedule({
     title: 'Reminder Email Scheduler with Time Zone Support',
@@ -17,9 +18,33 @@ exports.rule = entities.Issue.onSchedule({
         let latestReminderTime = null;
 
         activeReminders.forEach((reminder) => {
-            const users = reminder.selectedUsers || [];
+            let recipients = new Set();
 
-            users.forEach((user) => {
+            (reminder.selectedUsers || []).forEach((user) => {
+                if (user.login) {
+                    recipients.add(user.login);
+                }
+            });
+
+            (reminder.selectedGroups || []).forEach((group) => {
+                const groupEntity = entities.UserGroup.findByName(group.label);
+                if (groupEntity) {
+                    groupEntity.users.forEach((user) => {
+                        if (user.login) {
+                            recipients.add(user.login);
+                        }
+                    });
+                }
+            });
+
+            recipients.forEach((user) => {
+                console.log(user)
+                const existingUser = entities.User.findByLogin(user);
+                if (!existingUser || !existingUser.email) {
+                    console.warn(`Skipping user: ${user} (No valid email)`);
+                    return;
+                }
+
                 const dateTimeString = `${reminder.date}T${reminder.time}:00Z`;
 
                 const format = "yyyy-MM-dd'T'HH:mm:ss'Z'";
@@ -42,8 +67,8 @@ exports.rule = entities.Issue.onSchedule({
                 }
 
                 if (userReminderTime <= dateOfCurrentUserTime) {
-                    console.log(`Sending email to ${user.label}`);
-                    sendEmail(user, reminder);
+                    console.log(`Sending email to ${user}`);
+                    sendMail(ctx, user, reminder);
                 }
             });
             const currentGlobalTime = new Date().getTime()
@@ -56,11 +81,34 @@ exports.rule = entities.Issue.onSchedule({
     requirements: {},
 });
 
-function sendEmail(user, reminder) {
-    console.log(`Sending email to ${user.label} (${user.description})`);
-    console.log(`Subject: Reminder - ${reminder.subject}`);
-    console.log(`Message: ${reminder.message}`);
-    console.log(`Scheduled Time: ${reminder.date} ${reminder.time}`);
+function sendMail(ctx, user, reminder) {
+    const issue = ctx.issue;
+    const authorName = issue.reporter.fullName;
+
+    const userEmail = entities.User.findByLogin(user).email
+
+    const text =
+        `<div style="font-family: sans-serif">
+            <div style="padding: 10px 10px; font-size: 13px; border-bottom: 1px solid #D4D5D6;">
+              Reminder: <strong>${reminder.subject}</strong><br>
+              Scheduled for: <strong>${reminder.date} ${reminder.time} (${reminder.timezone})</strong><br>
+              Message: <strong>${reminder.message}</strong><br>
+              Issue: <strong>${issue.id}</strong>
+            </div>
+        </div>`;
+
+    const message = {
+        fromName: authorName,
+        to: [userEmail],
+        subject: `Reminder: ${reminder.subject}`,
+        headers: {
+            'X-Custom-Header': 'Reminder Notification'
+        },
+        body: text
+    };
+
+    notifications.sendEmail(message, issue);
+    console.log(`Email sent to ${user.label} (${user.login}) for reminder: ${reminder.subject}`);
 }
 
 function handleRepeatSchedule(ctx, reminder) {
