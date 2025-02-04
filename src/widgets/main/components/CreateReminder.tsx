@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Input, { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
@@ -27,6 +27,17 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
     const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(editingReminder?.repeatSchedule || null);
     const [resetKey, setResetKey] = useState(0);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    useEffect(() => {
+        if (editingReminder) {
+            setSubject(editingReminder.subject || "");
+            setDate(editingReminder.date || "");
+            setTime(editingReminder.time || "");
+            setMessage(editingReminder.message || "");
+        } else {
+            handleCancel();
+        }
+    }, [editingReminder]);
 
     const [touched, setTouched] = useState({
         subject: false,

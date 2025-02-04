@@ -19,9 +19,7 @@ export default function GroupSelector({ onChange, editingReminder }: { onChange:
                     data.map((group) => ({
                         key: group.id,
                         label: group.name,
-                        description: t("groupSelector.messages.groupDescription", {
-                            count: group.usersCount,
-                        }),
+                        description: `${group.usersCount} ${t("groupSelector.messages.groupDescription")}`,
                     }))
                 );
             });

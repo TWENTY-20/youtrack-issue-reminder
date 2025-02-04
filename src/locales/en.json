@@ -60,7 +60,7 @@
     },
     "messages": {
       "noGroups": "No groups available",
-      "groupDescription": "{count} members"
+      "groupDescription": "members"
     },
     "errors": {
       "fetchGroups": "Error fetching groups"
