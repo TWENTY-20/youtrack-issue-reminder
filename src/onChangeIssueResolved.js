@@ -8,6 +8,7 @@ exports.rule = entities.Issue.onChange({
     },
     action: (ctx) => {
         const issue = ctx.issue;
+        const reminderTag = 'reminder';
 
         const reminders = JSON.parse(ctx.globalStorage.extensionProperties.reminders || '[]');
 
@@ -19,6 +20,7 @@ exports.rule = entities.Issue.onChange({
         workflow.message(
             `All reminders for issue ${issue.id} were deactivated.`
         );
+        issue.removeTag(reminderTag);
     },
     requirements: {}
 });
