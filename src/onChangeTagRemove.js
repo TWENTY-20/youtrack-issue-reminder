@@ -10,7 +10,7 @@ exports.rule = entities.Issue.onChange({
   action: (ctx) => {
     const issue = ctx.issue;
 
-    const reminders = ctx.globalStorage.extensionProperties.reminders;
+    const reminders = ctx.globalStorage.extensionProperties.reminders || '[]'
     const parsedReminders = JSON.parse(reminders);
 
     const filteredReminders = parsedReminders.filter(reminder => reminder.issueId === issue.id);
