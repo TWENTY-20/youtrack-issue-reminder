@@ -37,6 +37,18 @@ exports.rule = entities.Issue.onSchedule({
                 }
             });
 
+            const dateTimeString = `${reminder.date}T${reminder.time}:00Z`;
+
+            console.log(dateTimeString)
+
+            const format = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
+            const userReminderTime = new Date(dateTimeString).getTime()
+
+            const currentUserTime = new Date().getTime();
+            const formattedCurrentUserTime = dateTime.format(currentUserTime, format, reminder.timezone)
+            const dateOfCurrentUserTime = new Date(formattedCurrentUserTime).getTime()
+
             recipients.forEach((user) => {
                 console.log(user)
                 const existingUser = entities.User.findByLogin(user);
@@ -45,34 +57,16 @@ exports.rule = entities.Issue.onSchedule({
                     return;
                 }
 
-                const dateTimeString = `${reminder.date}T${reminder.time}:00Z`;
-
-                const format = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-
-                const userReminderTime = dateTime.parse(dateTimeString, format, reminder.timezone);
-
-                const currentUserTime = new Date().getTime();
-                const formattedCurrentUserTime = dateTime.format(currentUserTime, format, reminder.timezone)
-                const dateOfCurrentUserTime = new Date(formattedCurrentUserTime).getTime()
-
-                console.log(userReminderTime)
-                console.log(dateOfCurrentUserTime)
-
-                console.log(`Checking reminder for user ${user.label}" in "${reminder.timezone}":`);
+                console.log(`Checking reminder for user ${user}" in "${reminder.timezone}":`);
                 console.log(`Reminder time: ${userReminderTime}`);
                 console.log(`Current time: ${dateOfCurrentUserTime}`);
-
-                if (!latestReminderTime || latestReminderTime <= userReminderTime) {
-                    latestReminderTime = userReminderTime;
-                }
 
                 if (userReminderTime <= dateOfCurrentUserTime) {
                     console.log(`Sending email to ${user}`);
                     sendMail(ctx, user, reminder);
                 }
             });
-            const currentGlobalTime = new Date().getTime()
-            if (latestReminderTime && latestReminderTime <= currentGlobalTime) {
+            if (userReminderTime <= dateOfCurrentUserTime) {
                 console.log(`All reminders executed. Handling repeat schedule.`);
                 handleRepeatSchedule(ctx, reminder);
             }
@@ -108,7 +102,7 @@ function sendMail(ctx, user, reminder) {
     };
 
     notifications.sendEmail(message, issue);
-    console.log(`Email sent to ${user.label} (${user.login}) for reminder: ${reminder.subject}`);
+    console.log(`Email sent to ${user} (${user}) for reminder: ${reminder.subject}`);
 }
 
 function handleRepeatSchedule(ctx, reminder) {

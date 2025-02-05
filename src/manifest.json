@@ -11,15 +11,9 @@
   "widgets": [
     {
       "key": "main",
-      "name": "Scheduler",
+      "name": "Reminder",
       "indexPath": "main/index.html",
       "extensionPoint": "ISSUE_OPTIONS_MENU_ITEM"
-    },
-    {
-      "key": "issue_list_reminders",
-      "name": "Scheduler List",
-      "indexPath": "issue_list_reminders/index.html",
-      "extensionPoint": "ISSUE_FIELD_PANEL_LAST"
     }
   ]
 }

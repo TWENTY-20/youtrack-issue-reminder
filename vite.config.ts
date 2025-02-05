@@ -57,8 +57,7 @@ export default defineConfig(({mode}) => {
             rollupOptions: {
                 external: ['@jetbrains/ring-ui/components/select/select.css'],
                 input: {
-                    main: 'src/widgets/main/index.html',
-                    issue_list_reminders: 'src/widgets/issue_list_reminders/index.html'
+                    main: 'src/widgets/main/index.html'
                 }
             }
         },

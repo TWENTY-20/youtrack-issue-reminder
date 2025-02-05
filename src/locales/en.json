@@ -101,7 +101,7 @@
   "app": {
     "tabs": {
       "reminders": "Reminders",
-      "settings": "Settings"
+      "settings": "Overview"
     },
     "actions": {
       "switchLocale": "Switch Language"

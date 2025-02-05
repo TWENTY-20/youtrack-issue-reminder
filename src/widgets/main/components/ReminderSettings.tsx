@@ -6,14 +6,18 @@ import Button from "@jetbrains/ring-ui-built/components/button/button";
 import pencilIcon from "@jetbrains/icons/pencil";
 import bellIcon from "@jetbrains/icons/bell-20px";
 import groupIcon from "@jetbrains/icons/group";
+import tooltipIcon from "@jetbrains/icons/info";
 import Icon from "@jetbrains/ring-ui-built/components/icon";
 import { useTranslation } from "react-i18next";
 import Toggle from "@jetbrains/ring-ui-built/components/toggle/toggle";
 import Alert from "@jetbrains/ring-ui-built/components/alert/alert";
+import {getUserTimeZone} from "../youTrackHandler.ts";
+import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
 
 export default function ReminderSettings({ onEditReminder }) {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
     const [alert, setAlert] = useState({ show: false, isClosing: false, message: "" });
+    const [timeZone, setTimeZone] = useState(null)
 
     const { t } = useTranslation();
 
@@ -24,6 +28,7 @@ export default function ReminderSettings({ onEditReminder }) {
             console.log(filteredReminders)
             setReminders(filteredReminders);
         });
+        void getUserTimeZone(YTApp.me.id).then(setTimeZone);
     }, []);
 
     const formatDate = (dateStr: string | undefined): string => {
@@ -42,6 +47,72 @@ export default function ReminderSettings({ onEditReminder }) {
             return `${month}.${day}.${year}`;
         }
     };
+
+    const formatDateTooltip = (dateStr, timeStr, creatorTimeZone, userTimeZone) => {
+        if (!dateStr || !timeStr || !creatorTimeZone || !userTimeZone) return t("reminderSettings.errors.date");
+
+        try {
+            const isoDateTime = `${dateStr}T${timeStr}:00`;
+
+            const creatorDate = new Date(isoDateTime);
+
+            const getOffset = (date, timeZone) => {
+                const formatter = new Intl.DateTimeFormat("en-US", {timeZone, timeZoneName: "shortOffset"});
+                const parts = formatter.formatToParts(date);
+                const timeZonePart = parts.find((part) => part.type === "timeZoneName");
+                return timeZonePart ? parseInt(timeZonePart.value.replace("GMT", ""), 10) * 60 : 0;
+            };
+
+            const creatorOffset = getOffset(creatorDate, creatorTimeZone);
+            const userOffset = getOffset(creatorDate, userTimeZone);
+
+            const timeDifference = creatorOffset - userOffset;
+            const adjustedDate = new Date(creatorDate.getTime() - timeDifference * 60000);
+
+            return new Intl.DateTimeFormat(YTApp.locale, {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+            }).format(adjustedDate);
+        } catch (error) {
+            console.error("Error formatting time:", error);
+            return t("reminderSettings.errors.time");
+        }
+    }
+
+    const formatTimeTooltip = (timeStr, creatorTimeZone, userTimeZone) => {
+        if (!timeStr || !creatorTimeZone || !userTimeZone) return t("reminderSettings.messages.noTime");
+
+        try {
+            const today = new Date().toISOString().split("T")[0];
+            const isoDateTime = `${today}T${timeStr}:00`;
+
+            const creatorDate = new Date(isoDateTime);
+
+            const getOffset = (date, timeZone) => {
+                const formatter = new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "shortOffset" });
+                const parts = formatter.formatToParts(date);
+                const timeZonePart = parts.find((part) => part.type === "timeZoneName");
+                return timeZonePart ? parseInt(timeZonePart.value.replace("GMT", ""), 10) * 60 : 0;
+            };
+
+            const creatorOffset = getOffset(creatorDate, creatorTimeZone);
+            const userOffset = getOffset(creatorDate, userTimeZone);
+
+            const timeDifference = userOffset - creatorOffset;
+            const adjustedTime = new Date(creatorDate.getTime() + timeDifference * 60000);
+
+            return new Intl.DateTimeFormat(YTApp.locale, {
+                hour: "2-digit",
+                minute: "2-digit",
+            }).format(adjustedTime);
+        } catch (error) {
+            console.error("Error formatting time:", error);
+            return t("reminderSettings.errors.time");
+        }
+    };
+
+
 
     const handleToggle = async (reminderId: string, newValue: boolean) => {
         try {
@@ -163,12 +234,20 @@ export default function ReminderSettings({ onEditReminder }) {
                                                 </div>
                                             )}
                                             <div className={"px-2 py-1 rounded-md"}>
-                                                <span className="mr-2 text-white">{formatDate(reminder.date, reminder.timezone)},</span>
+                                                <span className="mr-2 text-white">{formatDate(reminder.date)},</span>
                                                 <span className={"text-white"}>{reminder.time || t("reminderSettings.messages.noTime")}</span>
                                             </div>
                                         </div>
-                                        <div className={"mt-2"}>
-                                            <span className={"text-white"}>Timezone of creator: {reminder.timezone}</span>
+                                        <div className={"mt-2 flex text-gray-500 items-center"}>
+                                            <span className="ml-2 mr-1 text-gray-500">
+                                                    ({formatDateTooltip(reminder.date, reminder.time, reminder.timezone, timeZone)},
+                                                </span>
+                                            <span className="mr-2 text-gray-500">
+                                                    {formatTimeTooltip(reminder.time, reminder.timezone, timeZone)})
+                                                </span>
+                                            <Tooltip title="Time of notification in your timezone">
+                                                <Icon glyph={tooltipIcon} className="ring-icon" />
+                                            </Tooltip>
                                         </div>
                                     </div>
                                 </div>
