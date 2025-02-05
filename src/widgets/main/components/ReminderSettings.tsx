@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {fetchRemindersForCurrentIssue, updateReminders} from "../globalStorage.ts";
+import {fetchRemindersForCurrentIssue, removeReminder, updateReminders} from "../globalStorage.ts";
 import { GroupTagDTO, ReminderData, UserTagDTO } from "../types.ts";
 import YTApp from "../youTrackApp.ts";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
@@ -7,17 +7,21 @@ import pencilIcon from "@jetbrains/icons/pencil";
 import bellIcon from "@jetbrains/icons/bell-20px";
 import groupIcon from "@jetbrains/icons/group";
 import tooltipIcon from "@jetbrains/icons/info";
+import trashIcon from "@jetbrains/icons/trash";
 import Icon from "@jetbrains/ring-ui-built/components/icon";
 import { useTranslation } from "react-i18next";
 import Toggle from "@jetbrains/ring-ui-built/components/toggle/toggle";
 import Alert from "@jetbrains/ring-ui-built/components/alert/alert";
 import {getUserTimeZone} from "../youTrackHandler.ts";
 import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
+import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
 
 export default function ReminderSettings({ onEditReminder }) {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
     const [alert, setAlert] = useState({ show: false, isClosing: false, message: "" });
     const [timeZone, setTimeZone] = useState(null)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
 
     const { t } = useTranslation();
 
@@ -150,6 +154,37 @@ export default function ReminderSettings({ onEditReminder }) {
         setAlert((prevAlert) => ({ ...prevAlert, isClosing: true }));
     };
 
+    const handleDeleteClick = (reminder: ReminderData) => {
+        setReminderToDelete(reminder);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!reminderToDelete) return;
+
+        try {
+            await removeReminder(reminderToDelete.uuid);
+            setReminders((prevReminders) => prevReminders.filter((r) => r.uuid !== reminderToDelete.uuid));
+
+            setAlert({
+                show: true,
+                isClosing: false,
+                message: t("reminderSettings.messages.alerts.deletedMessage"),
+            });
+
+            setReminderToDelete(null);
+            setIsDeleteModalOpen(false);
+        } catch (error) {
+            console.error(t("reminderSettings.errors.errorRemovingReminder"), error);
+        }
+    };
+
+    const cancelDelete = () => {
+        setReminderToDelete(null);
+        setIsDeleteModalOpen(false);
+    };
+
+
     if (reminders.length === 0) {
         return <div>{t("reminderSettings.messages.noReminders")}</div>;
     }
@@ -167,21 +202,28 @@ export default function ReminderSettings({ onEditReminder }) {
                                 <div className="flex gap-4 border border-[#9ea0a9] p-4 rounded-md shadow-sm items-center">
                                     <Icon glyph={bellIcon} className="ring-icon" />
                                     <div className={"flex w-full flex-col"}>
-                                        <div className="flex items-center gap-2 mb-2">
+                                        <div className="flex items-center mb-2">
                                             <span className="text-md font-semibold w-full overflow-ellipsis">
                                                 {reminder.subject}
                                             </span>
-                                            <div className={"flex justify-end items-center"}>
+                                            <div className="flex justify-end items-center">
                                                 <Toggle
                                                     checked={reminder.isActive}
                                                     onChange={(e) => handleToggle(reminder.uuid, e.target.checked)}
-                                                    className={"mb-2"}
+                                                    className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-2 mr-1"}
                                                 />
                                                 <Button
                                                     onClick={() => onEditReminder(reminder)}
                                                     title={t("reminderSettings.actions.edit")}
                                                     icon={pencilIcon}
                                                     className="ring-btn-small ring-btn-primary ring-btn-icon-only"
+                                                />
+                                                <Button
+                                                    danger
+                                                    onClick={() => handleDeleteClick(reminder)}
+                                                    title={t("reminderSettings.actions.delete")}
+                                                    icon={trashIcon}
+                                                    className="ring-btn-small ring-btn-danger ring-btn-icon-only"
                                                 />
                                             </div>
                                         </div>
@@ -267,6 +309,14 @@ export default function ReminderSettings({ onEditReminder }) {
                     {alert.message}
                 </Alert>
             )}
+
+            <ReminderDeleteDialog
+                isOpen={isDeleteModalOpen}
+                title={t("reminderSettings.messages.confirmDeleteTitle")}
+                message={t("reminderSettings.messages.confirmDeleteMessage")}
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
+            />
         </div>
     );
 }

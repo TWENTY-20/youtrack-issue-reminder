@@ -15,7 +15,6 @@ import {
     createTag, getUserTimeZone,
     isTagPresentGlobal,
 } from "../youTrackHandler.ts";
-import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
 
 export default function CreateReminder({editingReminder, onCancelEdit}) {
     const [subject, setSubject] = useState(editingReminder?.subject || "");
@@ -26,7 +25,6 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
     const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
     const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(editingReminder?.repeatSchedule || null);
     const [resetKey, setResetKey] = useState(0);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     useEffect(() => {
         if (editingReminder) {
@@ -143,26 +141,6 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
 
     const errors = validateFields();
 
-    const handleDelete = () => {
-        setIsDeleteModalOpen(true);
-    };
-
-    const confirmDelete = async () => {
-        if (!editingReminder) return;
-        try {
-            await removeReminder(editingReminder.uuid);
-            setIsDeleteModalOpen(false);
-            await handleCancel()
-            onCancelEdit();
-        } catch (error) {
-            console.error(t("reminderSettings.errors.errorRemovingReminder"), error);
-        }
-    };
-
-    const cancelDelete = () => {
-        setIsDeleteModalOpen(false);
-    };
-
     return (
         <div>
             <div className="grid grid-cols-12 w-full h-full gap-4">
@@ -253,11 +231,6 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
                 </div>
 
                 <div className="col-span-12 flex justify-end gap-2 mt-4">
-                    {editingReminder && (
-                        <Button danger={true} onClick={handleDelete}>
-                            {t("createReminder.actions.delete")}
-                        </Button>
-                    )}
                     {!editingReminder && (
                         <Button danger={true} onClick={handleCancel}>{t("createReminder.actions.reset")}</Button>
                     )}
@@ -266,14 +239,6 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
                     </Button>
                 </div>
             </div>
-
-            <ReminderDeleteDialog
-                isOpen={isDeleteModalOpen}
-                title={t("reminderSettings.messages.confirmDeleteTitle")}
-                message={t("reminderSettings.messages.confirmDeleteMessage")}
-                onConfirm={confirmDelete}
-                onCancel={cancelDelete}
-            />
         </div>
     );
 }
