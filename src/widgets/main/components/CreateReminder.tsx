@@ -15,6 +15,7 @@ import {
     createTag, getUserTimeZone,
     isTagPresentGlobal,
 } from "../youTrackHandler.ts";
+import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 
 export default function CreateReminder({editingReminder, onCancelEdit}) {
     const [subject, setSubject] = useState(editingReminder?.subject || "");
@@ -25,6 +26,8 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
     const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
     const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(editingReminder?.repeatSchedule || null);
     const [resetKey, setResetKey] = useState(0);
+    const [onlyCreatorCanEdit, setOnlyCreatorCanEdit] = useState(editingReminder?.onlyCreatorCanEdit ?? true);
+    const [allAssigneesCanEdit, setAllAssigneesCanEdit] = useState(editingReminder?.allAssigneesCanEdit ?? false);
 
     useEffect(() => {
         if (editingReminder) {
@@ -32,6 +35,8 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
             setDate(editingReminder.date || "");
             setTime(editingReminder.time || "");
             setMessage(editingReminder.message || "");
+            setOnlyCreatorCanEdit(editingReminder.onlyCreatorCanEdit ?? true);
+            setAllAssigneesCanEdit(editingReminder.allAssigneesCanEdit ?? false);
         } else {
             handleCancel();
         }
@@ -88,8 +93,12 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
             issueId,
             uuid,
             isActive: true,
-            timezone: timeZone
+            timezone: timeZone,
+            creatorLogin: YTApp.me.login,
+            onlyCreatorCanEdit,
+            allAssigneesCanEdit,
         };
+
 
         try {
             if (editingReminder) {
@@ -129,6 +138,8 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
         setSelectedUsers([]);
         setSelectedGroups([]);
         setRepeatSchedule(null);
+        setOnlyCreatorCanEdit(true);
+        setAllAssigneesCanEdit(false);
         setResetKey((prevKey) => prevKey + 1);
         setTouched({
             subject: false,
@@ -137,6 +148,16 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
             message: false,
             repeatSchedule: false,
         });
+    };
+
+    const handleOnlyCreatorChange = () => {
+        setOnlyCreatorCanEdit(true);
+        setAllAssigneesCanEdit(false);
+    };
+
+    const handleAllAssigneesChange = () => {
+        setOnlyCreatorCanEdit(false);
+        setAllAssigneesCanEdit(true);
     };
 
     const errors = validateFields();
@@ -227,6 +248,19 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
                         value={message}
                         {...(touched.message && errors.message ? { error: errors.message } : {})}
                         onChange={(e) => setMessage(e.target.value)}
+                    />
+                </div>
+
+                <div className={"col-span-12 flex flex-col"}>
+                    <Checkbox
+                        checked={onlyCreatorCanEdit}
+                        onChange={handleOnlyCreatorChange}
+                        label="Only creator can edit"
+                    />
+                    <Checkbox
+                        checked={allAssigneesCanEdit}
+                        onChange={handleAllAssigneesChange}
+                        label="All assignees can edit"
                     />
                 </div>
 

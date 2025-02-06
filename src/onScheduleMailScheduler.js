@@ -15,8 +15,6 @@ exports.rule = entities.Issue.onSchedule({
             return;
         }
 
-        let latestReminderTime = null;
-
         activeReminders.forEach((reminder) => {
             let recipients = new Set();
 

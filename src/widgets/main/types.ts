@@ -113,6 +113,9 @@ export interface ReminderData {
     uuid: string;
     isActive: boolean;
     timezone: string;
+    creatorLogin: string;
+    onlyCreatorCanEdit: boolean;
+    allAssigneesCanEdit: boolean;
 }
 
 export interface CustomField {

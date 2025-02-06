@@ -24,6 +24,7 @@ export default function ReminderSettings({ onEditReminder }) {
     const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
 
     const { t } = useTranslation();
+    const currentUserLogin = YTApp.me.login;
 
     useEffect(() => {
         const issueId = YTApp.entity.id;
@@ -197,104 +198,114 @@ export default function ReminderSettings({ onEditReminder }) {
                 </div>
                 <div className="col-span-12">
                     <ul className="space-y-4">
-                        {reminders.map((reminder, index) => (
-                            <li key={index} className="flex flex-col gap-2">
-                                <div className="flex gap-4 border border-[#9ea0a9] p-4 rounded-md shadow-sm items-center">
-                                    <Icon glyph={bellIcon} className="ring-icon" />
-                                    <div className={"flex w-full flex-col"}>
-                                        <div className="flex items-center mb-2">
-                                            <span className="text-md font-semibold w-full overflow-ellipsis">
-                                                {reminder.subject}
-                                            </span>
-                                            <div className="flex justify-end items-center">
-                                                <Toggle
-                                                    checked={reminder.isActive}
-                                                    onChange={(e) => handleToggle(reminder.uuid, e.target.checked)}
-                                                    className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-2 mr-1"}
-                                                />
-                                                <Button
-                                                    onClick={() => onEditReminder(reminder)}
-                                                    title={t("reminderSettings.actions.edit")}
-                                                    icon={pencilIcon}
-                                                    className="ring-btn-small ring-btn-primary ring-btn-icon-only"
-                                                />
-                                                <Button
-                                                    danger
-                                                    onClick={() => handleDeleteClick(reminder)}
-                                                    title={t("reminderSettings.actions.delete")}
-                                                    icon={trashIcon}
-                                                    className="ring-btn-small ring-btn-danger ring-btn-icon-only"
-                                                />
+                        {reminders.map((reminder, index) => {
+                            const isCreator = reminder.creatorLogin === currentUserLogin;
+                            const isAllowedUser = reminder.selectedUsers.some(user => user.login === currentUserLogin);
+
+                            const canEditOrDelete =
+                                reminder.onlyCreatorCanEdit ? isCreator : reminder.allAssigneesCanEdit ? (isCreator || isAllowedUser) : false;
+
+                            return (
+                                <li key={index} className="flex flex-col gap-2">
+                                    <div className="flex gap-4 border border-[#9ea0a9] p-4 rounded-md shadow-sm items-center">
+                                        <Icon glyph={bellIcon} className="ring-icon" />
+                                        <div className={"flex w-full flex-col"}>
+                                            <div className="flex items-center mb-2">
+                                                <span className="text-md font-semibold w-full overflow-ellipsis">
+                                                    {reminder.subject}
+                                                </span>
+                                                <div className="flex justify-end items-center">
+                                                    <Toggle
+                                                        checked={reminder.isActive}
+                                                        onChange={(e) => handleToggle(reminder.uuid, e.target.checked)}
+                                                        className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-2 mr-1"}
+                                                    />
+                                                    <Button
+                                                        onClick={() => onEditReminder(reminder)}
+                                                        title={t("reminderSettings.actions.edit")}
+                                                        icon={pencilIcon}
+                                                        className="ring-btn-small ring-btn-primary ring-btn-icon-only"
+                                                        disabled={!canEditOrDelete}
+                                                    />
+                                                    <Button
+                                                        danger
+                                                        onClick={() => handleDeleteClick(reminder)}
+                                                        title={t("reminderSettings.actions.delete")}
+                                                        icon={trashIcon}
+                                                        className="ring-btn-small ring-btn-danger ring-btn-icon-only"
+                                                        disabled={!canEditOrDelete}
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                                            {reminder.selectedUsers.length > 0 && (
-                                                <div className="flex items-center">
-                                                    <div className="flex -space-x-2">
-                                                        {reminder.selectedUsers.slice(0, 2).map((user: UserTagDTO, index) => (
+                                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                                                {reminder.selectedUsers.length > 0 && (
+                                                    <div className="flex items-center">
+                                                        <div className="flex -space-x-2">
+                                                            {reminder.selectedUsers.slice(0, 2).map((user: UserTagDTO, index) => (
+                                                                <div
+                                                                    key={user.key}
+                                                                    className="relative w-6 h-6 rounded-full bg-gray-300 flex-shrink-0"
+                                                                    style={{ zIndex: 10 - index }}
+                                                                >
+                                                                    <img
+                                                                        src={
+                                                                            user.avatar ||
+                                                                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                                                user.label
+                                                                            )}&background=random&color=fff`
+                                                                        }
+                                                                        alt={t("reminderSettings.messages.userAvatarAlt", { name: user.label })}
+                                                                        className="w-full h-full rounded-full object-cover"
+                                                                    />
+                                                                </div>
+                                                            ))}
+                                                            {reminder.selectedUsers.length > 2 && (
+                                                                <span className="flex items-center justify-center w-6 h-6 text-xs font-medium text-gray-600 bg-gray-200 rounded-full">
+                                                                    +{reminder.selectedUsers.length - 2}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {reminder.selectedGroups.length > 0 && (
+                                                    <div className="flex gap-2 items-center">
+                                                        {reminder.selectedGroups.slice(0, 1).map((group: GroupTagDTO) => (
                                                             <div
-                                                                key={user.key}
-                                                                className="relative w-6 h-6 rounded-full bg-gray-300 flex-shrink-0"
-                                                                style={{ zIndex: 10 - index }}
+                                                                key={group.key}
+                                                                className="flex items-center gap-1 px-2 py-1 rounded-md bg-neutral-700 text-white"
                                                             >
-                                                                <img
-                                                                    src={
-                                                                        user.avatar ||
-                                                                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                                                                            user.label
-                                                                        )}&background=random&color=fff`
-                                                                    }
-                                                                    alt={t("reminderSettings.messages.userAvatarAlt", { name: user.label })}
-                                                                    className="w-full h-full rounded-full object-cover"
-                                                                />
+                                                                <Icon glyph={groupIcon} className="ring-icon" />
+                                                                {group.label}
                                                             </div>
                                                         ))}
-                                                        {reminder.selectedUsers.length > 2 && (
-                                                            <span className="flex items-center justify-center w-6 h-6 text-xs font-medium text-gray-600 bg-gray-200 rounded-full">
-                                                                +{reminder.selectedUsers.length - 2}
+                                                        {reminder.selectedGroups.length > 1 && (
+                                                            <span className="text-gray-500">
+                                                                +{reminder.selectedGroups.length - 1} {t("reminderSettings.messages.moreGroups")}
                                                             </span>
                                                         )}
                                                     </div>
+                                                )}
+                                                <div className={"px-2 py-1 rounded-md"}>
+                                                    <span className="mr-2 text-white">{formatDate(reminder.date)},</span>
+                                                    <span className={"text-white"}>{reminder.time || t("reminderSettings.messages.noTime")}</span>
                                                 </div>
-                                            )}
-                                            {reminder.selectedGroups.length > 0 && (
-                                                <div className="flex gap-2 items-center">
-                                                    {reminder.selectedGroups.slice(0, 1).map((group: GroupTagDTO) => (
-                                                        <div
-                                                            key={group.key}
-                                                            className="flex items-center gap-1 px-2 py-1 rounded-md bg-neutral-700 text-white"
-                                                        >
-                                                            <Icon glyph={groupIcon} className="ring-icon" />
-                                                            {group.label}
-                                                        </div>
-                                                    ))}
-                                                    {reminder.selectedGroups.length > 1 && (
-                                                        <span className="text-gray-500">
-                                                            +{reminder.selectedGroups.length - 1} {t("reminderSettings.messages.moreGroups")}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
-                                            <div className={"px-2 py-1 rounded-md"}>
-                                                <span className="mr-2 text-white">{formatDate(reminder.date)},</span>
-                                                <span className={"text-white"}>{reminder.time || t("reminderSettings.messages.noTime")}</span>
+                                            </div>
+                                            <div className={"mt-2 flex text-gray-500 items-center"}>
+                                                <span className="mr-1 text-gray-500">
+                                                        ({formatDateTooltip(reminder.date, reminder.time, reminder.timezone, timeZone)},
+                                                    </span>
+                                                <span className="mr-2 text-gray-500">
+                                                        {formatTimeTooltip(reminder.time, reminder.timezone, timeZone)})
+                                                    </span>
+                                                <Tooltip title="Time of notification in your timezone">
+                                                    <Icon glyph={tooltipIcon} className="ring-icon" />
+                                                </Tooltip>
                                             </div>
                                         </div>
-                                        <div className={"mt-2 flex text-gray-500 items-center"}>
-                                            <span className="ml-2 mr-1 text-gray-500">
-                                                    ({formatDateTooltip(reminder.date, reminder.time, reminder.timezone, timeZone)},
-                                                </span>
-                                            <span className="mr-2 text-gray-500">
-                                                    {formatTimeTooltip(reminder.time, reminder.timezone, timeZone)})
-                                                </span>
-                                            <Tooltip title="Time of notification in your timezone">
-                                                <Icon glyph={tooltipIcon} className="ring-icon" />
-                                            </Tooltip>
-                                        </div>
                                     </div>
-                                </div>
-                            </li>
-                        ))}
+                                </li>
+                            );
+                        })}
                     </ul>
                 </div>
             </div>
