@@ -218,7 +218,6 @@ export default function ReminderSettings({ onEditReminder }) {
                     <ul className="space-y-4">
                         {reminders.map((reminder, index) => {
                             const isCreator = reminder.creatorLogin === currentUserLogin;
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                             const isAllowedUser = reminder.selectedUsers.some(user => user.login === currentUserLogin);
 
                             const canEditOrDelete =
@@ -259,7 +258,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                                            <div className="flex items-center w-full gap-4 text-sm text-gray-600">
                                                 {reminder.selectedUsers.length > 0 && (
                                                     <div className="flex items-center">
                                                         <div className="flex -space-x-2">
@@ -294,7 +293,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                         {reminder.selectedGroups.slice(0, 1).map((group: GroupTagDTO) => (
                                                             <div
                                                                 key={group.key}
-                                                                className="flex items-center gap-1 px-2 py-1 rounded-md bg-neutral-700 text-white"
+                                                                className="flex items-center gap-1 px-2 py-1 rounded-md dark:text-white bg-neutral-200 dark:bg-neutral-700"
                                                             >
                                                                 <Icon glyph={groupIcon} className="ring-icon" />
                                                                 {group.label}
@@ -308,8 +307,8 @@ export default function ReminderSettings({ onEditReminder }) {
                                                     </div>
                                                 )}
                                                 <div className={"px-2 py-1 rounded-md"}>
-                                                    <span className="mr-2">{formatDate(reminder.date)},</span>
-                                                    <span>{formatTime(reminder.time)}</span>
+                                                    <span className="mr-2 dark:text-white">{formatDate(reminder.date)},</span>
+                                                    <span className={"dark:text-white"}>{formatTime(reminder.time)}</span>
                                                 </div>
                                             </div>
                                             <div className={"mt-2 flex text-gray-500 items-center"}>

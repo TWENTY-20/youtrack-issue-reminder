@@ -37,8 +37,6 @@ exports.rule = entities.Issue.onSchedule({
 
             const dateTimeString = `${reminder.date}T${reminder.time}:00Z`;
 
-            console.log(dateTimeString)
-
             const format = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
             const userReminderTime = new Date(dateTimeString).getTime()
@@ -48,12 +46,6 @@ exports.rule = entities.Issue.onSchedule({
             const dateOfCurrentUserTime = new Date(formattedCurrentUserTime).getTime()
 
             recipients.forEach((user) => {
-                console.log(user)
-                const existingUser = entities.User.findByLogin(user);
-                if (!existingUser || !existingUser.email) {
-                    console.warn(`Skipping user: ${user} (No valid email)`);
-                    return;
-                }
 
                 console.log(`Checking reminder for user ${user}" in "${reminder.timezone}":`);
                 console.log(`Reminder time: ${userReminderTime}`);
