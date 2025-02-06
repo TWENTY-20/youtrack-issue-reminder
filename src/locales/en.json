@@ -1,57 +1,34 @@
 {
   "createReminder": {
-    "title": "Schedule a Reminder",
-    "titleEdit": "Edit a Reminder",
+    "title": "Create Reminder",
+    "titleEdit": "Edit Reminder",
+    "placeholders": {
+      "subject": "Enter subject",
+      "date": "Select date",
+      "time": "Select time",
+      "message": "Enter message"
+    },
     "labels": {
       "subject": "Subject",
       "date": "Date",
       "time": "Time",
-      "message": "Message"
-    },
-    "placeholders": {
-      "subject": "Enter a Subject here...",
-      "date": "Enter a Date",
-      "time": "Enter a Time",
-      "message": "Enter a Message here..."
+      "message": "Message",
+      "permissions": "Permissions",
+      "onlyCreatorCanEdit": "Only creator can edit",
+      "allAssigneesCanEdit": "All assignees can edit"
     },
     "errors": {
-      "subject": "Subject is required",
-      "date": "Date is required",
-      "time": "Time is required",
-      "message": "Message is required",
-      "repeatSchedule": "Repeat schedule is required",
-      "submitError": "Error during reminder submission"
+      "subject": "Subject is required.",
+      "date": "Date is required.",
+      "time": "Time is required.",
+      "message": "Message is required.",
+      "repeatSchedule": "Repeat schedule is required.",
+      "submitError": "An error occurred while submitting the reminder."
     },
     "actions": {
-      "reset": "Reset Entries",
-      "submit": "Submit",
-      "delete": "Delete",
-      "saveEdit": "Save new reminder"
-    }
-  },
-  "reminderSettings": {
-    "title": "My Reminders",
-    "errors": {
-      "errorRemovingReminder": "Error while removing the reminder.",
-      "toggleError": "Error while toggling the reminder."
-    },
-    "actions": {
-      "delete": "Delete Reminder"
-    },
-    "messages": {
-      "noReminders": "No reminders found.",
-      "confirmDeleteTitle": "Confirm Deletion",
-      "confirmDeleteMessage": "Are you sure you want to delete this reminder?",
-      "moreGroups": "more",
-      "noTime": "No specific time",
-      "userAvatarAlt": "Avatar of {name}",
-      "alerts": {
-        "toggleTitle": "Reminder Status Updated",
-        "activatedMessage": "The reminder has been activated.",
-        "deactivatedMessage": "The reminder has been deactivated.",
-        "errorTitle": "Error",
-        "errorMessage": "Something went wrong while updating the reminder."
-      }
+      "reset": "Reset",
+      "submit": "Create Reminder",
+      "saveEdit": "Save Changes"
     }
   },
   "groupSelector": {
@@ -59,14 +36,49 @@
       "addGroups": "Add Groups"
     },
     "messages": {
-      "noGroups": "No groups available",
       "groupDescription": "members"
     },
     "errors": {
-      "fetchGroups": "Error fetching groups"
+      "fetchGroups": "Failed to fetch groups."
     },
     "actions": {
       "removeGroup": "Remove Group"
+    }
+  },
+  "reminderDeleteDialog": {
+    "title": "Delete Reminder",
+    "message": "Are you sure you want to delete this reminder?",
+    "actions": {
+      "cancel": "Cancel",
+      "delete": "Delete"
+    }
+  },
+  "reminderSettings": {
+    "title": "My Reminders",
+    "errors": {
+      "date": "Invalid date",
+      "time": "Invalid time",
+      "toggleError": "Failed to toggle reminder status",
+      "errorRemovingReminder": "Failed to remove reminder"
+    },
+    "messages": {
+      "noTime": "No time set",
+      "noReminders": "No reminders available",
+      "moreGroups": "more groups",
+      "userAvatarAlt": "User avatar for {name}",
+      "confirmDeleteTitle": "Confirm Deletion",
+      "confirmDeleteMessage": "Are you sure you want to delete this reminder?",
+      "notificationTimeTooltip": "Time of notification in your timezone",
+      "alerts": {
+        "activatedMessage": "Reminder activated successfully!",
+        "deactivatedMessage": "Reminder deactivated successfully!",
+        "deletedMessage": "Reminder deleted successfully!",
+        "errorMessage": "Something went wrong"
+      }
+    },
+    "actions": {
+      "edit": "Edit Reminder",
+      "delete": "Delete Reminder"
     }
   },
   "repeatScheduleSelector": {
@@ -74,14 +86,28 @@
       "repeatSchedule": "Repeat Schedule"
     },
     "options": {
-      "1_day": "Every day",
-      "2_days": "Every 2 days",
-      "3_days": "Every 3 days",
-      "1_week": "Every week",
-      "2_weeks": "Every 2 weeks",
-      "1_month": "Every month",
-      "2_months": "Every 2 months",
-      "1_year": "Every year"
+      "1_day": "Every Day",
+      "2_days": "Every 2 Days",
+      "3_days": "Every 3 Days",
+      "4_days": "Every 4 Days",
+      "5_days": "Every 5 Days",
+      "6_days": "Every 6 Days",
+      "1_week": "Every Week",
+      "2_weeks": "Every 2 Weeks",
+      "3_weeks": "Every 3 Weeks",
+      "1_month": "Every Month",
+      "2_months": "Every 2 Months",
+      "3_months": "Every 3 Months",
+      "4_months": "Every 4 Months",
+      "5_months": "Every 5 Months",
+      "6_months": "Every 6 Months",
+      "7_months": "Every 7 Months",
+      "8_months": "Every 8 Months",
+      "9_months": "Every 9 Months",
+      "10_months": "Every 10 Months",
+      "11_months": "Every 11 Months",
+      "1_year": "Every Year",
+      "2_years": "Every 2 Years"
     }
   },
   "userSelector": {
@@ -89,10 +115,10 @@
       "addUsers": "Add Users"
     },
     "messages": {
-      "noUsers": "No users available"
+      "userAvatarAlt": "User avatar for {name}"
     },
     "errors": {
-      "fetchUsers": "Error fetching users"
+      "fetchUsers": "Failed to fetch users."
     },
     "actions": {
       "removeUser": "Remove User"
@@ -100,11 +126,8 @@
   },
   "app": {
     "tabs": {
-      "reminders": "Reminders",
-      "settings": "Overview"
-    },
-    "actions": {
-      "switchLocale": "Switch Language"
+      "reminders": "Create reminder",
+      "settings": "Reminders"
     }
   }
 }

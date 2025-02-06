@@ -1,4 +1,5 @@
 import Button from "@jetbrains/ring-ui-built/components/button/button";
+import {t} from "i18next";
 
 interface DeleteDialog {
     isOpen: boolean;
@@ -20,13 +21,13 @@ export const ReminderDeleteDialog: React.FC<DeleteDialog> = ({ isOpen, title, me
                     <Button
                         onClick={onCancel}
                     >
-                        Cancel
+                        {t("reminderDeleteDialog.actions.cancel")}
                     </Button>
                     <Button
                         onClick={onConfirm}
                         danger={true}
                     >
-                        Delete
+                        {t("reminderDeleteDialog.actions.delete")}
                     </Button>
                 </div>
             </div>

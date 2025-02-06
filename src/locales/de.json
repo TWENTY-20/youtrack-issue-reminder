@@ -1,46 +1,34 @@
 {
   "createReminder": {
-    "title": "Erinnerung planen",
+    "title": "Erinnerung erstellen",
+    "titleEdit": "Erinnerung bearbeiten",
+    "placeholders": {
+      "subject": "Betreff eingeben",
+      "date": "Datum auswählen",
+      "time": "Uhrzeit auswählen",
+      "message": "Nachricht eingeben"
+    },
     "labels": {
       "subject": "Betreff",
       "date": "Datum",
       "time": "Uhrzeit",
-      "message": "Nachricht"
-    },
-    "placeholders": {
-      "subject": "Betreff hier eingeben...",
-      "date": "Datum eingeben",
-      "time": "Uhrzeit eingeben",
-      "message": "Nachricht hier eingeben..."
+      "message": "Nachricht",
+      "permissions": "Berechtigungen",
+      "onlyCreatorCanEdit": "Nur der Ersteller kann bearbeiten",
+      "allAssigneesCanEdit": "Alle Beauftragten können bearbeiten"
     },
     "errors": {
-      "subject": "Betreff ist erforderlich",
-      "date": "Datum ist erforderlich",
-      "time": "Uhrzeit ist erforderlich",
-      "message": "Nachricht ist erforderlich",
-      "repeatSchedule": "Wiederholungsplan ist erforderlich",
-      "submitError": "Fehler beim Absenden der Erinnerung"
+      "subject": "Betreff ist erforderlich.",
+      "date": "Datum ist erforderlich.",
+      "time": "Uhrzeit ist erforderlich.",
+      "message": "Nachricht ist erforderlich.",
+      "repeatSchedule": "Wiederholungsplan ist erforderlich.",
+      "submitError": "Beim Absenden der Erinnerung ist ein Fehler aufgetreten."
     },
     "actions": {
-      "reset": "Eingaben zurücksetzen",
-      "submit": "Absenden"
-    }
-  },
-  "reminderSettings": {
-    "title": "Meine Erinnerungen",
-    "errors": {
-      "errorRemovingReminder": "Fehler beim Entfernen der Erinnerung."
-    },
-    "actions": {
-      "delete": "Erinnerung löschen"
-    },
-    "messages": {
-      "noReminders": "Keine Erinnerungen gefunden.",
-      "confirmDeleteTitle": "Löschung bestätigen",
-      "confirmDeleteMessage": "Möchten Sie diese Erinnerung wirklich löschen?",
-      "moreGroups": "mehr",
-      "noTime": "Keine spezifische Uhrzeit",
-      "userAvatarAlt": "Avatar von {name}"
+      "reset": "Zurücksetzen",
+      "submit": "Erinnerung erstellen",
+      "saveEdit": "Änderungen speichern"
     }
   },
   "groupSelector": {
@@ -48,14 +36,49 @@
       "addGroups": "Gruppen hinzufügen"
     },
     "messages": {
-      "noGroups": "Keine Gruppen verfügbar",
-      "groupDescription": "{count} Mitglieder"
+      "groupDescription": "Mitglieder"
     },
     "errors": {
-      "fetchGroups": "Fehler beim Abrufen der Gruppen"
+      "fetchGroups": "Fehler beim Abrufen der Gruppen."
     },
     "actions": {
       "removeGroup": "Gruppe entfernen"
+    }
+  },
+  "reminderDeleteDialog": {
+    "title": "Erinnerung löschen",
+    "message": "Sind Sie sicher, dass Sie diese Erinnerung löschen möchten?",
+    "actions": {
+      "cancel": "Abbrechen",
+      "delete": "Löschen"
+    }
+  },
+  "reminderSettings": {
+    "title": "Meine Erinnerungen",
+    "errors": {
+      "date": "Ungültiges Datum",
+      "time": "Ungültige Uhrzeit",
+      "toggleError": "Fehler beim Umschalten des Erinnerungsstatus",
+      "errorRemovingReminder": "Fehler beim Entfernen der Erinnerung"
+    },
+    "messages": {
+      "noTime": "Keine Uhrzeit festgelegt",
+      "noReminders": "Keine Erinnerungen verfügbar",
+      "moreGroups": "weitere Gruppen",
+      "userAvatarAlt": "Benutzeravatar für {name}",
+      "confirmDeleteTitle": "Löschen bestätigen",
+      "confirmDeleteMessage": "Sind Sie sicher, dass Sie diese Erinnerung löschen möchten?",
+      "notificationTimeTooltip": "Benachrichtigungszeit in deiner Zeitzone",
+      "alerts": {
+        "activatedMessage": "Erinnerung erfolgreich aktiviert!",
+        "deactivatedMessage": "Erinnerung erfolgreich deaktiviert!",
+        "deletedMessage": "Erinnerung erfolgreich gelöscht!",
+        "errorMessage": "Etwas ist schiefgelaufen"
+      }
+    },
+    "actions": {
+      "edit": "Erinnerung bearbeiten",
+      "delete": "Erinnerung löschen"
     }
   },
   "repeatScheduleSelector": {
@@ -66,11 +89,25 @@
       "1_day": "Jeden Tag",
       "2_days": "Alle 2 Tage",
       "3_days": "Alle 3 Tage",
+      "4_days": "Alle 4 Tage",
+      "5_days": "Alle 5 Tage",
+      "6_days": "Alle 6 Tage",
       "1_week": "Jede Woche",
       "2_weeks": "Alle 2 Wochen",
+      "3_weeks": "Alle 3 Wochen",
       "1_month": "Jeden Monat",
       "2_months": "Alle 2 Monate",
-      "1_year": "Jedes Jahr"
+      "3_months": "Alle 3 Monate",
+      "4_months": "Alle 4 Monate",
+      "5_months": "Alle 5 Monate",
+      "6_months": "Alle 6 Monate",
+      "7_months": "Alle 7 Monate",
+      "8_months": "Alle 8 Monate",
+      "9_months": "Alle 9 Monate",
+      "10_months": "Alle 10 Monate",
+      "11_months": "Alle 11 Monate",
+      "1_year": "Jedes Jahr",
+      "2_years": "Alle 2 Jahre"
     }
   },
   "userSelector": {
@@ -78,10 +115,10 @@
       "addUsers": "Benutzer hinzufügen"
     },
     "messages": {
-      "noUsers": "Keine Benutzer verfügbar"
+      "userAvatarAlt": "Benutzeravatar für {name}"
     },
     "errors": {
-      "fetchUsers": "Fehler beim Abrufen der Benutzer"
+      "fetchUsers": "Fehler beim Abrufen der Benutzer."
     },
     "actions": {
       "removeUser": "Benutzer entfernen"
@@ -89,11 +126,8 @@
   },
   "app": {
     "tabs": {
-      "reminders": "Erinnerungen",
-      "settings": "Einstellungen"
-    },
-    "actions": {
-      "switchLocale": "Sprache wechseln"
+      "reminders": "Erinnerung erstellen",
+      "settings": "Erinnerungen"
     }
   }
 }

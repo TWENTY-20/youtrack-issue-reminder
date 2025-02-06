@@ -108,11 +108,25 @@ function handleRepeatSchedule(ctx, reminder) {
         "1_day": 1,
         "2_days": 2,
         "3_days": 3,
+        "4_days": 4,
+        "5_days": 5,
+        "6_days": 6,
         "1_week": 7,
         "2_weeks": 14,
+        "3_weeks": 21,
         "1_month": 30,
         "2_months": 60,
+        "3_months": 90,
+        "4_months": 120,
+        "5_months": 150,
+        "6_months": 180,
+        "7_months": 210,
+        "8_months": 240,
+        "9_months": 270,
+        "10_months": 300,
+        "11_months": 330,
         "1_year": 365,
+        "2_years": 730,
     };
 
     const repeatInterval = repeatMap[reminder.repeatSchedule?.key] || 0;
@@ -135,6 +149,9 @@ function handleRepeatSchedule(ctx, reminder) {
             uuid: reminder.uuid,
             isActive: reminder.isActive,
             timezone: reminder.timezone,
+            creatorLogin: reminder.creatorLogin,
+            onlyCreatorCanEdit: reminder.onlyCreatorCanEdit,
+            allAssigneesCanEdit: reminder.allAssigneesCanEdit,
         };
 
         const updatedReminders = [...filteredReminders, formData];

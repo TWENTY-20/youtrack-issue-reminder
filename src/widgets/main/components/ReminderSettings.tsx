@@ -42,16 +42,32 @@ export default function ReminderSettings({ onEditReminder }) {
         if (!dateStr) return t("reminderSettings.errors.date");
         const date = new Date(dateStr);
 
-        if (YTApp.locale === "de") {
-            const day = date.getDate().toString().padStart(2, "0");
-            const month = (date.getMonth() + 1).toString().padStart(2, "0");
-            const year = date.getFullYear();
-            return `${day}.${month}.${year}`;
-        } else {
-            const month = (date.getMonth() + 1).toString().padStart(2, "0");
-            const day = date.getDate().toString().padStart(2, "0");
-            const year = date.getFullYear();
-            return `${month}.${day}.${year}`;
+        return new Intl.DateTimeFormat(YTApp.locale, {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }).format(date);
+    };
+
+    const formatTime = (timeStr: string | undefined): string => {
+        if (!timeStr) return t("reminderSettings.messages.noTime");
+
+        try {
+            // Extract hour and minute from the time string (e.g., "10:50")
+            const [hours, minutes] = timeStr.split(":").map(Number);
+
+            // Create a new Date object with the current date but correct local time
+            const now = new Date();
+            now.setHours(hours, minutes, 0, 0); // Set extracted time without affecting timezone
+
+            return new Intl.DateTimeFormat(YTApp.locale, {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: YTApp.locale === "en" // 12-hour format for US, 24-hour for others
+            }).format(now);
+        } catch (error) {
+            console.error("Error formatting time:", error);
+            return t("reminderSettings.errors.time");
         }
     };
 
@@ -295,7 +311,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                 )}
                                                 <div className={"px-2 py-1 rounded-md"}>
                                                     <span className="mr-2 text-white">{formatDate(reminder.date)},</span>
-                                                    <span className={"text-white"}>{reminder.time || t("reminderSettings.messages.noTime")}</span>
+                                                    <span className={"text-white"}>{formatTime(reminder.time)}</span>
                                                 </div>
                                             </div>
                                             <div className={"mt-2 flex text-gray-500 items-center"}>
@@ -305,7 +321,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                 <span className="mr-2 text-gray-500">
                                                         {formatTimeTooltip(reminder.time, reminder.timezone, timeZone)})
                                                     </span>
-                                                <Tooltip title="Time of notification in your timezone">
+                                                <Tooltip title={t("reminderSettings.messages.notificationTimeTooltip")}>
                                                     <Icon glyph={tooltipIcon} className="ring-icon" />
                                                 </Tooltip>
                                             </div>

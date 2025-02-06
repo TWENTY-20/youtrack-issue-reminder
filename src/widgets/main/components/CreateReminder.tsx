@@ -253,15 +253,16 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
                 </div>
 
                 <div className={"col-span-12 flex flex-col"}>
+                    <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.permissions")}</label>
                     <Checkbox
                         checked={onlyCreatorCanEdit}
                         onChange={handleOnlyCreatorChange}
-                        label="Only creator can edit"
+                        label={t("createReminder.labels.onlyCreatorCanEdit")}
                     />
                     <Checkbox
                         checked={allAssigneesCanEdit}
                         onChange={handleAllAssigneesChange}
-                        label="All assignees can edit"
+                        label={t("createReminder.labels.allAssigneesCanEdit")}
                     />
                 </div>
 
