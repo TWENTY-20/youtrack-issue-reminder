@@ -53,17 +53,15 @@ export default function ReminderSettings({ onEditReminder }) {
         if (!timeStr) return t("reminderSettings.messages.noTime");
 
         try {
-            // Extract hour and minute from the time string (e.g., "10:50")
             const [hours, minutes] = timeStr.split(":").map(Number);
 
-            // Create a new Date object with the current date but correct local time
             const now = new Date();
-            now.setHours(hours, minutes, 0, 0); // Set extracted time without affecting timezone
+            now.setHours(hours, minutes, 0, 0);
 
             return new Intl.DateTimeFormat(YTApp.locale, {
                 hour: "2-digit",
                 minute: "2-digit",
-                hour12: YTApp.locale === "en" // 12-hour format for US, 24-hour for others
+                hour12: YTApp.locale === "en"
             }).format(now);
         } catch (error) {
             console.error("Error formatting time:", error);
@@ -310,8 +308,8 @@ export default function ReminderSettings({ onEditReminder }) {
                                                     </div>
                                                 )}
                                                 <div className={"px-2 py-1 rounded-md"}>
-                                                    <span className="mr-2 text-white">{formatDate(reminder.date)},</span>
-                                                    <span className={"text-white"}>{formatTime(reminder.time)}</span>
+                                                    <span className="mr-2">{formatDate(reminder.date)},</span>
+                                                    <span>{formatTime(reminder.time)}</span>
                                                 </div>
                                             </div>
                                             <div className={"mt-2 flex text-gray-500 items-center"}>
