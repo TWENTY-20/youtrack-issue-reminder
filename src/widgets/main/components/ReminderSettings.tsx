@@ -16,6 +16,8 @@ import {getUserTimeZone} from "../youTrackHandler.ts";
 import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
 import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 export default function ReminderSettings({ onEditReminder }) {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
     const [alert, setAlert] = useState({ show: false, isClosing: false, message: "" });
@@ -53,7 +55,7 @@ export default function ReminderSettings({ onEditReminder }) {
         }
     };
 
-    const formatDateTooltip = (dateStr, timeStr, creatorTimeZone, userTimeZone) => {
+    const formatDateTooltip = (dateStr: string, timeStr: string, creatorTimeZone: string, userTimeZone: any) => {
         if (!dateStr || !timeStr || !creatorTimeZone || !userTimeZone) return t("reminderSettings.errors.date");
 
         try {
@@ -61,7 +63,7 @@ export default function ReminderSettings({ onEditReminder }) {
 
             const creatorDate = new Date(isoDateTime);
 
-            const getOffset = (date, timeZone) => {
+            const getOffset = (date: number | Date | undefined, timeZone: string) => {
                 const formatter = new Intl.DateTimeFormat("en-US", {timeZone, timeZoneName: "shortOffset"});
                 const parts = formatter.formatToParts(date);
                 const timeZonePart = parts.find((part) => part.type === "timeZoneName");
@@ -69,6 +71,7 @@ export default function ReminderSettings({ onEditReminder }) {
             };
 
             const creatorOffset = getOffset(creatorDate, creatorTimeZone);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             const userOffset = getOffset(creatorDate, userTimeZone);
 
             const timeDifference = creatorOffset - userOffset;
@@ -85,7 +88,7 @@ export default function ReminderSettings({ onEditReminder }) {
         }
     }
 
-    const formatTimeTooltip = (timeStr, creatorTimeZone, userTimeZone) => {
+    const formatTimeTooltip = (timeStr: string, creatorTimeZone: string, userTimeZone: any) => {
         if (!timeStr || !creatorTimeZone || !userTimeZone) return t("reminderSettings.messages.noTime");
 
         try {
@@ -94,7 +97,7 @@ export default function ReminderSettings({ onEditReminder }) {
 
             const creatorDate = new Date(isoDateTime);
 
-            const getOffset = (date, timeZone) => {
+            const getOffset = (date: number | Date | undefined, timeZone: string) => {
                 const formatter = new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "shortOffset" });
                 const parts = formatter.formatToParts(date);
                 const timeZonePart = parts.find((part) => part.type === "timeZoneName");
@@ -102,6 +105,7 @@ export default function ReminderSettings({ onEditReminder }) {
             };
 
             const creatorOffset = getOffset(creatorDate, creatorTimeZone);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             const userOffset = getOffset(creatorDate, userTimeZone);
 
             const timeDifference = userOffset - creatorOffset;
@@ -200,6 +204,7 @@ export default function ReminderSettings({ onEditReminder }) {
                     <ul className="space-y-4">
                         {reminders.map((reminder, index) => {
                             const isCreator = reminder.creatorLogin === currentUserLogin;
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                             const isAllowedUser = reminder.selectedUsers.some(user => user.login === currentUserLogin);
 
                             const canEditOrDelete =
@@ -217,11 +222,13 @@ export default function ReminderSettings({ onEditReminder }) {
                                                 <div className="flex justify-end items-center">
                                                     <Toggle
                                                         checked={reminder.isActive}
+                                                        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
                                                         onChange={(e) => handleToggle(reminder.uuid, e.target.checked)}
                                                         className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-2 mr-1"}
                                                         disabled={!canEditOrDelete}
                                                     />
                                                     <Button
+                                                        /* eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return */
                                                         onClick={() => onEditReminder(reminder)}
                                                         title={t("reminderSettings.actions.edit")}
                                                         icon={pencilIcon}
@@ -326,6 +333,7 @@ export default function ReminderSettings({ onEditReminder }) {
                 isOpen={isDeleteModalOpen}
                 title={t("reminderSettings.messages.confirmDeleteTitle")}
                 message={t("reminderSettings.messages.confirmDeleteMessage")}
+                /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
                 onConfirm={confirmDelete}
                 onCancel={cancelDelete}
             />

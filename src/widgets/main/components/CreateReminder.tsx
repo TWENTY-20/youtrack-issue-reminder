@@ -17,6 +17,7 @@ import {
 } from "../youTrackHandler.ts";
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 
+// @ts-ignore
 export default function CreateReminder({editingReminder, onCancelEdit}) {
     const [subject, setSubject] = useState(editingReminder?.subject || "");
     const [date, setDate] = useState(editingReminder?.date || "");

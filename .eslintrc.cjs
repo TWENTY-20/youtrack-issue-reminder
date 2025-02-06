@@ -1,4 +1,4 @@
-module.exports = {
+    module.exports = {
     root: true,
     env: {browser: true, es2020: true},
     extends: [
@@ -14,6 +14,6 @@ module.exports = {
         tsconfigRootDir: __dirname,
     },
     rules: {
-        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-explicit-any": "on",
     }
 }
