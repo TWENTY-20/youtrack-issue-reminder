@@ -219,6 +219,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                         checked={reminder.isActive}
                                                         onChange={(e) => handleToggle(reminder.uuid, e.target.checked)}
                                                         className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-2 mr-1"}
+                                                        disabled={!canEditOrDelete}
                                                     />
                                                     <Button
                                                         onClick={() => onEditReminder(reminder)}
