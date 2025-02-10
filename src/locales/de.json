@@ -15,7 +15,7 @@
       "message": "Nachricht",
       "permissions": "Berechtigungen",
       "onlyCreatorCanEdit": "Nur der Ersteller kann bearbeiten",
-      "allAssigneesCanEdit": "Alle Beauftragten können bearbeiten"
+      "allAssigneesCanEdit": "Alle Teilnehmer können bearbeiten"
     },
     "errors": {
       "subject": "Betreff ist erforderlich.",
@@ -23,7 +23,8 @@
       "time": "Uhrzeit ist erforderlich.",
       "message": "Nachricht ist erforderlich.",
       "repeatSchedule": "Wiederholungsplan ist erforderlich.",
-      "submitError": "Beim Absenden der Erinnerung ist ein Fehler aufgetreten."
+      "submitError": "Beim Absenden der Erinnerung ist ein Fehler aufgetreten.",
+      "selectedUsersOrGroups": "Mindestens ein Benutzer oder eine Gruppe muss ausgewählt werden."
     },
     "actions": {
       "reset": "Zurücksetzen",
@@ -64,7 +65,7 @@
     "messages": {
       "noTime": "Keine Uhrzeit festgelegt",
       "noReminders": "Keine Erinnerungen verfügbar",
-      "moreGroups": "weitere Gruppen",
+      "moreGroups": "weitere",
       "userAvatarAlt": "Benutzeravatar für {name}",
       "confirmDeleteTitle": "Löschen bestätigen",
       "confirmDeleteMessage": "Sind Sie sicher, dass Sie diese Erinnerung löschen möchten?",

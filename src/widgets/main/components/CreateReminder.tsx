@@ -49,6 +49,7 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
         time: false,
         message: false,
         repeatSchedule: false,
+        selectedUsersOrGroups: false,
     });
 
     const { t } = useTranslation();
@@ -60,6 +61,9 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
             time: time.trim() ? "" : t("createReminder.errors.time"),
             message: message.trim() ? "" : t("createReminder.errors.message"),
             repeatSchedule: repeatSchedule ? "" : t("createReminder.errors.repeatSchedule"),
+            selectedUsersOrGroups: selectedUsers.length > 0 || selectedGroups.length > 0
+                ? ""
+                : t("createReminder.errors.selectedUsersOrGroups"),
         };
     };
 
@@ -72,6 +76,7 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
             time: true,
             message: true,
             repeatSchedule: true,
+            selectedUsersOrGroups: true,
         });
 
         const errors = validateFields();
@@ -148,6 +153,7 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
             time: false,
             message: false,
             repeatSchedule: false,
+            selectedUsersOrGroups: false,
         });
     };
 
@@ -238,6 +244,12 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
                         editingReminder={editingReminder}
                     />
                 </div>
+
+                {touched.selectedUsersOrGroups && errors.selectedUsersOrGroups && (
+                    <div className="col-span-12 -mt-6">
+                        <div className="text-[#e47875] text-xs">{errors.selectedUsersOrGroups}</div>
+                    </div>
+                )}
 
                 <div className="col-span-12">
                     <Input

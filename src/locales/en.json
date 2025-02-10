@@ -23,7 +23,8 @@
       "time": "Time is required.",
       "message": "Message is required.",
       "repeatSchedule": "Repeat schedule is required.",
-      "submitError": "An error occurred while submitting the reminder."
+      "submitError": "An error occurred while submitting the reminder.",
+      "selectedUsersOrGroups": "At least one user or group must be selected."
     },
     "actions": {
       "reset": "Reset",
@@ -64,7 +65,7 @@
     "messages": {
       "noTime": "No time set",
       "noReminders": "No reminders available",
-      "moreGroups": "more groups",
+      "moreGroups": "more",
       "userAvatarAlt": "User avatar for {name}",
       "confirmDeleteTitle": "Confirm Deletion",
       "confirmDeleteMessage": "Are you sure you want to delete this reminder?",
