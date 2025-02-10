@@ -40,5 +40,19 @@ exports.httpHandler = {
                 }
             }
         },
+        {
+            method: 'POST',
+            path: 'saveTranslations',
+            handle: (ctx) => {
+                try {
+                    const body = JSON.parse(ctx.request.body);
+                    ctx.globalStorage.extensionProperties.translations = body;
+                    ctx.response.json({ success: true, message: "Translations stored successfully" });
+                } catch (error) {
+                    console.error("Error saving translations:", error);
+                    ctx.response.json({ success: false, error: "Failed to save translations" });
+                }
+            }
+        },
     ]
 };

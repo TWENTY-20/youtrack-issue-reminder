@@ -5,6 +5,9 @@
       "properties": {
         "reminders": {
           "type": "string"
+        },
+        "translations": {
+          "type": "string"
         }
       }
     }

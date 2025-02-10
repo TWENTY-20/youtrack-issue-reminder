@@ -3,7 +3,7 @@ import Input, { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import { GroupTagDTO, ReminderData, RepeatOption, UserTagDTO } from "../types.ts";
-import {removeReminder, saveReminder} from "../globalStorage.ts";
+import {removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
@@ -83,6 +83,33 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
         if (Object.values(errors).some((error) => error)) {
             return;
         }
+
+        const translations = {
+            de: {
+                "reminder_sent": "Erinnerung für Ticket",
+                "reminder_sent2": "im Projekt",
+                "reminder_sent3": "wurde ausgeführt.",
+                "subject": "YouTrack Erinnerung:",
+                "subject_textblock": "Betreff:",
+                "planned_for": "Geplant für:",
+                "message": "Nachricht:",
+                "issue": "Issue:",
+                "notification_footer": "Sie haben diese Benachrichtigung erhalten, da Sie zu einer Erinnerung für dieses Ticket hinzugefügt wurden."
+            },
+            en: {
+                "reminder_sent": "Reminder for ticket",
+                "reminder_sent2": "in project",
+                "reminder_sent3": "was executed.",
+                "subject": "YouTrack Reminder:",
+                "subject_textblock": "Subject:",
+                "planned_for": "Scheduled for:",
+                "message": "Message:",
+                "issue": "Issue:",
+                "notification_footer": "You received this notification because you were added to a reminder for this ticket."
+            }
+        };
+
+        await uploadTranslations(translations);
 
         const issueId = YTApp.entity.id;
         const uuid = uuidv4();

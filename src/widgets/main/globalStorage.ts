@@ -95,5 +95,18 @@ export async function removeReminder(reminderId: string): Promise<void> {
     }
 }
 
+export async function uploadTranslations(translations: Record<string, any>): Promise<void> {
+    try {
+        await host.fetchApp("backend/saveTranslations", {
+            method: "POST",
+            body: JSON.stringify(translations),
+        });
+
+        console.log("Translations uploaded successfully!");
+    } catch (error) {
+        console.error("Error uploading translations:", error);
+    }
+}
+
 
 

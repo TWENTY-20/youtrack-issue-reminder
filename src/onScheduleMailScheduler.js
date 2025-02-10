@@ -65,35 +65,78 @@ exports.rule = entities.Issue.onSchedule({
     requirements: {},
 });
 
+function getTranslation(ctx, key, language) {
+    const translations = JSON.parse(ctx.globalStorage.extensionProperties.translations || '{}');
+
+    if (translations[language] && translations[language][key]) {
+        return translations[language][key];
+    }
+
+    return translations["en"] && translations["en"][key] ? translations["en"][key] : key;
+}
+
+
 function sendMail(ctx, user, reminder) {
     const issue = ctx.issue;
     const authorName = issue.reporter.fullName;
+    const userEntity = entities.User.findByLogin(user);
+    const userEmail = userEntity.email;
+    let userLanguage = userEntity.language
 
-    const userEmail = entities.User.findByLogin(user).email
+    if(userLanguage == "Deutsch") {
+        userLanguage = "de";
+    } else {
+        userLanguage = "en";
+    }
 
     const text =
-        `<div style="font-family: sans-serif">
-            <div style="padding: 10px 10px; font-size: 13px; border-bottom: 1px solid #D4D5D6;">
-              Reminder: <strong>${reminder.subject}</strong><br>
-              Scheduled for: <strong>${reminder.date} ${reminder.time} (${reminder.timezone})</strong><br>
-              Message: <strong>${reminder.message}</strong><br>
-              Issue: <strong>${issue.id}</strong>
+        `<div style="font-family: sans-serif; color: #333; max-width: 600px; word-wrap: break-word;">
+            <div style="margin-bottom: 10px; display: flex; flex-wrap: wrap; border-bottom: 1px solid #ddd; padding-bottom: 10px; gap: 10px;">
+                <p style="margin-bottom: 10px;">${getTranslation(ctx, "reminder_sent", userLanguage)}</p>
+                <b><p style="color: #000000; text-decoration: none; margin-bottom: 10px;">${issue.id}</p></b>
+                <p style="margin-bottom: 10px;">${getTranslation(ctx, "reminder_sent2", userLanguage)}</p>
+                <b><p style="color: #000000; text-decoration: none; margin-bottom: 10px;">${issue.project.name}</p></b>
+                <p style="margin-bottom: 10px;">${getTranslation(ctx, "reminder_sent3", userLanguage)}</p>
             </div>
+        
+            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
+                <div style="margin-top: 5px; font-size: 13px;">
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "subject_textblock", userLanguage)}</strong> ${reminder.subject}</p>
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "planned_for", userLanguage)}</strong> ${reminder.date} ${reminder.time} (${reminder.timezone})</p>
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "message", userLanguage)}</strong> ${reminder.message}</p>
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "issue", userLanguage)}</strong> <a href="${issue.url}" style="color: #0057b7; text-decoration: none;">${issue.id}</a></p>
+                </div>
+            </div>
+        
+            <div style="margin-top: 15px; font-size: 12px; color: #888; border-top: 1px solid #ddd; padding-top: 10px;">
+                ${getTranslation(ctx, "notification_footer", userLanguage)}
+            </div>
+        
+            <style>
+                @media (max-width: 600px) {
+                    div {
+                        max-width: 100%;
+                    }
+                    p {
+                        font-size: 14px;
+                        word-wrap: break-word;
+                    }
+                }
+            </style>
         </div>`;
 
     const message = {
         fromName: authorName,
         to: [userEmail],
-        subject: `Reminder: ${reminder.subject}`,
-        headers: {
-            'X-Custom-Header': 'Reminder Notification'
-        },
+        subject: `${getTranslation(ctx, "subject", userLanguage)} ${reminder.subject}`,
+        headers: { 'X-Custom-Header': 'Reminder Notification' },
         body: text
     };
 
     notifications.sendEmail(message, issue);
-    console.log(`Email sent to ${user} (${user}) for reminder: ${reminder.subject}`);
+    console.log(`Email sent to ${user} (${userEmail}) for reminder: ${reminder.subject}`);
 }
+
 
 function handleRepeatSchedule(ctx, reminder) {
     const repeatMap = {
