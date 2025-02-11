@@ -12,7 +12,7 @@ import Icon from "@jetbrains/ring-ui-built/components/icon";
 import { useTranslation } from "react-i18next";
 import Toggle from "@jetbrains/ring-ui-built/components/toggle/toggle";
 import Alert from "@jetbrains/ring-ui-built/components/alert/alert";
-import {getUserTimeZone} from "../youTrackHandler.ts";
+import {fetchGroups, fetchGroupUsers, getUserTimeZone} from "../youTrackHandler.ts";
 import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
 import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
 
@@ -29,12 +29,48 @@ export default function ReminderSettings({ onEditReminder }) {
     const currentUserLogin = YTApp.me.login;
 
     useEffect(() => {
-        const issueId = YTApp.entity.id;
-        void fetchRemindersForCurrentIssue().then((fetchedReminders) => {
-            const filteredReminders = fetchedReminders.filter((reminder) => reminder.issueId === issueId);
-            console.log(filteredReminders)
+        void fetchRemindersForCurrentIssue().then(async (fetchedReminders) => {
+            const filteredReminders = [];
+
+            for (const reminder of fetchedReminders) {
+                const isCreator = reminder.creatorLogin === currentUserLogin;
+                const isPartOfUsers = reminder.selectedUsers.some(
+                    (user) => user.login === currentUserLogin
+                );
+
+                let isPartOfGroups = false;
+
+                for (const group of reminder.selectedGroups) {
+                    const groups = await fetchGroups();
+                    const groupMatch = groups.find((g: { name: any; }) => g.name === group.label);
+
+                    console.log(group)
+                    console.log(groups)
+                    console.log(groupMatch)
+
+                    if (groupMatch) {
+                        const groupUsers = await fetchGroupUsers(groupMatch.id);
+                        console.log(groupUsers)
+                        const userInGroup = groupUsers.some(
+                            (user: { login: string }) => user.login === currentUserLogin
+                        );
+                        console.log(userInGroup)
+
+                        if (userInGroup) {
+                            isPartOfGroups = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (isCreator || isPartOfUsers || isPartOfGroups) {
+                    filteredReminders.push(reminder);
+                }
+            }
+
             setReminders(filteredReminders);
         });
+
         void getUserTimeZone(YTApp.me.id).then(setTimeZone);
     }, []);
 
@@ -85,7 +121,6 @@ export default function ReminderSettings({ onEditReminder }) {
             };
 
             const creatorOffset = getOffset(creatorDate, creatorTimeZone);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             const userOffset = getOffset(creatorDate, userTimeZone);
 
             const timeDifference = creatorOffset - userOffset;

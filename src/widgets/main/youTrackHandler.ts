@@ -101,3 +101,34 @@ export async function getUserTimeZone(userId: string) {
     return timeZoneResponse.timezone.id
 }
 
+export const fetchGroups = async (): Promise<any> => {
+    try {
+        const response = await host.fetchYouTrack(`groups?fields=id,name`);
+
+        if (!response || response.length === 0) {
+            return null;
+        }
+
+        return response
+    } catch (error) {
+        return null;
+    }
+};
+
+
+export const fetchGroupUsers = async (groupId: string): Promise<any> => {
+    try {
+        const response = await host.fetchYouTrack(`groups/${groupId}/users?fields=id,login,name`);
+
+        if (!response || response.length === 0) {
+            console.warn(`No users found for group ID '${groupId}'.`);
+            return null;
+        }
+
+        return response;
+    } catch (error) {
+        console.error(`Error fetching users for group ID '${groupId}':`, error);
+        return null;
+    }
+};
+
