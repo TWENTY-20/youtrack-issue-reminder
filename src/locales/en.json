@@ -129,6 +129,9 @@
     "tabs": {
       "reminders": "Create reminder",
       "settings": "Reminders"
-    }
+    },
+    "loading": "Loading permissions, please wait...",
+    "permission_denied_message": "You do not have sufficient permissions to access this content.",
+    "ask_admin": "Please ask an administrator to grant you the necessary permissions --> (Read Group)"
   }
 }

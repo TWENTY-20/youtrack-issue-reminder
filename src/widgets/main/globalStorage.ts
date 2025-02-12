@@ -36,12 +36,10 @@ export async function updateReminders(reminderId: string, updates: Partial<Remin
             const tagExists = await isTagPresent(currentIssueId, tagName);
             if (!tagExists) {
                 await addTagToIssue(currentIssueId, tagName);
-                console.log(`Added "${tagName}" tag to issue ${currentIssueId}`);
             }
         } else {
             const tagName = "reminder";
             await removeTagFromIssue(currentIssueId, tagName);
-            console.log(`Removed "${tagName}" tag from issue ${currentIssueId}`);
         }
     } catch (error) {
         console.error("Error updating reminders:", error);
@@ -101,8 +99,6 @@ export async function uploadTranslations(translations: Record<string, any>): Pro
             method: "POST",
             body: JSON.stringify(translations),
         });
-
-        console.log("Translations uploaded successfully!");
     } catch (error) {
         console.error("Error uploading translations:", error);
     }

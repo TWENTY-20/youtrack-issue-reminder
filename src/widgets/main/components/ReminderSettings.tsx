@@ -44,17 +44,11 @@ export default function ReminderSettings({ onEditReminder }) {
                     const groups = await fetchGroups();
                     const groupMatch = groups.find((g: { name: any; }) => g.name === group.label);
 
-                    console.log(group)
-                    console.log(groups)
-                    console.log(groupMatch)
-
                     if (groupMatch) {
                         const groupUsers = await fetchGroupUsers(groupMatch.id);
-                        console.log(groupUsers)
                         const userInGroup = groupUsers.some(
                             (user: { login: string }) => user.login === currentUserLogin
                         );
-                        console.log(userInGroup)
 
                         if (userInGroup) {
                             isPartOfGroups = true;

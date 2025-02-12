@@ -47,17 +47,17 @@ exports.rule = entities.Issue.onSchedule({
 
             recipients.forEach((user) => {
 
-                console.log(`Checking reminder for user ${user}" in "${reminder.timezone}":`);
+                /*console.log(`Checking reminder for user ${user}" in "${reminder.timezone}":`);
                 console.log(`Reminder time: ${userReminderTime}`);
-                console.log(`Current time: ${dateOfCurrentUserTime}`);
+                console.log(`Current time: ${dateOfCurrentUserTime}`);*/
 
                 if (userReminderTime <= dateOfCurrentUserTime) {
-                    console.log(`Sending email to ${user}`);
+                    //console.log(`Sending email to ${user}`);
                     sendMail(ctx, user, reminder);
                 }
             });
             if (userReminderTime <= dateOfCurrentUserTime) {
-                console.log(`All reminders executed. Handling repeat schedule.`);
+                //console.log(`All reminders executed. Handling repeat schedule.`);
                 handleRepeatSchedule(ctx, reminder);
             }
         });
@@ -134,7 +134,7 @@ function sendMail(ctx, user, reminder) {
     };
 
     notifications.sendEmail(message, issue);
-    console.log(`Email sent to ${user} (${userEmail}) for reminder: ${reminder.subject}`);
+    //console.log(`Email sent to ${user} (${userEmail}) for reminder: ${reminder.subject}`);
 }
 
 
@@ -192,7 +192,7 @@ function handleRepeatSchedule(ctx, reminder) {
         const updatedReminders = [...filteredReminders, formData];
         ctx.globalStorage.extensionProperties.reminders = JSON.stringify(updatedReminders);
 
-        console.log(`Reminder for issue ${ctx.issue.id} rescheduled to ${newReminderDate}`);
+        //console.log(`Reminder for issue ${ctx.issue.id} rescheduled to ${newReminderDate}`);
     } else {
         deactivateReminder(ctx, reminder.uuid);
     }
@@ -205,5 +205,5 @@ function deactivateReminder(ctx, reminderId) {
     );
     ctx.globalStorage.extensionProperties.reminders = JSON.stringify(updatedReminders);
 
-    console.log(`Reminder with ID ${reminderId} has been deactivated.`);
+    //console.log(`Reminder with ID ${reminderId} has been deactivated.`);
 }
