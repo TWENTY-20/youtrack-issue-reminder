@@ -13,7 +13,11 @@
       "key": "main",
       "name": "Ticket Reminder",
       "indexPath": "main/index.html",
-      "extensionPoint": "ISSUE_OPTIONS_MENU_ITEM"
+      "extensionPoint": "ISSUE_OPTIONS_MENU_ITEM",
+      "expectedDimensions": {
+        "height": 650,
+        "width": 600
+      }
     }
   ]
 }

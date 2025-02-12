@@ -41,7 +41,7 @@ export default function App() {
 
     if (!hasPermission) {
         return (
-            <div>
+            <div className={"text-center"} style={ { padding: "50px"}}>
                 {t("app.permission_denied_message")}
                 <br />
                 {t("app.ask_admin")}
