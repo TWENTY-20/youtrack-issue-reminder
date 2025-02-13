@@ -18,7 +18,7 @@ import {
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 
 // @ts-ignore
-export default function CreateReminder({editingReminder, onCancelEdit}) {
+export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated}) {
     const [subject, setSubject] = useState(editingReminder?.subject || "");
     const [date, setDate] = useState(editingReminder?.date || "");
     const [time, setTime] = useState(editingReminder?.time || "");
@@ -138,6 +138,8 @@ export default function CreateReminder({editingReminder, onCancelEdit}) {
                 await removeReminder(editingReminder.uuid);
             }
             await saveReminder(formData);
+
+            onReminderCreated();
 
             const newTagName = "reminder";
 

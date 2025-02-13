@@ -74,6 +74,7 @@ export default function App() {
                     <CreateReminder
                         editingReminder={editingReminder}
                         onCancelEdit={() => setEditingReminder(null)}
+                        onReminderCreated={() => setActiveTab("settings")}
                     />
                 ) : (
                     <ReminderSettings onEditReminder={handleEditReminder} />
