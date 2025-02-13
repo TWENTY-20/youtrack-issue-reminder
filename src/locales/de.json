@@ -17,6 +17,10 @@
       "onlyCreatorCanEdit": "Nur der Ersteller kann bearbeiten",
       "allAssigneesCanEdit": "Alle Teilnehmer können bearbeiten"
     },
+    "messages": {
+      "confirmCreateTitle": "Fehlende E-Mail-Adressen",
+      "confirmCreateMessage": "Einige Benutzer oder Gruppenmitglieder haben keine E-Mail-Adresse und können daher nicht informiert werden. Möchten Sie die Erinnerung trotzdem erstellen?"
+    },
     "errors": {
       "subject": "Betreff ist erforderlich.",
       "date": "Datum ist erforderlich.",
@@ -29,7 +33,8 @@
     "actions": {
       "reset": "Zurücksetzen",
       "submit": "Erinnerung erstellen",
-      "saveEdit": "Änderungen speichern"
+      "saveEdit": "Änderungen speichern",
+      "cancel": "Abbrechen"
     }
   },
   "groupSelector": {

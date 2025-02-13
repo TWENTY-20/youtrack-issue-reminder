@@ -26,10 +26,15 @@
       "submitError": "An error occurred while submitting the reminder.",
       "selectedUsersOrGroups": "At least one user or group must be selected."
     },
+    "messages": {
+      "confirmCreateTitle": "Missing Email Addresses",
+      "confirmCreateMessage": "Some users or group members do not have an email address and therefore cannot be informed. Do you want to continue creating the reminder?"
+    },
     "actions": {
       "reset": "Reset",
       "submit": "Create Reminder",
-      "saveEdit": "Save Changes"
+      "saveEdit": "Save Changes",
+      "cancel": "Cancel"
     }
   },
   "groupSelector": {

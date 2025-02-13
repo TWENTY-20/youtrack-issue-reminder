@@ -15,23 +15,26 @@ export default function UserSelector({ onChange, editingReminder, }: { onChange:
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const data: UserDTO[] = await host.fetchYouTrack("users?fields=id,login,fullName,avatarUrl");
+                const data: UserDTO[] = await host.fetchYouTrack("users?fields=id,login,fullName,avatarUrl,email");
 
                 const formattedUsers: UserTagDTO[] = data.map((user) => ({
                     key: user.id,
                     label: user.fullName || user.login,
                     login: user.login,
                     avatar: user.avatarUrl,
+                    email: user.email
                 }));
 
                 setUsers(formattedUsers);
 
                 if (!editingReminder) {
+                    const user: UserDTO = await host.fetchYouTrack(`users/${YTApp.me.id}?fields=id,login,fullName,avatarUrl,email`);
                     const currentUser: UserTagDTO = {
                         key: YTApp.me.id,
                         label: YTApp.me.name || YTApp.me.login,
                         login: YTApp.me.login,
                         avatar: YTApp.me.avatarUrl,
+                        email: user.email
                     };
                     setSelectedUsers([currentUser]);
                     onChange([currentUser]);

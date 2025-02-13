@@ -75,6 +75,7 @@ export interface UserDTO {
     login: string;
     fullName?: string;
     avatarUrl?: string;
+    email: string;
 }
 
 export interface UserTagDTO {
@@ -82,6 +83,7 @@ export interface UserTagDTO {
     label: string;
     login: string;
     avatar?: string;
+    email: string;
 }
 
 export interface GroupDTO {

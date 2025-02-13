@@ -111,7 +111,7 @@ export const fetchGroups = async (): Promise<any> => {
 
 export const fetchGroupUsers = async (groupId: string): Promise<any> => {
     try {
-        const response = await host.fetchYouTrack(`groups/${groupId}/users?fields=id,login,name`);
+        const response = await host.fetchYouTrack(`groups/${groupId}/users?fields=id,login,name,email`);
 
         if (!response || response.length === 0) {
             console.warn(`No users found for group ID '${groupId}'.`);

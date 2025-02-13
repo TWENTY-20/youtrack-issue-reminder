@@ -12,10 +12,11 @@ import { useTranslation } from "react-i18next";
 import YTApp from "../youTrackApp.ts";
 import {
     addTagToIssue,
-    createTag, getUserTimeZone,
+    createTag, fetchGroupUsers, getUserTimeZone,
     isTagPresentGlobal,
 } from "../youTrackHandler.ts";
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
+import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
 
 // @ts-ignore
 export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated}) {
@@ -29,6 +30,8 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const [resetKey, setResetKey] = useState(0);
     const [onlyCreatorCanEdit, setOnlyCreatorCanEdit] = useState(editingReminder?.onlyCreatorCanEdit ?? true);
     const [allAssigneesCanEdit, setAllAssigneesCanEdit] = useState(editingReminder?.allAssigneesCanEdit ?? false);
+    const [showEmailWarningDialog, setShowEmailWarningDialog] = useState(false);
+    const [usersWithoutEmail, setUsersWithoutEmail] = useState<UserTagDTO[]>([]);
 
     useEffect(() => {
         if (editingReminder) {
@@ -53,6 +56,33 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     });
 
     const { t } = useTranslation();
+
+    const checkMissingEmails = async () => {
+        const usersWithoutEmails = [...selectedUsers.filter(user => !user.email)];
+
+        for (const group of selectedGroups) {
+            const groupUsers = await fetchGroupUsers(group.key);
+            const missingEmailsInGroup = groupUsers.filter((user: { email: string | null }) => !user.email);
+            usersWithoutEmails.push(...missingEmailsInGroup);
+        }
+
+        const uniqueUsersWithoutEmails = removeDuplicateUsersByLogin(usersWithoutEmails);
+
+        console.log(uniqueUsersWithoutEmails);
+
+        return uniqueUsersWithoutEmails;
+    };
+
+    const removeDuplicateUsersByLogin = (users: UserTagDTO[]): UserTagDTO[] => {
+        const seenLogins = new Set<string>();
+        return users.filter(user => {
+            if (!seenLogins.has(user.login)) {
+                seenLogins.add(user.login);
+                return true;
+            }
+            return false;
+        });
+    };
 
     const validateFields = () => {
         return {
@@ -111,6 +141,19 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
         await uploadTranslations(translations);
 
+        const usersWithoutEmails = await checkMissingEmails();
+        if (usersWithoutEmails.length > 0) {
+            setUsersWithoutEmail(usersWithoutEmails);
+            setShowEmailWarningDialog(true);
+        } else {
+            await handleSubmitSecond();
+        }
+    };
+
+    const handleSubmitSecond = async () => {
+
+        setShowEmailWarningDialog(false)
+
         const issueId = YTApp.entity.id;
         const uuid = uuidv4();
         const timeZone = editingReminder?.timezone || await getUserTimeZone(YTApp.me.id);
@@ -163,7 +206,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         } catch (error) {
             console.error(t("createReminder.errors.submitError"), error);
         }
-    };
+    }
 
     const handleCancel = async () => {
         setSubject("");
@@ -194,6 +237,10 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const handleAllAssigneesChange = () => {
         setOnlyCreatorCanEdit(false);
         setAllAssigneesCanEdit(true);
+    };
+
+    const cancelCreate = () => {
+        setShowEmailWarningDialog(false)
     };
 
     const errors = validateFields();
@@ -316,6 +363,14 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                     </Button>
                 </div>
             </div>
+            <ReminderCreateDialog
+                isOpen={showEmailWarningDialog}
+                title={t("createReminder.messages.confirmCreateTitle")}
+                message={t("createReminder.messages.confirmCreateMessage")}
+                usersWithoutEmail={usersWithoutEmail}
+                onConfirm={handleSubmitSecond}
+                onCancel={cancelCreate}
+            />
         </div>
     );
 }
