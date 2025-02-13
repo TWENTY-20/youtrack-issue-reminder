@@ -1,20 +1,16 @@
 import React, {useEffect, useState} from "react";
-import Input, { Size } from "@jetbrains/ring-ui-built/components/input/input";
-import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
+import Input, {Size} from "@jetbrains/ring-ui-built/components/input/input";
+import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
-import { GroupTagDTO, ReminderData, RepeatOption, UserTagDTO } from "../types.ts";
+import {GroupTagDTO, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
 import {removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
-import { v4 as uuidv4 } from "uuid";
-import { useTranslation } from "react-i18next";
+import {v4 as uuidv4} from "uuid";
+import {useTranslation} from "react-i18next";
 import YTApp from "../youTrackApp.ts";
-import {
-    addTagToIssue,
-    createTag, fetchGroupUsers, getUserTimeZone,
-    isTagPresentGlobal,
-} from "../youTrackHandler.ts";
+import {addTagToIssue, createTag, fetchGroupUsers, getUserTimeZone, isTagPresentGlobal,} from "../youTrackHandler.ts";
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
 
@@ -66,11 +62,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             usersWithoutEmails.push(...missingEmailsInGroup);
         }
 
-        const uniqueUsersWithoutEmails = removeDuplicateUsersByLogin(usersWithoutEmails);
-
-        console.log(uniqueUsersWithoutEmails);
-
-        return uniqueUsersWithoutEmails;
+        return removeDuplicateUsersByLogin(usersWithoutEmails);
     };
 
     const removeDuplicateUsersByLogin = (users: UserTagDTO[]): UserTagDTO[] => {
