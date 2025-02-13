@@ -77,8 +77,7 @@ function getTranslation(ctx, key, language) {
 
 
 function sendMail(ctx, user, reminder) {
-    const issue = ctx.issue;
-    const authorName = issue.reporter.fullName;
+    const issue = entities.Issue.findById(reminder.issueId);
     const userEntity = entities.User.findByLogin(user);
     const userEmail = userEntity.email;
     let userLanguage = userEntity.language
@@ -92,11 +91,7 @@ function sendMail(ctx, user, reminder) {
     const text =
         `<div style="font-family: sans-serif; color: #333; max-width: 600px; word-wrap: break-word;">
             <div style="margin-bottom: 10px; display: flex; flex-wrap: wrap; border-bottom: 1px solid #ddd; padding-bottom: 10px; gap: 10px;">
-                <p style="margin-bottom: 10px;">${getTranslation(ctx, "reminder_sent", userLanguage)}</p>
-                <b><p style="color: #000000; text-decoration: none; margin-bottom: 10px;">${issue.id}</p></b>
-                <p style="margin-bottom: 10px;">${getTranslation(ctx, "reminder_sent2", userLanguage)}</p>
-                <b><p style="color: #000000; text-decoration: none; margin-bottom: 10px;">${issue.project.name}</p></b>
-                <p style="margin-bottom: 10px;">${getTranslation(ctx, "reminder_sent3", userLanguage)}</p>
+                <p style="margin-bottom: 10px;">${getTranslation(ctx, "reminder_sent", userLanguage)} <b>${issue.id}</b> ${getTranslation(ctx, "reminder_sent2", userLanguage)} <b>${issue.project.name}</b> ${getTranslation(ctx, "reminder_sent3", userLanguage)}</p>
             </div>
         
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
@@ -126,7 +121,7 @@ function sendMail(ctx, user, reminder) {
         </div>`;
 
     const message = {
-        fromName: authorName,
+        fromName: "Ticket Reminder",
         to: [userEmail],
         subject: `${getTranslation(ctx, "subject", userLanguage)} ${reminder.subject}`,
         headers: { 'X-Custom-Header': 'Reminder Notification' },
