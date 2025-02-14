@@ -1,5 +1,5 @@
 import YTApp, {host} from "./youTrackApp.ts";
-import {ReminderData} from "./types.ts";
+import {nameOfTag, ReminderData} from "./types.ts";
 import {addTagToIssue, isTagPresent, removeTagFromIssue} from "./youTrackHandler.ts";
 
 export async function saveReminder(data: ReminderData) {
@@ -31,14 +31,14 @@ export async function updateReminders(reminderId: string, updates: Partial<Remin
             (reminder) => reminder.issueId === currentIssueId && reminder.isActive
         );
 
+
+        const tagName = nameOfTag;
         if (remindersForCurrentIssue.length > 0) {
-            const tagName = "reminder";
             const tagExists = await isTagPresent(currentIssueId, tagName);
             if (!tagExists) {
                 await addTagToIssue(currentIssueId, tagName);
             }
         } else {
-            const tagName = "reminder";
             await removeTagFromIssue(currentIssueId, tagName);
         }
     } catch (error) {
@@ -86,7 +86,7 @@ export async function removeReminder(reminderId: string): Promise<void> {
 
         if (remindersForCurrentIssue.length === 0) {
             const currentIssueId = YTApp.entity.id;
-            await removeTagFromIssue(currentIssueId, 'reminder');
+            await removeTagFromIssue(currentIssueId, nameOfTag);
         }
     } catch (error) {
         console.error("Error removing reminder:", error);

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import Input, {Size} from "@jetbrains/ring-ui-built/components/input/input";
 import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
-import {GroupTagDTO, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
+import {GroupTagDTO, nameOfTag, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
 import {removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
@@ -108,9 +108,9 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
         const translations = {
             de: {
-                "reminder_sent": "Erinnerung für Ticket",
+                "reminder_sent": "YouTrack möchte Sie an das Ticket",
                 "reminder_sent2": "im Projekt",
-                "reminder_sent3": "wurde ausgeführt.",
+                "reminder_sent3": "erinnern",
                 "subject": "YouTrack Erinnerung:",
                 "subject_textblock": "Betreff:",
                 "planned_for": "Geplant für:",
@@ -119,9 +119,9 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 "notification_footer": "Sie haben diese Benachrichtigung erhalten, da Sie zu einer Erinnerung für dieses Ticket hinzugefügt wurden."
             },
             en: {
-                "reminder_sent": "Reminder for ticket",
+                "reminder_sent": "YouTrack wants to remind you about the ticket",
                 "reminder_sent2": "in project",
-                "reminder_sent3": "was executed.",
+                "reminder_sent3": "",
                 "subject": "YouTrack Reminder:",
                 "subject_textblock": "Subject:",
                 "planned_for": "Scheduled for:",
@@ -176,25 +176,25 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
             onReminderCreated();
 
-            const newTagName = "reminder";
+            const newTagName = nameOfTag;
 
-            let existingTag = await isTagPresentGlobal(newTagName)
-
-            if (!existingTag) {
-                const newTagId = await createTag(newTagName);
-                if (!newTagId) {
-                    console.error(`Failed to create tag '${newTagName}'.`);
-                    return;
+            void isTagPresentGlobal(newTagName).then(async existingTag => {
+                if (!existingTag) {
+                    const newTagId = await createTag(newTagName);
+                    if (!newTagId) {
+                        console.error(`Failed to create tag '${newTagName}'.`);
+                        return;
+                    }
+                    existingTag = {id: newTagId, name: newTagName};
                 }
-                existingTag = { id: newTagId, name: newTagName };
-            }
 
-            await addTagToIssue(issueId, existingTag.name);
+                await addTagToIssue(issueId, existingTag.name);
 
-            await handleCancel();
-            if (editingReminder) {
-                onCancelEdit();
-            }
+                await handleCancel();
+                if (editingReminder) {
+                    onCancelEdit();
+                }
+            })
         } catch (error) {
             console.error(t("createReminder.errors.submitError"), error);
         }

@@ -4,7 +4,7 @@ const notifications = require('@jetbrains/youtrack-scripting-api/notifications')
 
 exports.rule = entities.Issue.onSchedule({
     title: 'Reminder Email Scheduler with Time Zone Support',
-    search: '#reminder',
+    search: '#Reminder',
     cron: "0 * * * * ?",
     guard: () => true,
     action: (ctx) => {

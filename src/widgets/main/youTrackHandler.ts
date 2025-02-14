@@ -2,12 +2,17 @@ import { host } from "./youTrackApp.ts";
 
 export const createTag = async (tagName: string): Promise<string | null> => {
     try {
+        const groups = await fetchGroups()
+
         const response = await host.fetchYouTrack('tags', {
             method: 'POST',
             body: {
                 name: tagName,
                 color: {
                     id: "32"
+                },
+                visibleFor: {
+                    id: groups[0].id
                 }
             }
         });
@@ -64,7 +69,7 @@ export const isTagPresent = async (issueId: string, tagName: string): Promise<bo
 };
 
 export const isTagPresentGlobal = async (newTagName: string) => {
-    const globalTagsResponse = await host.fetchYouTrack("tags?fields=id,name");
+    const globalTagsResponse = await host.fetchYouTrack("tags?fields=id,name,readSharingSettings");
     const globalTags = globalTagsResponse as { id: string; name: string }[];
 
     return globalTags.find(tag => tag.name.toLowerCase() === newTagName.toLowerCase());

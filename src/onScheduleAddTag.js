@@ -14,7 +14,7 @@ exports.rule = entities.Issue.onSchedule({
         }
 
         activeReminders.forEach((reminder) => {
-            const reminderTag = 'reminder';
+            const reminderTag = 'Reminder';
             const issue = entities.Issue.findById(reminder.issueId);
 
             if(!issue.hasTag(reminderTag)) {
