@@ -40,8 +40,7 @@ export default defineConfig(({mode}) => {
                     { src: "./onChangeTagRemove.js", dest: "." },
                     { src: "./onScheduleMailScheduler.js", dest: "."},
                     { src: "./onChangeIssueResolved.js", dest: "."},
-                    { src: "./onChangeIssueRemoved.js", dest: "."},
-                    { src: "./onScheduleAddTag.js", dest: "."}
+                    { src: "./onChangeIssueRemoved.js", dest: "."}
                 ]
             })
         ],

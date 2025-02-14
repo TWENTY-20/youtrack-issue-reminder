@@ -11,8 +11,15 @@ export const createTag = async (tagName: string): Promise<string | null> => {
                 color: {
                     id: "32"
                 },
-                visibleFor: {
-                    id: groups[0].id
+                readSharingSettings: {
+                    permittedGroups: [
+                        {id: groups[0].id}
+                    ]
+                },
+                tagSharingSettings: {
+                    permittedGroups: [
+                        {id: groups[0].id}
+                    ]
                 }
             }
         });

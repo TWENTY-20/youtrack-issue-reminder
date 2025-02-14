@@ -10,7 +10,7 @@ import GroupSelector from "./GroupSelector.tsx";
 import {v4 as uuidv4} from "uuid";
 import {useTranslation} from "react-i18next";
 import YTApp from "../youTrackApp.ts";
-import {addTagToIssue, createTag, fetchGroupUsers, getUserTimeZone, isTagPresentGlobal,} from "../youTrackHandler.ts";
+import {addTagToIssue, fetchGroupUsers, getUserTimeZone} from "../youTrackHandler.ts";
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
 
@@ -176,16 +176,15 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
             onReminderCreated();
 
-            const newTagName = nameOfTag;
-
-            void isTagPresentGlobal(newTagName).then(async existingTag => {
+            /*void isTagPresentGlobal(nameOfTag).then(async existingTag => {
+                console.log("existingTag", existingTag);
                 if (!existingTag) {
-                    const newTagId = await createTag(newTagName);
+                    const newTagId = await createTag(nameOfTag);
                     if (!newTagId) {
-                        console.error(`Failed to create tag '${newTagName}'.`);
+                        console.error(`Failed to create tag '${nameOfTag}'.`);
                         return;
                     }
-                    existingTag = {id: newTagId, name: newTagName};
+                    existingTag = {id: newTagId, name: nameOfTag};
                 }
 
                 await addTagToIssue(issueId, existingTag.name);
@@ -194,7 +193,14 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 if (editingReminder) {
                     onCancelEdit();
                 }
-            })
+            })*/
+
+            await addTagToIssue(issueId, nameOfTag);
+
+            await handleCancel();
+            if (editingReminder) {
+                onCancelEdit();
+            }
         } catch (error) {
             console.error(t("createReminder.errors.submitError"), error);
         }
