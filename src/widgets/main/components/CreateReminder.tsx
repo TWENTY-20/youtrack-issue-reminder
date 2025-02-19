@@ -271,6 +271,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         type="date"
                         label={t("createReminder.labels.date")}
                         value={date}
+                        min={new Date().toISOString().split("T")[0]}
                         {...(touched.date && errors.date ? { error: errors.date } : {})}
                         onChange={(e) => setDate(e.target.value)}
                     />
