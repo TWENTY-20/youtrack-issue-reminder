@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import Input, {Size} from "@jetbrains/ring-ui-built/components/input/input";
 import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
-import {GroupTagDTO, nameOfTag, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
+import {GroupTagDTO, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
 import {removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
@@ -10,7 +10,7 @@ import GroupSelector from "./GroupSelector.tsx";
 import {v4 as uuidv4} from "uuid";
 import {useTranslation} from "react-i18next";
 import YTApp from "../youTrackApp.ts";
-import {addTagToIssue, fetchGroupUsers, getUserTimeZone} from "../youTrackHandler.ts";
+import {fetchGroupUsers, getUserTimeZone} from "../youTrackHandler.ts";
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
 
@@ -121,7 +121,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             en: {
                 "reminder_sent": "YouTrack wants to remind you about the ticket",
                 "reminder_sent2": "in project",
-                "reminder_sent3": "",
+                "reminder_sent3": " ",
                 "subject": "YouTrack Reminder:",
                 "subject_textblock": "Subject:",
                 "planned_for": "Scheduled for:",
@@ -194,8 +194,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                     onCancelEdit();
                 }
             })*/
-
-            await addTagToIssue(issueId, nameOfTag);
 
             await handleCancel();
             if (editingReminder) {

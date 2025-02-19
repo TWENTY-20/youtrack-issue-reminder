@@ -170,8 +170,6 @@ export interface Issue {
     project: Project;
 }
 
-export const nameOfTag = "reminder";
-
 
 
 

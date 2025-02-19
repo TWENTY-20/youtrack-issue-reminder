@@ -1,6 +1,5 @@
 import YTApp, {host} from "./youTrackApp.ts";
-import {nameOfTag, ReminderData} from "./types.ts";
-import {addTagToIssue, isTagPresent, removeTagFromIssue} from "./youTrackHandler.ts";
+import {ReminderData} from "./types.ts";
 
 export async function saveReminder(data: ReminderData) {
     const existingReminders = await fetchReminders();
@@ -9,6 +8,7 @@ export async function saveReminder(data: ReminderData) {
 
     await host.fetchApp(`backend/saveReminders`, {
         method: 'POST',
+        query: {issueId: YTApp.entity.id},
         body: { value: JSON.stringify(updatedReminders) },
     });
 }
@@ -23,24 +23,9 @@ export async function updateReminders(reminderId: string, updates: Partial<Remin
 
         await host.fetchApp(`backend/saveReminders`, {
             method: 'POST',
+            query: {issueId: YTApp.entity.id},
             body: { value: JSON.stringify(updatedReminders) },
         });
-
-        const currentIssueId = YTApp.entity.id;
-        const remindersForCurrentIssue = updatedReminders.filter(
-            (reminder) => reminder.issueId === currentIssueId && reminder.isActive
-        );
-
-
-        const tagName = nameOfTag;
-        if (remindersForCurrentIssue.length > 0) {
-            const tagExists = await isTagPresent(currentIssueId, tagName);
-            if (!tagExists) {
-                await addTagToIssue(currentIssueId, tagName);
-            }
-        } else {
-            await removeTagFromIssue(currentIssueId, tagName);
-        }
     } catch (error) {
         console.error("Error updating reminders:", error);
     }
@@ -48,25 +33,11 @@ export async function updateReminders(reminderId: string, updates: Partial<Remin
 
 export async function fetchReminders(): Promise<ReminderData[]> {
     try {
-        const result = await host.fetchApp("backend/fetchReminders", { method: "GET" });
+        const result = await host.fetchApp("backend/fetchReminders", {query: {issueId: YTApp.entity.id}});
 
         return result.result || [];
     } catch (error) {
         console.error("Error fetching reminders:", error);
-        return [];
-    }
-}
-
-
-export async function fetchRemindersForCurrentIssue(): Promise<ReminderData[]> {
-    try {
-        const allReminders = await fetchReminders();
-
-        const currentIssueId = YTApp.entity.id;
-
-        return allReminders.filter(reminder => reminder.issueId === currentIssueId);
-    } catch (error) {
-        console.error("Error fetching reminders for current issue:", error);
         return [];
     }
 }
@@ -79,15 +50,9 @@ export async function removeReminder(reminderId: string): Promise<void> {
 
         await host.fetchApp(`backend/saveReminders`, {
             method: 'POST',
+            query: {issueId: YTApp.entity.id},
             body: { value: JSON.stringify(updatedReminders) },
         });
-
-        const remindersForCurrentIssue = await fetchRemindersForCurrentIssue();
-
-        if (remindersForCurrentIssue.length === 0) {
-            const currentIssueId = YTApp.entity.id;
-            await removeTagFromIssue(currentIssueId, nameOfTag);
-        }
     } catch (error) {
         console.error("Error removing reminder:", error);
     }

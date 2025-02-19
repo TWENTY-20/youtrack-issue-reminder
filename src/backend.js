@@ -1,4 +1,6 @@
 //import English from "./locales/en.json"
+const entities = require('@jetbrains/youtrack-scripting-api/entities');
+
 import German from "./locales/de.json"
 
 const languages = new Map()
@@ -21,7 +23,11 @@ exports.httpHandler = {
             path: 'saveReminders',
             handle: (ctx) => {
                 const body = JSON.parse(ctx.request.body)
-                ctx.globalStorage.extensionProperties.reminders = body.value;
+
+                const issueId = ctx.request.getParameter('issueId')
+                const issue = entities.Issue.findById(issueId)
+
+                issue.extensionProperties.activeReminders = body.value;
                 ctx.response.json({body: body.value});
             }
         },
@@ -29,7 +35,9 @@ exports.httpHandler = {
             method: 'GET',
             path: 'fetchReminders',
             handle: (ctx) => {
-                const reminders = ctx.globalStorage.extensionProperties.reminders;
+                const issueId = ctx.request.getParameter('issueId')
+                const issue = entities.Issue.findById(issueId)
+                const reminders = issue.extensionProperties.activeReminders;
 
                 try {
                     const parsedReminders = JSON.parse(reminders);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {fetchRemindersForCurrentIssue, removeReminder, updateReminders} from "../globalStorage.ts";
+import {fetchReminders, removeReminder, updateReminders} from "../globalStorage.ts";
 import { GroupTagDTO, ReminderData, UserTagDTO } from "../types.ts";
 import YTApp from "../youTrackApp.ts";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
@@ -29,7 +29,7 @@ export default function ReminderSettings({ onEditReminder }) {
     const currentUserLogin = YTApp.me.login;
 
     useEffect(() => {
-        void fetchRemindersForCurrentIssue().then(async (fetchedReminders) => {
+        void fetchReminders().then(async (fetchedReminders) => {
             const filteredReminders = [];
 
             for (const reminder of fetchedReminders) {

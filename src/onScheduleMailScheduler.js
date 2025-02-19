@@ -4,18 +4,18 @@ const notifications = require('@jetbrains/youtrack-scripting-api/notifications')
 
 exports.rule = entities.Issue.onSchedule({
     title: 'Reminder Email Scheduler with Time Zone Support',
-    search: '#reminder',
+    search: '#{All issues}',
     cron: "0 * * * * ?",
     guard: () => true,
     action: (ctx) => {
-        const reminders = JSON.parse(ctx.globalStorage.extensionProperties.reminders || '[]');
-        const activeReminders = reminders.filter((reminder) => reminder.isActive);
+        const reminders = JSON.parse(ctx.issue.extensionProperties.activeReminders || '[]');
+        const activatedReminders = reminders.filter((reminder) => reminder.isActive);
 
-        if (activeReminders.length === 0) {
+        if (activatedReminders.length === 0) {
             return;
         }
 
-        activeReminders.forEach((reminder) => {
+        activatedReminders.forEach((reminder) => {
             let recipients = new Set();
 
             (reminder.selectedUsers || []).forEach((user) => {
@@ -164,7 +164,7 @@ function handleRepeatSchedule(ctx, reminder) {
         const newReminderDate = new Date(`${reminder.date}T${reminder.time}`);
         newReminderDate.setDate(newReminderDate.getDate() + repeatInterval);
 
-        const reminders = JSON.parse(ctx.globalStorage.extensionProperties.reminders || '[]');
+        const reminders = JSON.parse(ctx.issue.extensionProperties.activeReminders || '[]');
         const filteredReminders = reminders.filter((r) => r.uuid !== reminder.uuid);
 
         const formData = {
@@ -185,7 +185,7 @@ function handleRepeatSchedule(ctx, reminder) {
         };
 
         const updatedReminders = [...filteredReminders, formData];
-        ctx.globalStorage.extensionProperties.reminders = JSON.stringify(updatedReminders);
+        ctx.issue.extensionProperties.activeReminders = JSON.stringify(updatedReminders);
 
         //console.log(`Reminder for issue ${ctx.issue.id} rescheduled to ${newReminderDate}`);
     } else {
@@ -194,11 +194,11 @@ function handleRepeatSchedule(ctx, reminder) {
 }
 
 function deactivateReminder(ctx, reminderId) {
-    const reminders = JSON.parse(ctx.globalStorage.extensionProperties.reminders || '[]');
+    const reminders = JSON.parse(ctx.issue.extensionProperties.activeReminders || '[]');
     const updatedReminders = reminders.map((reminder) =>
         reminder.uuid === reminderId ? { ...reminder, isActive: false } : reminder
     );
-    ctx.globalStorage.extensionProperties.reminders = JSON.stringify(updatedReminders);
+    ctx.issue.extensionProperties.activeReminders = JSON.stringify(updatedReminders);
 
     //console.log(`Reminder with ID ${reminderId} has been deactivated.`);
 }
