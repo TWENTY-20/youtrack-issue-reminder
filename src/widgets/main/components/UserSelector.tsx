@@ -1,31 +1,43 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Select from "@jetbrains/ring-ui-built/components/select/select";
-import YTApp, { host } from "../youTrackApp.ts";
+import YTApp, {host} from "../youTrackApp.ts";
 import Tag from "@jetbrains/ring-ui-built/components/tag/tag";
-import { Size } from "@jetbrains/ring-ui-built/components/input/input";
-import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
+import {Size} from "@jetbrains/ring-ui-built/components/input/input";
+import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import {ReminderData, UserDTO, UserTagDTO} from "../types.ts";
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next";
 
-export default function UserSelector({ onChange, editingReminder, }: { onChange: (users: UserTagDTO[]) => void; editingReminder?: ReminderData | null; }) {
+export default function UserSelector({ onChange, editingReminder }: { onChange: (users: UserTagDTO[]) => void; editingReminder?: ReminderData | null; }) {
     const [users, setUsers] = useState<UserTagDTO[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers || []);
     const { t } = useTranslation();
 
+    const PAGE_SIZE = 50;
+
+    const loadUsers = async (query: string = "") => {
+        try {
+            const data: UserDTO[] = await host.fetchYouTrack(
+                `users?fields=id,login,fullName,avatarUrl,email${query ? `&query=${encodeURIComponent(query)}` : ""}&$top=${PAGE_SIZE}`
+            );
+
+            const formattedUsers: UserTagDTO[] = data.map((user) => ({
+                key: user.id,
+                label: user.fullName || user.login,
+                login: user.login,
+                avatar: user.avatarUrl,
+                email: user.email,
+            }));
+
+            setUsers(formattedUsers);
+        } catch (error) {
+            console.error(t("userSelector.errors.fetchUsers"), error);
+        }
+    };
+
     useEffect(() => {
-        const fetchUsers = async () => {
+        const fetchInitialUsers = async () => {
             try {
-                const data: UserDTO[] = await host.fetchYouTrack("users?fields=id,login,fullName,avatarUrl,email");
-
-                const formattedUsers: UserTagDTO[] = data.map((user) => ({
-                    key: user.id,
-                    label: user.fullName || user.login,
-                    login: user.login,
-                    avatar: user.avatarUrl,
-                    email: user.email
-                }));
-
-                setUsers(formattedUsers);
+                await loadUsers();
 
                 if (!editingReminder) {
                     const user: UserDTO = await host.fetchYouTrack(`users/${YTApp.me.id}?fields=id,login,fullName,avatarUrl,email`);
@@ -34,7 +46,7 @@ export default function UserSelector({ onChange, editingReminder, }: { onChange:
                         label: YTApp.me.name || YTApp.me.login,
                         login: YTApp.me.login,
                         avatar: YTApp.me.avatarUrl,
-                        email: user.email
+                        email: user.email,
                     };
                     setSelectedUsers([currentUser]);
                     onChange([currentUser]);
@@ -44,7 +56,7 @@ export default function UserSelector({ onChange, editingReminder, }: { onChange:
             }
         };
 
-        fetchUsers();
+        fetchInitialUsers();
     }, [t, onChange, editingReminder]);
 
     const handleUserChange = (selected: UserTagDTO | null) => {
@@ -61,6 +73,57 @@ export default function UserSelector({ onChange, editingReminder, }: { onChange:
         onChange(updatedUsers);
     };
 
+    const loadMore = async (query: string = "") => {
+        try {
+            const offset = query ? 0 : users.length;
+            const data: UserDTO[] = await host.fetchYouTrack(
+                `users?query=${encodeURIComponent(query)}&fields=id,login,fullName,avatarUrl,email&$skip=${offset}&$top=${PAGE_SIZE}`
+            );
+
+            const additionalUsers = data.map((user) => ({
+                key: user.id,
+                label: user.fullName || user.login,
+                login: user.login,
+                avatar: user.avatarUrl,
+                email: user.email,
+            }));
+
+            setUsers((prevUsers) => {
+                if (query) {
+                    return additionalUsers;
+                } else {
+                    return [...prevUsers, ...additionalUsers].reduce<UserTagDTO[]>(
+                        (unique, user) => {
+                            if (!unique.some((u) => u.key === user.key)) {
+                                unique.push(user);
+                            }
+                            return unique;
+                        },
+                        []
+                    );
+                }
+            });
+        } catch (error) {
+            console.error(t("userSelector.errors.loadMoreUsers"), error);
+        }
+    };
+
+    const onFilter = async (input: string) => {
+        try {
+            if (input && input.trim().length >= 1) {
+                await loadMore(input.trim());
+            } else {
+                await loadUsers();
+            }
+        } catch (error) {
+            console.error(t("userSelector.errors.filter"), error);
+        }
+    };
+
+    const onOpen = async () => {
+        await loadUsers();
+    };
+
     return (
         <div>
             <div className="flex flex-col">
@@ -71,6 +134,9 @@ export default function UserSelector({ onChange, editingReminder, }: { onChange:
                     data={users}
                     selected={null}
                     onChange={handleUserChange}
+                    onFilter={onFilter}
+                    onOpen={onOpen}
+                    onLoadMore={loadMore}
                     filter
                     className="w-full mb-4"
                 />

@@ -4,7 +4,7 @@ import { host } from "../youTrackApp.ts";
 import Tag from "@jetbrains/ring-ui-built/components/tag/tag";
 import { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
-import {GroupDTO, GroupTagDTO, ReminderData} from "../types.ts";
+import { GroupDTO, GroupTagDTO, ReminderData } from "../types.ts";
 import { useTranslation } from "react-i18next";
 
 export default function GroupSelector({ onChange, editingReminder }: { onChange: (groups: any[]) => void; editingReminder?: ReminderData | null; }) {
@@ -12,20 +12,26 @@ export default function GroupSelector({ onChange, editingReminder }: { onChange:
     const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
     const { t } = useTranslation();
 
-    useEffect(() => {
+    const loadGroups = async (query: string = "") => {
         try {
-            void host.fetchYouTrack("groups?fields=id,name,usersCount").then((data: GroupDTO[]) => {
-                setGroups(
-                    data.map((group) => ({
-                        key: group.id,
-                        label: group.name,
-                        description: `${group.usersCount} ${t("groupSelector.messages.groupDescription")}`,
-                    }))
-                );
-            });
+            const data: GroupDTO[] = await host.fetchYouTrack(
+                `groups?fields=id,name,usersCount${query ? `&query=${encodeURIComponent(query)}` : ""}&$top=50`
+            );
+
+            const formattedGroups = data.map((group) => ({
+                key: group.id,
+                label: group.name,
+                description: `${group.usersCount} ${t("groupSelector.messages.groupDescription")}`,
+            }));
+
+            setGroups(formattedGroups);
         } catch (error) {
             console.error(t("groupSelector.errors.fetchGroups"), error);
         }
+    };
+
+    useEffect(() => {
+        void loadGroups();
     }, [t]);
 
     const handleGroupChange = (selected: GroupTagDTO | null) => {
@@ -42,6 +48,18 @@ export default function GroupSelector({ onChange, editingReminder }: { onChange:
         onChange(updatedGroups);
     };
 
+    const onFilter = async (input: string) => {
+        if (input && input.trim().length > 0) {
+            await loadGroups(input.trim());
+        } else {
+            await loadGroups();
+        }
+    };
+
+    const onOpen = async () => {
+        await loadGroups();
+    };
+
     return (
         <div>
             <div className="flex flex-col">
@@ -52,12 +70,14 @@ export default function GroupSelector({ onChange, editingReminder }: { onChange:
                     data={groups}
                     selected={null}
                     onChange={handleGroupChange}
+                    onFilter={onFilter}
+                    onOpen={onOpen}
                     filter
                     className="w-full mb-4"
                 />
             </div>
 
-            <div className="items-center">
+            <div className="items-center flex flex-wrap gap-2">
                 {selectedGroups.map((group) => (
                     <Tag
                         key={group.key}
@@ -65,7 +85,7 @@ export default function GroupSelector({ onChange, editingReminder }: { onChange:
                         aria-label={t("groupSelector.actions.removeGroup")}
                         className="flex items-center rounded"
                     >
-                        <div className={"flex items-center py-4"}>
+                        <div className="flex items-center py-4">
                             <span>{group.label}</span>
                         </div>
                     </Tag>
