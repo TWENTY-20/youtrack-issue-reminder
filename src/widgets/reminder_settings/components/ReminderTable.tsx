@@ -25,14 +25,15 @@ export default function ReminderTable({ onDeleteClick }: { onDeleteClick: (remin
             ],
             selectedGroups: [],
             message: "Weekly team sync meeting to discuss updates.",
-            issueId: "DEMO-23",
-            uuid: "c3b04239-d594-4d3f-9344-5f06a2e4c997",
+            issueId: "DEMO-16",
+            uuid: "16e83a0f-59fd-4946-89fa-1156031ce05a",
             isActive: true,
             timezone: "Europe/London",
             creatorLogin: "jane.doe",
             onlyCreatorCanEdit: false,
             allAssigneesCanEdit: true,
             project: "Demo Project",
+            issueUrl: "http://localhost:8080/issue/DEMO-16"
         },
         {
             subject: "Code Review Session",
@@ -61,6 +62,7 @@ export default function ReminderTable({ onDeleteClick }: { onDeleteClick: (remin
             onlyCreatorCanEdit: true,
             allAssigneesCanEdit: false,
             project: "Codebase Cleanup",
+            issueUrl: "http://localhost:8080/issue/DEMO-16"
         }
     ];
 
@@ -80,6 +82,15 @@ export default function ReminderTable({ onDeleteClick }: { onDeleteClick: (remin
                 {
                     id: "issue",
                     title: "Issue",
+                    getValue: (row) => {
+                        const reminder = mocks.find((mock) => mock.uuid === row.id);
+                        if (!reminder) return null;
+                        return (
+                            <a href={reminder.issueUrl} target="_blank" rel="noopener noreferrer" className={"text-[#95b6f8]"}>
+                                {reminder.issueId}
+                            </a>
+                        );
+                    },
                 },
                 {
                     id: "subject",

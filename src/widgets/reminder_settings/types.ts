@@ -119,6 +119,7 @@ export interface ReminderData {
     onlyCreatorCanEdit: boolean;
     allAssigneesCanEdit: boolean;
     project: string;
+    issueUrl: string;
 }
 
 export interface CustomField {

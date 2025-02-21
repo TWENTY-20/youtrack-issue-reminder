@@ -13,6 +13,9 @@
       "properties": {
         "activeReminders": {
           "type": "string"
+        },
+        "hasReminders": {
+          "type": "boolean"
         }
       }
     }

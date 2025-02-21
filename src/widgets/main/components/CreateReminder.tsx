@@ -3,7 +3,7 @@ import Input, {Size} from "@jetbrains/ring-ui-built/components/input/input";
 import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import {GroupTagDTO, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
-import {getReminderBool, removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
+import {fetchIssueUrl, getReminderBool, removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
@@ -29,6 +29,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const [showEmailWarningDialog, setShowEmailWarningDialog] = useState(false);
     const [usersWithoutEmail, setUsersWithoutEmail] = useState<UserTagDTO[]>([]);
     const [projectName, setProjectName] = useState<string>("");
+    const [issueUrl, setIssueUrl] = useState<string>("");
 
     useEffect(() => {
         void getReminderBool().then(result => {
@@ -36,6 +37,9 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         })
         void fetchIssueProjectId(YTApp.entity.id).then(result => {
             setProjectName(result.name)
+        })
+        void fetchIssueUrl(YTApp.entity.id).then(result => {
+            setIssueUrl(result)
         })
         if (editingReminder) {
             setSubject(editingReminder.subject || "");
@@ -172,7 +176,8 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             creatorLogin: YTApp.me.login,
             onlyCreatorCanEdit,
             allAssigneesCanEdit,
-            project: projectName
+            project: projectName,
+            issueUrl: issueUrl
         };
 
 

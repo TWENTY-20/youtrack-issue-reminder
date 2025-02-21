@@ -49,12 +49,21 @@ exports.httpHandler = {
             }
         },
         {
+            method: 'GET',
+            path: 'fetchIssueUrl',
+            handle: (ctx) => {
+                const issueId = ctx.request.getParameter('issueId')
+                const issueUrl = entities.Issue.findById(issueId).url
+
+                ctx.response.json({ result: issueUrl });
+            }
+        },
+        {
             method: 'POST',
             path: 'saveTranslations',
             handle: (ctx) => {
                 try {
-                    const body = JSON.parse(ctx.request.body);
-                    ctx.globalStorage.extensionProperties.translations = body;
+                    ctx.globalStorage.extensionProperties.translations = JSON.parse(ctx.request.body);
                     ctx.response.json({ success: true, message: "Translations stored successfully" });
                 } catch (error) {
                     console.error("Error saving translations:", error);
@@ -62,5 +71,55 @@ exports.httpHandler = {
                 }
             }
         },
+        {
+            method: 'POST',
+            path: 'setReminderBool',
+            handle: (ctx) => {
+                const issueId = ctx.request.getParameter('issueId')
+                const issue = entities.Issue.findById(issueId)
+                try {
+                    issue.extensionProperties.hasReminders = ctx.request.body;
+                    ctx.response.json({ success: true, message: "Bool stored successfully" });
+                } catch (error) {
+                    console.error("Error saving bool:", error);
+                    ctx.response.json({ success: false, error: "Failed to save bool" });
+                }
+            }
+        },
+        {
+            method: 'GET',
+            path: 'fetchReminderBool',
+            handle: (ctx) => {
+                const issueId = ctx.request.getParameter('issueId')
+                const issue = entities.Issue.findById(issueId)
+                const activeReminders = issue.extensionProperties;
+                const issues = entities.Issue.findByExtensionProperties(
+                    {
+                        activeReminders: { $neq: null },
+                    }
+                )
+
+                try {
+                    ctx.response.json({ result: activeReminders });
+                } catch (error) {
+                    console.error("Error parsing reminders:", error);
+                    ctx.response.json({ result: [] });
+                }
+            }
+        },
+        {
+            method: 'GET',
+            path: 'fetchAllReminders',
+            handle: (ctx) => {
+                const issueId = ctx.request.getParameter('issueId')
+                const issue = entities.Issue.findById(issueId)
+                try {
+                    ctx.response.json({result: entities});
+                } catch (error) {
+                    console.error("Unexpected error:", error);
+                    ctx.response.json({success: false, error: "Unexpected error occurred"});
+                }
+            }
+        }
     ]
 };

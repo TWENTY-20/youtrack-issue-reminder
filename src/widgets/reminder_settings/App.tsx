@@ -18,6 +18,9 @@ export default function App() {
         if (!reminderToDelete) return;
 
         try {
+            console.log("Removing reminder", reminderToDelete);
+            console.log("Issue ID", reminderToDelete.issueId);
+            console.log("UUID", reminderToDelete.uuid);
             await removeReminder(reminderToDelete.uuid, reminderToDelete.issueId);
 
             setReminderToDelete(null);

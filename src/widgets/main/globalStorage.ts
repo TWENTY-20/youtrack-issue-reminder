@@ -105,5 +105,20 @@ export async function getReminderBool(): Promise<void> {
     }
 }
 
+export async function fetchIssueUrl(issueId?: string): Promise<any> {
+    try {
+        const idToFetch = issueId || YTApp.entity.id;
+
+        const result = await host.fetchApp("backend/fetchIssueUrl", {
+            method: "GET",
+            query: {issueId: idToFetch},
+        });
+
+        return result.result || [];
+    } catch (error) {
+        console.error("Error fetching all reminders:", error);
+    }
+}
+
 
 
