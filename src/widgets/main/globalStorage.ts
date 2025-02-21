@@ -58,7 +58,7 @@ export async function removeReminder(reminderId: string, issueId?: string): Prom
 
         await host.fetchApp(`backend/saveReminders`, {
             method: 'POST',
-            query: {issueId: YTApp.entity.id},
+            query: {issueId: idToFetch},
             body: { value: JSON.stringify(updatedReminders) },
         });
 
