@@ -3,14 +3,14 @@ import Input, {Size} from "@jetbrains/ring-ui-built/components/input/input";
 import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import {GroupTagDTO, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
-import {removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
+import {getReminderBool, removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
 import {v4 as uuidv4} from "uuid";
 import {useTranslation} from "react-i18next";
 import YTApp from "../youTrackApp.ts";
-import {fetchGroupUsers, getUserTimeZone} from "../youTrackHandler.ts";
+import {fetchGroupUsers, fetchIssueProjectId, getUserTimeZone} from "../youTrackHandler.ts";
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
 
@@ -28,8 +28,15 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const [allAssigneesCanEdit, setAllAssigneesCanEdit] = useState(editingReminder?.allAssigneesCanEdit ?? false);
     const [showEmailWarningDialog, setShowEmailWarningDialog] = useState(false);
     const [usersWithoutEmail, setUsersWithoutEmail] = useState<UserTagDTO[]>([]);
+    const [projectName, setProjectName] = useState<string>("");
 
     useEffect(() => {
+        void getReminderBool().then(result => {
+            console.log(result)
+        })
+        void fetchIssueProjectId(YTApp.entity.id).then(result => {
+            setProjectName(result.name)
+        })
         if (editingReminder) {
             setSubject(editingReminder.subject || "");
             setDate(editingReminder.date || "");
@@ -165,6 +172,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             creatorLogin: YTApp.me.login,
             onlyCreatorCanEdit,
             allAssigneesCanEdit,
+            project: projectName
         };
 
 
@@ -175,25 +183,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             await saveReminder(formData);
 
             onReminderCreated();
-
-            /*void isTagPresentGlobal(nameOfTag).then(async existingTag => {
-                console.log("existingTag", existingTag);
-                if (!existingTag) {
-                    const newTagId = await createTag(nameOfTag);
-                    if (!newTagId) {
-                        console.error(`Failed to create tag '${nameOfTag}'.`);
-                        return;
-                    }
-                    existingTag = {id: newTagId, name: nameOfTag};
-                }
-
-                await addTagToIssue(issueId, existingTag.name);
-
-                await handleCancel();
-                if (editingReminder) {
-                    onCancelEdit();
-                }
-            })*/
 
             await handleCancel();
             if (editingReminder) {

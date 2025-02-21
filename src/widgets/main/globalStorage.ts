@@ -11,6 +11,8 @@ export async function saveReminder(data: ReminderData) {
         query: {issueId: YTApp.entity.id},
         body: { value: JSON.stringify(updatedReminders) },
     });
+
+    await setReminderBool(updatedReminders.length > 0);
 }
 
 export async function updateReminders(reminderId: string, updates: Partial<ReminderData>): Promise<void> {
@@ -26,14 +28,18 @@ export async function updateReminders(reminderId: string, updates: Partial<Remin
             query: {issueId: YTApp.entity.id},
             body: { value: JSON.stringify(updatedReminders) },
         });
+
+        await setReminderBool(updatedReminders.length > 0);
     } catch (error) {
         console.error("Error updating reminders:", error);
     }
 }
 
-export async function fetchReminders(): Promise<ReminderData[]> {
+export async function fetchReminders(issueId?: string): Promise<ReminderData[]> {
     try {
-        const result = await host.fetchApp("backend/fetchReminders", {query: {issueId: YTApp.entity.id}});
+        const idToFetch = issueId || YTApp.entity.id;
+
+        const result = await host.fetchApp("backend/fetchReminders", {query: {issueId: idToFetch}});
 
         return result.result || [];
     } catch (error) {
@@ -42,9 +48,11 @@ export async function fetchReminders(): Promise<ReminderData[]> {
     }
 }
 
-export async function removeReminder(reminderId: string): Promise<void> {
+export async function removeReminder(reminderId: string, issueId?: string): Promise<void> {
     try {
-        const existingReminders = await fetchReminders();
+        const idToFetch = issueId || YTApp.entity.id;
+
+        const existingReminders = await fetchReminders(idToFetch);
 
         const updatedReminders = existingReminders.filter((reminder) => reminder.uuid !== reminderId);
 
@@ -53,6 +61,8 @@ export async function removeReminder(reminderId: string): Promise<void> {
             query: {issueId: YTApp.entity.id},
             body: { value: JSON.stringify(updatedReminders) },
         });
+
+        await setReminderBool(updatedReminders.length > 0);
     } catch (error) {
         console.error("Error removing reminder:", error);
     }
@@ -66,6 +76,32 @@ export async function uploadTranslations(translations: Record<string, any>): Pro
         });
     } catch (error) {
         console.error("Error uploading translations:", error);
+    }
+}
+
+async function setReminderBool(hasActiveReminders: boolean): Promise<void> {
+    console.log(hasActiveReminders)
+    try {
+        await host.fetchApp(`backend/setReminderBool`, {
+            method: 'POST',
+            query: {issueId: YTApp.entity.id},
+            body: hasActiveReminders
+        });
+    } catch (error) {
+        console.error("Error setting reminder bool:", error);
+    }
+}
+
+export async function getReminderBool(): Promise<void> {
+    try {
+        const result = await host.fetchApp(`backend/fetchReminderBool`, {
+            method: 'GET',
+            query: {issueId: YTApp.entity.id}
+        });
+
+        return result.result;
+    } catch (error) {
+        console.error("Error setting reminder bool:", error);
     }
 }
 

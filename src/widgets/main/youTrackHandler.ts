@@ -67,7 +67,7 @@ export const fetchIssueProjectId = async (issueId: string): Promise<any> => {
             return null;
         }
 
-        return response.id;
+        return response;
     } catch (error) {
         console.error(`Error fetching project for issue ID '${issueId}':`, error);
         return null;
