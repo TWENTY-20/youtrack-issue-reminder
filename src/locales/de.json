@@ -75,6 +75,7 @@
       "confirmDeleteTitle": "Löschen bestätigen",
       "confirmDeleteMessage": "Sind Sie sicher, dass Sie diese Erinnerung löschen möchten?",
       "notificationTimeTooltip": "Benachrichtigungszeit in deiner Zeitzone",
+      "loading": "Laden...",
       "alerts": {
         "activatedMessage": "Erinnerung erfolgreich aktiviert!",
         "deactivatedMessage": "Erinnerung erfolgreich deaktiviert!",

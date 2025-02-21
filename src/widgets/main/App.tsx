@@ -5,11 +5,12 @@ import { useTranslation } from "react-i18next";
 import {ReminderData} from "./types.ts";
 import {fetchIssueProjectId, fetchPermissionsCache} from "./youTrackHandler.ts";
 import YTApp from "./youTrackApp.ts";
+import Loader from "@jetbrains/ring-ui-built/components/loader/loader";
 
 export default function App() {
     const [activeTab, setActiveTab] = useState("reminders");
     const [editingReminder, setEditingReminder] = useState<ReminderData | null>(null);
-    const [hasPermission, setHasPermission] = useState<boolean | null>(null); // NULL bedeutet noch nicht geladen
+    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const { t } = useTranslation();
 
     const handleEditReminder = (reminder: ReminderData) => {
@@ -36,7 +37,7 @@ export default function App() {
     }, []);
 
     if (hasPermission === null) {
-        return <div>{t("app.loading")}</div>;
+        return <Loader message={t("reminderSettings.messages.loading")}/>;
     }
 
     if (!hasPermission) {

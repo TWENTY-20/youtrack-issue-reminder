@@ -75,6 +75,7 @@
       "confirmDeleteTitle": "Confirm Deletion",
       "confirmDeleteMessage": "Are you sure you want to delete this reminder?",
       "notificationTimeTooltip": "Time of notification in your timezone",
+      "loading": "Loading...",
       "alerts": {
         "activatedMessage": "Reminder activated successfully!",
         "deactivatedMessage": "Reminder deactivated successfully!",

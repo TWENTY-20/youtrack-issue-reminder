@@ -10,6 +10,7 @@ import {useTranslation} from "react-i18next";
 export default function UserSelector({ onChange, editingReminder }: { onChange: (users: UserTagDTO[]) => void; editingReminder?: ReminderData | null; }) {
     const [users, setUsers] = useState<UserTagDTO[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers || []);
+    const [isLoading, setIsLoading] = useState(true);
     const { t } = useTranslation();
 
     const PAGE_SIZE = 50;
@@ -75,6 +76,7 @@ export default function UserSelector({ onChange, editingReminder }: { onChange: 
 
     const loadMore = async (query: string = "") => {
         try {
+            setIsLoading(true);
             const offset = query ? 0 : users.length;
             const data: UserDTO[] = await host.fetchYouTrack(
                 `users?query=${encodeURIComponent(query)}&fields=id,login,fullName,avatarUrl,email&$skip=${offset}&$top=${PAGE_SIZE}`
@@ -103,6 +105,7 @@ export default function UserSelector({ onChange, editingReminder }: { onChange: 
                     );
                 }
             });
+            setIsLoading(false);
         } catch (error) {
             console.error(t("userSelector.errors.loadMoreUsers"), error);
         }
@@ -137,6 +140,7 @@ export default function UserSelector({ onChange, editingReminder }: { onChange: 
                     onFilter={onFilter}
                     onOpen={onOpen}
                     onLoadMore={loadMore}
+                    loading={isLoading}
                     filter
                     className="w-full mb-4"
                 />

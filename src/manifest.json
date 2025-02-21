@@ -18,6 +18,12 @@
         "height": 650,
         "width": 600
       }
+    },
+    {
+      "key": "reminder_settings",
+      "name": "Ticket Reminder",
+      "indexPath": "reminder_settings/index.html",
+      "extensionPoint": "USER_PROFILE_SETTINGS"
     }
   ]
 }

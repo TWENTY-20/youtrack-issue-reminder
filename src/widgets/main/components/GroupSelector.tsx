@@ -7,26 +7,48 @@ import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/contr
 import { GroupDTO, GroupTagDTO, ReminderData } from "../types.ts";
 import { useTranslation } from "react-i18next";
 
-export default function GroupSelector({ onChange, editingReminder }: { onChange: (groups: any[]) => void; editingReminder?: ReminderData | null; }) {
+export default function GroupSelector({
+                                          onChange,
+                                          editingReminder
+                                      }: {
+    onChange: (groups: any[]) => void;
+    editingReminder?: ReminderData | null;
+}) {
     const [groups, setGroups] = useState<GroupTagDTO[]>([]);
     const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
+    const [isLoading, setIsLoading] = useState(true);
     const { t } = useTranslation();
 
-    const loadGroups = async (query: string = "") => {
+    const PAGE_SIZE = 50;
+
+    const loadGroups = async (query: string = "", offset: number = 0) => {
         try {
+            setIsLoading(true);
             const data: GroupDTO[] = await host.fetchYouTrack(
-                `groups?fields=id,name,usersCount${query ? `&query=${encodeURIComponent(query)}` : ""}&$top=50`
+                `groups?fields=id,name,usersCount${query ? `&query=${encodeURIComponent(query)}` : ""}&$skip=${offset}&$top=${PAGE_SIZE}`
             );
 
-            const formattedGroups = data.map((group) => ({
+            const formattedGroups: GroupTagDTO[] = data.map((group) => ({
                 key: group.id,
                 label: group.name,
                 description: `${group.usersCount} ${t("groupSelector.messages.groupDescription")}`,
             }));
 
-            setGroups(formattedGroups);
+            setGroups((prevGroups) => {
+                if (offset === 0 || query) {
+                    return formattedGroups;
+                }
+                return [...prevGroups, ...formattedGroups].reduce<GroupTagDTO[]>((uniqueGroups, group) => {
+                    if (!uniqueGroups.some((g) => g.key === group.key)) {
+                        uniqueGroups.push(group);
+                    }
+                    return uniqueGroups;
+                }, []);
+            });
         } catch (error) {
             console.error(t("groupSelector.errors.fetchGroups"), error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -46,6 +68,10 @@ export default function GroupSelector({ onChange, editingReminder }: { onChange:
         const updatedGroups = selectedGroups.filter((group) => group.key !== groupKey);
         setSelectedGroups(updatedGroups);
         onChange(updatedGroups);
+    };
+
+    const loadMore = async () => {
+        await loadGroups("", groups.length);
     };
 
     const onFilter = async (input: string) => {
@@ -72,6 +98,8 @@ export default function GroupSelector({ onChange, editingReminder }: { onChange:
                     onChange={handleGroupChange}
                     onFilter={onFilter}
                     onOpen={onOpen}
+                    onLoadMore={loadMore}
+                    loading={isLoading}
                     filter
                     className="w-full mb-4"
                 />

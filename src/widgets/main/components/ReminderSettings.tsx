@@ -15,11 +15,13 @@ import Alert from "@jetbrains/ring-ui-built/components/alert/alert";
 import {fetchGroups, fetchGroupUsers, getUserTimeZone} from "../youTrackHandler.ts";
 import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
 import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
+import Loader from "@jetbrains/ring-ui-built/components/loader/loader";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 export default function ReminderSettings({ onEditReminder }) {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [alert, setAlert] = useState({ show: false, isClosing: false, message: "" });
     const [timeZone, setTimeZone] = useState(null)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -30,6 +32,7 @@ export default function ReminderSettings({ onEditReminder }) {
 
     useEffect(() => {
         void fetchReminders().then(async (fetchedReminders) => {
+            setIsLoading(true);
             const filteredReminders = [];
 
             for (const reminder of fetchedReminders) {
@@ -63,6 +66,7 @@ export default function ReminderSettings({ onEditReminder }) {
             }
 
             setReminders(filteredReminders);
+            setIsLoading(false);
         });
 
         void getUserTimeZone(YTApp.me.id).then(setTimeZone);
@@ -232,6 +236,9 @@ export default function ReminderSettings({ onEditReminder }) {
         setIsDeleteModalOpen(false);
     };
 
+    if (isLoading) {
+        return <Loader message={t("reminderSettings.messages.loading")} />;
+    }
 
     if (reminders.length === 0) {
         return <div>{t("reminderSettings.messages.noReminders")}</div>;
