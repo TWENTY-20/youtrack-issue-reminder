@@ -1,13 +1,32 @@
 import ReminderTable from "./components/ReminderTable.tsx";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { t } from "i18next";
-import {ReminderData} from "./types.ts";
-import {removeReminder} from "../main/globalStorage.ts";
-import {ReminderDeleteDialog} from "../main/components/ReminderDeleteDialog.tsx";
+import { ReminderData } from "./types.ts";
+import { removeReminder } from "../main/globalStorage.ts";
+import { ReminderDeleteDialog } from "../main/components/ReminderDeleteDialog.tsx";
+import {fetchAllReminders} from "./globalStorage.ts";
+import Loader from "@jetbrains/ring-ui-built/components/loader/loader";
 
 export default function App() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
+    const [reminders, setReminders] = useState<ReminderData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchReminders = async () => {
+        setIsLoading(true);
+        const fetchedReminders: ReminderData[] = [];
+        const issues = await fetchAllReminders();
+        issues.forEach((issue: any) => {
+            fetchedReminders.push(...issue.reminders);
+        });
+        setReminders(fetchedReminders);
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        void fetchReminders();
+    }, []);
 
     const handleDeleteClick = (reminder: ReminderData) => {
         setReminderToDelete(reminder);
@@ -18,10 +37,11 @@ export default function App() {
         if (!reminderToDelete) return;
 
         try {
-            console.log("Removing reminder", reminderToDelete);
-            console.log("Issue ID", reminderToDelete.issueId);
-            console.log("UUID", reminderToDelete.uuid);
             await removeReminder(reminderToDelete.uuid, reminderToDelete.issueId);
+
+            setReminders((prevReminders) =>
+                prevReminders.filter((reminder) => reminder.uuid !== reminderToDelete.uuid)
+            );
 
             setReminderToDelete(null);
             setIsDeleteModalOpen(false);
@@ -35,9 +55,13 @@ export default function App() {
         setIsDeleteModalOpen(false);
     };
 
+    if (isLoading) {
+        return <Loader message={t("reminderSettings.messages.loading")} />;
+    }
+
     return (
         <div>
-            <ReminderTable onDeleteClick={handleDeleteClick} />
+            <ReminderTable reminders={reminders} onDeleteClick={handleDeleteClick} />
 
             {isDeleteModalOpen && (
                 <ReminderDeleteDialog

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/youtrack-app.json",
   "name": "issue_reminder",
-  "title": "Ticket Reminder",
+  "title": "Issue Reminder",
   "description": "A tool to setup reminders for an existing issue.",
   "changeNotes": "See ...",
   "version": "1.0.0",
@@ -11,7 +11,7 @@
   "widgets": [
     {
       "key": "main",
-      "name": "Ticket Reminder",
+      "name": "Issue Reminder",
       "indexPath": "main/index.html",
       "extensionPoint": "ISSUE_OPTIONS_MENU_ITEM",
       "expectedDimensions": {
@@ -21,7 +21,7 @@
     },
     {
       "key": "reminder_settings",
-      "name": "Ticket Reminder",
+      "name": "Issue Reminder",
       "indexPath": "reminder_settings/index.html",
       "extensionPoint": "USER_PROFILE_SETTINGS"
     }
