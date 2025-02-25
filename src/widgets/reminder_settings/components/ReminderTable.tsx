@@ -2,6 +2,10 @@ import SimpleTable from "@jetbrains/ring-ui-built/components/table/simple-table"
 import deleteIcon from "@jetbrains/icons/trash";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import { t } from "i18next";
+import Toggle from "@jetbrains/ring-ui-built/components/toggle/toggle";
+import {updateReminders} from "../../main/globalStorage.ts";
+import {useState} from "react";
+import Alert from "@jetbrains/ring-ui-built/components/alert/alert";
 
 export default function ReminderTable({
                                           reminders,
@@ -10,6 +14,45 @@ export default function ReminderTable({
     reminders: any[];
     onDeleteClick: (reminder: any) => void;
 }) {
+    const [alert, setAlert] = useState({ show: false, isClosing: false, message: "" });
+
+    const handleToggleForTable = async (reminderId: string, newValue: boolean, issueId: string) => {
+        try {
+            reminders.forEach((reminder) => {
+                if (reminder.uuid === reminderId) {
+                    reminder.isActive = newValue;
+                }
+            });
+
+            await updateReminders(reminderId, { isActive: newValue }, issueId);
+
+            setAlert({
+                show: true,
+                isClosing: false,
+                message: newValue
+                    ? "Reminder successfully activated."
+                    : "Reminder successfully deactivated.",
+            });
+        } catch (err) {
+            console.error("Error toggling reminder:", err);
+
+            setAlert({
+                show: true,
+                isClosing: false,
+                message: "An error occurred while updating the reminder.",
+            });
+        }
+    };
+
+    const handleAlertClose = () => {
+        setAlert((prevAlert) => ({ ...prevAlert, show: false }));
+    };
+
+    const handleAlertCloseRequest = () => {
+        setAlert((prevAlert) => ({ ...prevAlert, isClosing: true }));
+    };
+
+
     if (reminders.length === 0) {
         return (
             <div style={{ padding: "20px" }}>
@@ -20,6 +63,17 @@ export default function ReminderTable({
 
     return (
         <div style={{ paddingLeft: "20px", paddingRight: "20px", paddingBottom: "100px", paddingTop: "20px" }}>
+            {alert.show && (
+                <Alert
+                    type={Alert.Type.SUCCESS}
+                    onClose={handleAlertClose}
+                    onCloseRequest={handleAlertCloseRequest}
+                    isClosing={alert.isClosing}
+                    timeout={3000}
+                >
+                    {alert.message}
+                </Alert>
+            )}
             <SimpleTable
                 autofocus
                 columns={[
@@ -73,11 +127,22 @@ export default function ReminderTable({
                             if (!reminder) return null;
 
                             return (
-                                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "5px",
+                                    }}
+                                >
+                                    <Toggle
+                                        checked={reminder.isActive}
+                                        onChange={(e) => handleToggleForTable(reminder.uuid, e.target.checked, reminder.issueId)}
+                                        className={"ring-btn-small mb-4"}
+                                    />
                                     <Button
                                         danger
                                         onClick={() => onDeleteClick(reminder)}
-                                        title={t("reminderSettings.actions.delete")}
+                                        title="Delete"
                                         icon={deleteIcon}
                                     />
                                 </div>

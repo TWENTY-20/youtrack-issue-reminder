@@ -15,9 +15,10 @@ export async function saveReminder(data: ReminderData) {
     await setReminderBool(true);
 }
 
-export async function updateReminders(reminderId: string, updates: Partial<ReminderData>): Promise<void> {
+export async function updateReminders(reminderId: string, updates: Partial<ReminderData>, issueId?: string): Promise<void> {
     try {
-        const reminders = await fetchReminders();
+        const idToFetch = issueId || YTApp.entity.id;
+        const reminders = await fetchReminders(idToFetch);
 
         const updatedReminders = reminders.map((reminder) =>
             reminder.uuid === reminderId ? { ...reminder, ...updates } : reminder
@@ -25,7 +26,7 @@ export async function updateReminders(reminderId: string, updates: Partial<Remin
 
         await host.fetchApp(`backend/saveReminders`, {
             method: 'POST',
-            query: {issueId: YTApp.entity.id},
+            query: {issueId: idToFetch},
             body: { value: JSON.stringify(updatedReminders) },
         });
 
