@@ -12,21 +12,30 @@ export async function fetchReminders(): Promise<ReminderData[]> {
     }
 }
 
-export async function fetchAllReminders(): Promise<ReminderData[]> {
+export async function fetchAllReminders(): Promise<{ issueId: string; reminders: any[] }[]> {
     try {
-        const result = await host.fetchApp("backend/fetchAllReminders", {
-            method: "GET",
-            query: {issueId: YTApp.entity.id},
-        });
+        const result = await host.fetchApp("backend/fetchAllReminders", { method: "GET" });
 
-        console.log(result)
+        if (result.result && Array.isArray(result.result)) {
+            const remindersPromises = result.result.map(async (issue: { id: string }) => {
+                try {
+                    const reminders = await host.fetchApp("backend/fetchReminders", {
+                        query: { issueId: issue.id },
+                    });
 
-        return result.result || [];
+                    return { issueId: issue.id, reminders: reminders.result || [] };
+                } catch (error) {
+                    console.error(`Fehler beim Abrufen von Erinnerungen für Issue ${issue.id}:`, error);
+                    return { issueId: issue.id, reminders: [] };
+                }
+            });
+
+            return await Promise.all(remindersPromises);
+        } else {
+            return [];
+        }
     } catch (error) {
-        console.error("Error fetching all reminders:", error);
+        console.error("Fehler beim Abrufen aller Issues-Erinnerungen:", error);
         return [];
     }
 }
-
-
-

@@ -78,7 +78,8 @@ exports.httpHandler = {
                 const issueId = ctx.request.getParameter('issueId')
                 const issue = entities.Issue.findById(issueId)
                 try {
-                    issue.extensionProperties.hasReminders = ctx.request.body;
+                    const bodyValue = ctx.request.body
+                    issue.extensionProperties.hasReminders = bodyValue === "" ? null : bodyValue;
                     ctx.response.json({ success: true, message: "Bool stored successfully" });
                 } catch (error) {
                     console.error("Error saving bool:", error);
@@ -88,33 +89,15 @@ exports.httpHandler = {
         },
         {
             method: 'GET',
-            path: 'fetchReminderBool',
-            handle: (ctx) => {
-                const issueId = ctx.request.getParameter('issueId')
-                const issue = entities.Issue.findById(issueId)
-                const activeReminders = issue.extensionProperties;
-                const issues = entities.Issue.findByExtensionProperties(
-                    {
-                        activeReminders: { $neq: null },
-                    }
-                )
-
-                try {
-                    ctx.response.json({ result: activeReminders });
-                } catch (error) {
-                    console.error("Error parsing reminders:", error);
-                    ctx.response.json({ result: [] });
-                }
-            }
-        },
-        {
-            method: 'GET',
             path: 'fetchAllReminders',
             handle: (ctx) => {
-                const issueId = ctx.request.getParameter('issueId')
-                const issue = entities.Issue.findById(issueId)
+                const issues = entities.Issue.findByExtensionProperties(
+                    {
+                        hasReminders: true,
+                    }
+                )
                 try {
-                    ctx.response.json({result: entities});
+                    ctx.response.json({result: JSON.parse(issues), size: issues.size, first: issues.first()});
                 } catch (error) {
                     console.error("Unexpected error:", error);
                     ctx.response.json({success: false, error: "Unexpected error occurred"});

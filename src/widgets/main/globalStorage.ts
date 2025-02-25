@@ -12,7 +12,7 @@ export async function saveReminder(data: ReminderData) {
         body: { value: JSON.stringify(updatedReminders) },
     });
 
-    await setReminderBool(updatedReminders.length > 0);
+    await setReminderBool(true);
 }
 
 export async function updateReminders(reminderId: string, updates: Partial<ReminderData>): Promise<void> {
@@ -29,7 +29,11 @@ export async function updateReminders(reminderId: string, updates: Partial<Remin
             body: { value: JSON.stringify(updatedReminders) },
         });
 
-        await setReminderBool(updatedReminders.length > 0);
+        if (updatedReminders.length === 0) {
+            await setReminderBool(null);
+        } else {
+            await setReminderBool(true);
+        }
     } catch (error) {
         console.error("Error updating reminders:", error);
     }
@@ -62,7 +66,9 @@ export async function removeReminder(reminderId: string, issueId?: string): Prom
             body: { value: JSON.stringify(updatedReminders) },
         });
 
-        await setReminderBool(updatedReminders.length > 0);
+        if (updatedReminders.length === 0) {
+            await setReminderBool(null);
+        }
     } catch (error) {
         console.error("Error removing reminder:", error);
     }
@@ -79,7 +85,7 @@ export async function uploadTranslations(translations: Record<string, any>): Pro
     }
 }
 
-async function setReminderBool(hasActiveReminders: boolean): Promise<void> {
+async function setReminderBool(hasActiveReminders: boolean | null): Promise<void> {
     console.log(hasActiveReminders)
     try {
         await host.fetchApp(`backend/setReminderBool`, {
@@ -87,19 +93,6 @@ async function setReminderBool(hasActiveReminders: boolean): Promise<void> {
             query: {issueId: YTApp.entity.id},
             body: hasActiveReminders
         });
-    } catch (error) {
-        console.error("Error setting reminder bool:", error);
-    }
-}
-
-export async function getReminderBool(): Promise<void> {
-    try {
-        const result = await host.fetchApp(`backend/fetchReminderBool`, {
-            method: 'GET',
-            query: {issueId: YTApp.entity.id}
-        });
-
-        return result.result;
     } catch (error) {
         console.error("Error setting reminder bool:", error);
     }

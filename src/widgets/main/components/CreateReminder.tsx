@@ -3,7 +3,7 @@ import Input, {Size} from "@jetbrains/ring-ui-built/components/input/input";
 import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import {GroupTagDTO, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
-import {fetchIssueUrl, getReminderBool, removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
+import {fetchIssueUrl, removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
 import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
@@ -32,9 +32,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const [issueUrl, setIssueUrl] = useState<string>("");
 
     useEffect(() => {
-        void getReminderBool().then(result => {
-            console.log(result)
-        })
         void fetchIssueProjectId(YTApp.entity.id).then(result => {
             setProjectName(result.name)
         })

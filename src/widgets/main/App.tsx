@@ -6,7 +6,6 @@ import {ReminderData} from "./types.ts";
 import {fetchIssueProjectId, fetchPermissionsCache} from "./youTrackHandler.ts";
 import YTApp from "./youTrackApp.ts";
 import Loader from "@jetbrains/ring-ui-built/components/loader/loader";
-import {getReminderBool} from "./globalStorage.ts";
 
 export default function App() {
     const [activeTab, setActiveTab] = useState("reminders");
@@ -34,10 +33,6 @@ export default function App() {
 
                 setHasPermission(hasGroupReadPermission);
             });
-
-            void getReminderBool().then(result => {
-                console.log(result);
-            })
         });
     }, []);
 
