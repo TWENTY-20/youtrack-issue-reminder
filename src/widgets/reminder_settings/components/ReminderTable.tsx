@@ -58,14 +58,14 @@ export default function ReminderTable({
 
     if (reminders.length === 0) {
         return (
-            <div style={{ padding: "20px" }}>
+            <div style={{ paddingLeft: "20px", paddingRight: "20px", paddingBottom: "150px", paddingTop: "10px" }}>
                 <p>{t("reminderSettings.messages.noReminders")}</p>
             </div>
         );
     }
 
     return (
-        <div style={{ paddingLeft: "20px", paddingRight: "20px", paddingBottom: "100px", paddingTop: "20px" }}>
+        <div style={{ paddingLeft: "20px", paddingRight: "20px", paddingBottom: "150px", paddingTop: "10px" }}>
             <SimpleTable
                 autofocus
                 columns={[

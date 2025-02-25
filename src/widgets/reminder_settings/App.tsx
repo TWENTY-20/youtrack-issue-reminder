@@ -58,11 +58,11 @@ export default function App() {
     };
 
     const handleEditClick = (reminder: ReminderData) => {
-        setEditingReminder(reminder); // Reminder in den State setzen
+        setEditingReminder(reminder);
     };
 
     const handleCancelEdit = () => {
-        setEditingReminder(null); // Bearbeitungsmodus verlassen
+        setEditingReminder(null);
     };
 
     if (isLoading) {
@@ -72,11 +72,13 @@ export default function App() {
     return (
         <div>
             {editingReminder ? (
-                <CreateReminder
-                    editingReminder={editingReminder}
-                    onCancelEdit={handleCancelEdit}
-                    onReminderCreated={fetchReminders}
-                />
+                <div style={{ paddingLeft: "20px", paddingRight: "20px", paddingTop: "10px" }}>
+                    <CreateReminder
+                        editingReminder={editingReminder}
+                        onCancelEdit={handleCancelEdit}
+                        onReminderCreated={fetchReminders}
+                    />
+                </div>
             ) : (
                 <ReminderTable
                     reminders={reminders}
