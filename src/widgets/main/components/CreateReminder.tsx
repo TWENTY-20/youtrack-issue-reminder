@@ -31,11 +31,13 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const [projectName, setProjectName] = useState<string>("");
     const [issueUrl, setIssueUrl] = useState<string>("");
 
+    const issueId = editingReminder?.issueId || YTApp.entity.id;
+
     useEffect(() => {
-        void fetchIssueProjectId(YTApp.entity.id).then(result => {
+        void fetchIssueProjectId(issueId).then(result => {
             setProjectName(result.name)
         })
-        void fetchIssueUrl(YTApp.entity.id).then(result => {
+        void fetchIssueUrl(issueId).then(result => {
             setIssueUrl(result)
         })
         if (editingReminder) {
@@ -154,7 +156,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
         setShowEmailWarningDialog(false)
 
-        const issueId = YTApp.entity.id;
         const uuid = uuidv4();
         const timeZone = editingReminder?.timezone || await getUserTimeZone(YTApp.me.id);
 
@@ -180,9 +181,9 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
         try {
             if (editingReminder) {
-                await removeReminder(editingReminder.uuid);
+                await removeReminder(editingReminder.uuid, issueId);
             }
-            await saveReminder(formData);
+            await saveReminder(formData, issueId);
 
             onReminderCreated();
 

@@ -6,12 +6,14 @@ import { removeReminder } from "../main/globalStorage.ts";
 import { ReminderDeleteDialog } from "../main/components/ReminderDeleteDialog.tsx";
 import {fetchAllReminders} from "./globalStorage.ts";
 import Loader from "@jetbrains/ring-ui-built/components/loader/loader";
+import CreateReminder from "../main/components/CreateReminder.tsx";
 
 export default function App() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
     const [reminders, setReminders] = useState<ReminderData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [editingReminder, setEditingReminder] = useState<ReminderData | null>(null); // Neuer State für den Bearbeitungsmodus
 
     const fetchReminders = async () => {
         setIsLoading(true);
@@ -55,13 +57,33 @@ export default function App() {
         setIsDeleteModalOpen(false);
     };
 
+    const handleEditClick = (reminder: ReminderData) => {
+        setEditingReminder(reminder); // Reminder in den State setzen
+    };
+
+    const handleCancelEdit = () => {
+        setEditingReminder(null); // Bearbeitungsmodus verlassen
+    };
+
     if (isLoading) {
         return <Loader message={t("reminderSettings.messages.loading")} />;
     }
 
     return (
         <div>
-            <ReminderTable reminders={reminders} onDeleteClick={handleDeleteClick} />
+            {editingReminder ? (
+                <CreateReminder
+                    editingReminder={editingReminder}
+                    onCancelEdit={handleCancelEdit}
+                    onReminderCreated={fetchReminders}
+                />
+            ) : (
+                <ReminderTable
+                    reminders={reminders}
+                    onDeleteClick={handleDeleteClick}
+                    onEditClick={handleEditClick}
+                />
+            )}
 
             {isDeleteModalOpen && (
                 <ReminderDeleteDialog

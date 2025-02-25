@@ -1,18 +1,21 @@
 import YTApp, {host} from "./youTrackApp.ts";
 import {ReminderData} from "./types.ts";
 
-export async function saveReminder(data: ReminderData) {
-    const existingReminders = await fetchReminders();
+export async function saveReminder(data: ReminderData, issueId?: string) {
+
+    const idToFetch = issueId || YTApp.entity.id;
+
+    const existingReminders = await fetchReminders(idToFetch);
 
     const updatedReminders = [...existingReminders, data];
 
     await host.fetchApp(`backend/saveReminders`, {
         method: 'POST',
-        query: {issueId: YTApp.entity.id},
+        query: {issueId: idToFetch},
         body: { value: JSON.stringify(updatedReminders) },
     });
 
-    await setReminderBool(true);
+    await setReminderBool(true, idToFetch);
 }
 
 export async function updateReminders(reminderId: string, updates: Partial<ReminderData>, issueId?: string): Promise<void> {
@@ -31,9 +34,9 @@ export async function updateReminders(reminderId: string, updates: Partial<Remin
         });
 
         if (updatedReminders.length === 0) {
-            await setReminderBool(null);
+            await setReminderBool(null, idToFetch);
         } else {
-            await setReminderBool(true);
+            await setReminderBool(true, idToFetch);
         }
     } catch (error) {
         console.error("Error updating reminders:", error);
