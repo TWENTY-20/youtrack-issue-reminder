@@ -93,7 +93,6 @@ async function setReminderBool(hasActiveReminders: boolean | null, issueId?: str
 
     const idToFetch = issueId || YTApp.entity.id;
 
-    console.log(hasActiveReminders)
     try {
         await host.fetchApp(`backend/setReminderBool`, {
             method: 'POST',
