@@ -2,11 +2,24 @@ const entities = require('@jetbrains/youtrack-scripting-api/entities');
 const dateTime = require('@jetbrains/youtrack-scripting-api/date-time');
 const notifications = require('@jetbrains/youtrack-scripting-api/notifications');
 
+function getSearchExpression() {
+    const issues = entities.Issue.findByExtensionProperties({
+        hasReminders: true,
+    });
+
+    if (!JSON.parse(issues) || JSON.parse(issues).length === 0) {
+        return null;
+    }
+
+    const issueIds = JSON.parse(issues).map((issue) => issue.id);
+    return issueIds.join(", ");
+}
+
 exports.rule = entities.Issue.onSchedule({
     title: 'Reminder Email Scheduler with Time Zone Support',
-    search: '#{All issues}',
+    search: getSearchExpression,
     cron: "0 * * * * ?",
-    guard: () => true,
+    guard: () => getSearchExpression() != null,
     action: (ctx) => {
         const reminders = JSON.parse(ctx.issue.extensionProperties.activeReminders || '[]');
         const activatedReminders = reminders.filter((reminder) => reminder.isActive);
