@@ -74,6 +74,10 @@ export default function ReminderTable({ onDeleteClick }: { onDeleteClick: (remin
                     title: "Members",
                 },
                 {
+                    id: "groups",
+                    title: "Groups",
+                },
+                {
                     id: "actions",
                     title: "Actions",
                     getValue: (row) => {
@@ -93,7 +97,7 @@ export default function ReminderTable({ onDeleteClick }: { onDeleteClick: (remin
                     },
                 },
             ]}
-            data={reminders.map((reminder: { uuid: any; project: any; issueId: any; subject: any; date: any; creatorLogin: any; selectedUsers: any; }) => ({
+            data={reminders.map((reminder: { uuid: any; project: any; issueId: any; subject: any; date: any; creatorLogin: any; selectedUsers: any; selectedGroups: any; }) => ({
                 id: reminder.uuid || "",
                 project: reminder.project || "Unknown Project",
                 issue: reminder.issueId || "Unknown Issue",
@@ -101,6 +105,7 @@ export default function ReminderTable({ onDeleteClick }: { onDeleteClick: (remin
                 date: reminder.date || "No Date",
                 creator: reminder.creatorLogin || "Unknown",
                 members: (reminder.selectedUsers || []).map((user: { label: any; }) => user.label).join(", "),
+                groups: (reminder.selectedGroups || []).map((group: { label: any; }) => group.label).join(", "),
             }))}
         />
     );

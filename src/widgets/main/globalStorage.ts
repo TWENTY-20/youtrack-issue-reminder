@@ -67,7 +67,7 @@ export async function removeReminder(reminderId: string, issueId?: string): Prom
         });
 
         if (updatedReminders.length === 0) {
-            await setReminderBool(null);
+            await setReminderBool(null, idToFetch);
         }
     } catch (error) {
         console.error("Error removing reminder:", error);
@@ -85,12 +85,15 @@ export async function uploadTranslations(translations: Record<string, any>): Pro
     }
 }
 
-async function setReminderBool(hasActiveReminders: boolean | null): Promise<void> {
+async function setReminderBool(hasActiveReminders: boolean | null, issueId?: string): Promise<void> {
+
+    const idToFetch = issueId || YTApp.entity.id;
+
     console.log(hasActiveReminders)
     try {
         await host.fetchApp(`backend/setReminderBool`, {
             method: 'POST',
-            query: {issueId: YTApp.entity.id},
+            query: {issueId: idToFetch},
             body: hasActiveReminders
         });
     } catch (error) {
