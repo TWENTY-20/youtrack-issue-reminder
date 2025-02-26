@@ -118,7 +118,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
         const translations = {
             de: {
-                "reminder_sent": "möchte Sie an das Ticket",
+                "reminder_sent": "möchte Sie an das Issue",
                 "reminder_sent2": "im Projekt",
                 "reminder_sent3": "erinnern",
                 "subject": "YouTrack Erinnerung:",
@@ -126,10 +126,11 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 "planned_for": "Geplant für:",
                 "message": "Nachricht:",
                 "issue": "Issue:",
-                "notification_footer": "Sie haben diese Benachrichtigung erhalten, da Sie zu einer Erinnerung für dieses Ticket hinzugefügt wurden."
+                "notification_footer": "Sie haben diese Benachrichtigung erhalten, da Sie zu einer Erinnerung für dieses Issue hinzugefügt wurden.",
+                "recipients_footer": "Alle Empfänger:"
             },
             en: {
-                "reminder_sent": "wants to remind you about the ticket",
+                "reminder_sent": "wants to remind you about the issue",
                 "reminder_sent2": "in project",
                 "reminder_sent3": " ",
                 "subject": "YouTrack Reminder:",
@@ -137,7 +138,8 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 "planned_for": "Scheduled for:",
                 "message": "Message:",
                 "issue": "Issue:",
-                "notification_footer": "You received this notification because you were added to a reminder for this ticket."
+                "notification_footer": "You received this notification because you were added to a reminder for this issue.",
+                "recipients_footer": "All recipients:"
             }
         };
 
