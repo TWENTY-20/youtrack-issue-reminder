@@ -66,7 +66,7 @@ exports.rule = entities.Issue.onSchedule({
 
                 if (userReminderTime <= dateOfCurrentUserTime) {
                     //console.log(`Sending email to ${user}`);
-                    sendMail(ctx, user, reminder);
+                    sendMail(ctx, user, reminder, recipients);
                 }
             });
             if (userReminderTime <= dateOfCurrentUserTime) {
@@ -89,11 +89,16 @@ function getTranslation(ctx, key, language) {
 }
 
 
-function sendMail(ctx, user, reminder) {
+function sendMail(ctx, user, reminder, recipients) {
     const issue = entities.Issue.findById(reminder.issueId);
     const userEntity = entities.User.findByLogin(user);
     const userEmail = userEntity.email;
     let userLanguage = userEntity.language
+
+    const userNames = Array.from(recipients).map((user) => {
+        const userEntity = entities.User.findByLogin(user);
+        return userEntity.fullName;
+    });
 
     if(userLanguage == "Deutsch") {
         userLanguage = "de";
@@ -118,6 +123,10 @@ function sendMail(ctx, user, reminder) {
         
             <div style="margin-top: 15px; font-size: 12px; color: #888; border-top: 1px solid #ddd; padding-top: 10px;">
                 ${getTranslation(ctx, "notification_footer", userLanguage)}
+            </div>
+            
+            <div style="margin-top: 15px; font-size: 12px; color: #888; padding-top: 10px;">
+                ${getTranslation(ctx, "recipients_footer", userLanguage)} ${userNames.join(", ")}
             </div>
         
             <style>
