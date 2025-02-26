@@ -61,6 +61,7 @@
   },
   "reminderSettings": {
     "title": "Meine Erinnerungen",
+    "title_all": "Meine Erinnerungen aus allen Projekten",
     "errors": {
       "date": "Ungültiges Datum",
       "time": "Ungültige Uhrzeit",

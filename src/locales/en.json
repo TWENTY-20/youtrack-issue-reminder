@@ -61,6 +61,7 @@
   },
   "reminderSettings": {
     "title": "My Reminders",
+    "title_all": "My reminders for all projects",
     "errors": {
       "date": "Invalid date",
       "time": "Invalid time",

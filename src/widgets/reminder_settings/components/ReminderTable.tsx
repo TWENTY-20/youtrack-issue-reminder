@@ -70,11 +70,13 @@ export default function ReminderTable({
     return (
         <div style={{ paddingLeft: "20px", paddingRight: "20px", paddingBottom: "150px", paddingTop: "10px" }}>
             <SimpleTable
+                stickyHeader={true}
                 autofocus
                 columns={[
                     {
                         id: "project",
                         title: "Project",
+                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -88,6 +90,7 @@ export default function ReminderTable({
                     {
                         id: "issue",
                         title: "Issue",
+                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -106,18 +109,12 @@ export default function ReminderTable({
                     {
                         id: "subject",
                         title: "Subject",
+                        className: "w-2/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
                             return (
                                 <span
-                                    style={{
-                                        display: "block",
-                                        whiteSpace: "nowrap",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        maxWidth: "200px",
-                                    }}
                                     title={reminder.subject || "No Subject"}
                                 >
                                     {reminder.subject || "No Subject"}
@@ -128,22 +125,27 @@ export default function ReminderTable({
                     {
                         id: "date",
                         title: "Date",
+                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "time",
                         title: "Time",
+                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "timezone",
                         title: "Timezone",
+                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "creator",
                         title: "Creator",
+                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "members",
                         title: "Members",
+                        className: "w-2/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -157,6 +159,7 @@ export default function ReminderTable({
                     {
                         id: "groups",
                         title: "Groups",
+                        className: "w-2/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -168,8 +171,35 @@ export default function ReminderTable({
                         },
                     },
                     {
+                        id: "status",
+                        title: "Status",
+                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
+                        getValue: (row) => {
+                            const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
+                            if (!reminder) return null;
+
+                            const isCreator = reminder.creatorLogin === currentUserLogin;
+                            const isAllowedUser = reminder.selectedUsers.some((user: { login: any }) => user.login === currentUserLogin);
+                            const canToggle = reminder.onlyCreatorCanEdit
+                                ? isCreator
+                                : reminder.allAssigneesCanEdit
+                                    ? isCreator || isAllowedUser
+                                    : false;
+
+                            return (
+                                <Toggle
+                                    checked={reminder.isActive}
+                                    onChange={(e) => handleToggleForTable(reminder.uuid, e.target.checked, reminder.issueId)}
+                                    className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-4"}
+                                    disabled={!canToggle}
+                                />
+                            );
+                        },
+                    },
+                    {
                         id: "actions",
                         title: "Actions",
+                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -183,24 +213,11 @@ export default function ReminderTable({
                                     : false;
 
                             return (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "5px",
-                                    }}
-                                >
-                                    <Toggle
-                                        checked={reminder.isActive}
-                                        onChange={(e) => handleToggleForTable(reminder.uuid, e.target.checked, reminder.issueId)}
-                                        className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-4"}
-                                        disabled={!canEditOrDelete}
-                                    />
-
+                                <div className={"flex gap-2"}>
                                     <Button
                                         onClick={() => onEditClick(reminder)}
                                         title={t("edit")}
-                                        className="ring-btn-small ring-btn-primary ring-btn-icon-only"
+                                        className="p-0"
                                         icon={pencilIcon}
                                         disabled={!canEditOrDelete}
                                     />
@@ -209,7 +226,7 @@ export default function ReminderTable({
                                         danger
                                         onClick={() => onDeleteClick(reminder)}
                                         title={t("delete")}
-                                        className="ring-btn-small ring-btn-danger ring-btn-icon-only"
+                                        className="p-0"
                                         icon={deleteIcon}
                                         disabled={!canEditOrDelete}
                                     />

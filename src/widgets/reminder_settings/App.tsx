@@ -122,11 +122,14 @@ export default function App() {
                     />
                 </div>
             ) : (
-                <ReminderTable
-                    reminders={reminders}
-                    onDeleteClick={handleDeleteClick}
-                    onEditClick={handleEditClick}
-                />
+                <div>
+                    <span className={"text-xl font-bold pl-4"}>{t("reminderSettings.title_all")}</span>
+                    <ReminderTable
+                        reminders={reminders}
+                        onDeleteClick={handleDeleteClick}
+                        onEditClick={handleEditClick}
+                    />
+                </div>
             )}
 
             {isDeleteModalOpen && (
