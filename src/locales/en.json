@@ -93,6 +93,7 @@
       "repeatSchedule": "Repeat Schedule"
     },
     "options": {
+      "0_day": "Once",
       "1_day": "Every Day",
       "2_days": "Every 2 Days",
       "3_days": "Every 3 Days",

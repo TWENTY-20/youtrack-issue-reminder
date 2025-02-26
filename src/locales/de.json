@@ -93,6 +93,7 @@
       "repeatSchedule": "Wiederholungsplan"
     },
     "options": {
+      "0_day": "Einmalig",
       "1_day": "Jeden Tag",
       "2_days": "Alle 2 Tage",
       "3_days": "Alle 3 Tage",

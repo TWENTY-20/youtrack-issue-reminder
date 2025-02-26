@@ -104,7 +104,7 @@ function sendMail(ctx, user, reminder) {
     const text =
         `<div style="font-family: sans-serif; color: #333; max-width: 600px; word-wrap: break-word;">
             <div style="margin-bottom: 10px; display: flex; flex-wrap: wrap; border-bottom: 1px solid #ddd; padding-bottom: 10px; gap: 10px;">
-                <p style="margin-bottom: 10px;">${getTranslation(ctx, "reminder_sent", userLanguage)} <b>${issue.id}</b> ${getTranslation(ctx, "reminder_sent2", userLanguage)} <b>${issue.project.name}</b> ${getTranslation(ctx, "reminder_sent3", userLanguage)}</p>
+                <p style="margin-bottom: 10px;"><b>${reminder.creatorName}</b> ${getTranslation(ctx, "reminder_sent", userLanguage)} <a href="${issue.url}" style="color: #000000; text-decoration: none;"><b>${issue.id}</b></a> ${getTranslation(ctx, "reminder_sent2", userLanguage)} <b>${issue.project.name}</b> ${getTranslation(ctx, "reminder_sent3", userLanguage)}</p>
             </div>
         
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
@@ -112,7 +112,7 @@ function sendMail(ctx, user, reminder) {
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "subject_textblock", userLanguage)}</strong> ${reminder.subject}</p>
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "planned_for", userLanguage)}</strong> ${reminder.date} ${reminder.time} (${reminder.timezone})</p>
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "message", userLanguage)}</strong> ${reminder.message}</p>
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "issue", userLanguage)}</strong> <a href="${issue.url}" style="color: #0057b7; text-decoration: none;">${issue.id}</a></p>
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "issue", userLanguage)}</strong> <a href="${issue.url}" style="color: #0057b7; text-decoration: none;">${issue.id}</a> (${issue.summary})</p>
                 </div>
             </div>
         
@@ -148,6 +148,7 @@ function sendMail(ctx, user, reminder) {
 
 function handleRepeatSchedule(ctx, reminder) {
     const repeatMap = {
+        "0_day": 0,
         "1_day": 1,
         "2_days": 2,
         "3_days": 3,

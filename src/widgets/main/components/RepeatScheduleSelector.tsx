@@ -9,6 +9,7 @@ export default function RepeatScheduleSelector({ onChange, editingReminder }: { 
     const { t } = useTranslation();
 
     const repeatOptions: RepeatOption[] = [
+        { key: "0_day", label: t("repeatScheduleSelector.options.0_day") },
         { key: "1_day", label: t("repeatScheduleSelector.options.1_day") },
         { key: "2_days", label: t("repeatScheduleSelector.options.2_days") },
         { key: "3_days", label: t("repeatScheduleSelector.options.3_days") },
