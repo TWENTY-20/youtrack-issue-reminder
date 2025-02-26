@@ -19,7 +19,7 @@
     },
     "messages": {
       "confirmCreateTitle": "Fehlende E-Mail-Adressen",
-      "confirmCreateMessage": "Einige Benutzer oder Gruppenmitglieder haben keine E-Mail-Adresse und können daher nicht informiert werden. Möchten Sie die Erinnerung trotzdem erstellen?"
+      "confirmCreateMessage": "Diese Benutzer oder Gruppenmitglieder haben keine E-Mail-Adresse und können daher nicht informiert werden. Möchten Sie die Erinnerung trotzdem erstellen?"
     },
     "errors": {
       "subject": "Betreff ist erforderlich.",

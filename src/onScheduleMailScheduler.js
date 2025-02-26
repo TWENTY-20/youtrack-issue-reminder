@@ -95,6 +95,8 @@ function sendMail(ctx, user, reminder, recipients) {
     const userEmail = userEntity.email;
     let userLanguage = userEntity.language
 
+    const nextReminder = calculateNextReminderDate(reminder);
+
     const userNames = Array.from(recipients).map((user) => {
         const userEntity = entities.User.findByLogin(user);
         return userEntity.fullName;
@@ -114,10 +116,11 @@ function sendMail(ctx, user, reminder, recipients) {
         
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
                 <div style="margin-top: 5px; font-size: 13px;">
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "subject_textblock", userLanguage)}</strong> ${reminder.subject}</p>
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "planned_for", userLanguage)}</strong> ${reminder.date} ${reminder.time} (${reminder.timezone})</p>
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "message", userLanguage)}</strong> ${reminder.message}</p>
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "issue", userLanguage)}</strong> <a href="${issue.url}" style="color: #0057b7; text-decoration: none;">${issue.id}</a> (${issue.summary})</p>
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "subject_textblock", userLanguage)}</strong> ${reminder.subject}</p>
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "message", userLanguage)}</strong> ${reminder.message}</p>
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "planned_for", userLanguage)}</strong> ${reminder.date} ${reminder.time} (${reminder.timezone})</p>
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "rescheduled_for", userLanguage)}</strong> ${nextReminder.date} ${nextReminder.time} (${reminder.timezone})</p>                
                 </div>
             </div>
         
@@ -125,7 +128,7 @@ function sendMail(ctx, user, reminder, recipients) {
                 ${getTranslation(ctx, "notification_footer", userLanguage)}
             </div>
             
-            <div style="margin-top: 15px; font-size: 12px; color: #888; padding-top: 10px;">
+            <div style="margin-top: 15px; font-size: 12px; color: #888;">
                 ${getTranslation(ctx, "recipients_footer", userLanguage)} ${userNames.join(", ")}
             </div>
         
@@ -154,6 +157,50 @@ function sendMail(ctx, user, reminder, recipients) {
     //console.log(`Email sent to ${user} (${userEmail}) for reminder: ${reminder.subject}`);
 }
 
+function calculateNextReminderDate(reminder) {
+    const repeatMap = {
+        "0_day": 0,
+        "1_day": 1,
+        "2_days": 2,
+        "3_days": 3,
+        "4_days": 4,
+        "5_days": 5,
+        "6_days": 6,
+        "1_week": 7,
+        "2_weeks": 14,
+        "3_weeks": 21,
+        "1_month": 30,
+        "2_months": 60,
+        "3_months": 90,
+        "4_months": 120,
+        "5_months": 150,
+        "6_months": 180,
+        "7_months": 210,
+        "8_months": 240,
+        "9_months": 270,
+        "10_months": 300,
+        "11_months": 330,
+        "1_year": 365,
+        "2_years": 730,
+    };
+
+    const repeatInterval = repeatMap[reminder.repeatSchedule?.key] || 0;
+
+    if (repeatInterval > 0) {
+        const currentReminderDate = new Date(`${reminder.date}T${reminder.time}`);
+        currentReminderDate.setDate(currentReminderDate.getDate() + repeatInterval);
+
+        return {
+            date: currentReminderDate.toISOString().split('T')[0],
+            time: currentReminderDate.toTimeString().split(' ')[0],
+        };
+    }
+
+    return {
+        date: reminder.date,
+        time: reminder.time,
+    };
+}
 
 function handleRepeatSchedule(ctx, reminder) {
     const repeatMap = {

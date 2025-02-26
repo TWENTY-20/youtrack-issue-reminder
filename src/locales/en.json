@@ -28,7 +28,7 @@
     },
     "messages": {
       "confirmCreateTitle": "Missing Email Addresses",
-      "confirmCreateMessage": "Some users or group members do not have an email address and therefore cannot be informed. Do you want to continue creating the reminder?"
+      "confirmCreateMessage": "These users or group members do not have an email address and therefore cannot be informed. Do you want to continue creating the reminder?"
     },
     "actions": {
       "reset": "Reset",

@@ -9,11 +9,11 @@ exports.rule = entities.Issue.onChange({
     action: (ctx) => {
         const issue = ctx.issue;
 
-        const reminders = JSON.parse(ctx.globalStorage.extensionProperties.reminders || '[]');
+        const reminders = JSON.parse(ctx.globalStorage.extensionProperties.activeReminders || '[]');
 
         const filteredReminders = reminders.filter(reminder => reminder.issueId !== issue.id);
 
-        ctx.globalStorage.extensionProperties.reminders = JSON.stringify(filteredReminders)
+        ctx.globalStorage.extensionProperties.activeReminders = JSON.stringify(filteredReminders)
     },
     requirements: {}
 });
