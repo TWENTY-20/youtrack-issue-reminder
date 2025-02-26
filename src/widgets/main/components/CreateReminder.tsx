@@ -171,7 +171,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             uuid,
             isActive: true,
             timezone: timeZone,
-            creatorLogin: YTApp.me.login,
+            creatorLogin: editingReminder?.creatorLogin || YTApp.me.login,
             onlyCreatorCanEdit,
             allAssigneesCanEdit,
             project: projectName,
