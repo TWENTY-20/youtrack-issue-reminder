@@ -116,6 +116,7 @@ export interface ReminderData {
     isActive: boolean;
     timezone: string;
     creatorLogin: string;
+    creatorName: string;
     onlyCreatorCanEdit: boolean;
     allAssigneesCanEdit: boolean;
     project: string;

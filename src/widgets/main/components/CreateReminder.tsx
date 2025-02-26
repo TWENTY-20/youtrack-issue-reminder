@@ -118,7 +118,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
         const translations = {
             de: {
-                "reminder_sent": "YouTrack möchte Sie an das Ticket",
+                "reminder_sent": "möchte Sie an das Ticket",
                 "reminder_sent2": "im Projekt",
                 "reminder_sent3": "erinnern",
                 "subject": "YouTrack Erinnerung:",
@@ -129,7 +129,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 "notification_footer": "Sie haben diese Benachrichtigung erhalten, da Sie zu einer Erinnerung für dieses Ticket hinzugefügt wurden."
             },
             en: {
-                "reminder_sent": "YouTrack wants to remind you about the ticket",
+                "reminder_sent": "wants to remind you about the ticket",
                 "reminder_sent2": "in project",
                 "reminder_sent3": " ",
                 "subject": "YouTrack Reminder:",
@@ -172,6 +172,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             isActive: true,
             timezone: timeZone,
             creatorLogin: editingReminder?.creatorLogin || YTApp.me.login,
+            creatorName: editingReminder?.creatorName || YTApp.me.name,
             onlyCreatorCanEdit,
             allAssigneesCanEdit,
             project: projectName,

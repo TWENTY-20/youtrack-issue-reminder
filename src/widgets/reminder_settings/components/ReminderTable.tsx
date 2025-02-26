@@ -218,14 +218,14 @@ export default function ReminderTable({
                         },
                     }
                 ]}
-                data={reminders.map((reminder: { uuid: any; project: any; issueId: any; subject: any; date: any; time: any; timezone: any; creatorLogin: any; selectedUsers: any; selectedGroups: any }) => ({
+                data={reminders.map((reminder: { uuid: any; project: any; issueId: any; subject: any; date: any; time: any; timezone: any; creatorName: any; selectedUsers: any; selectedGroups: any }) => ({
                     id: reminder.uuid || "",
                     project: reminder.project || "Unknown Project",
                     issue: reminder.issueId || "Unknown Issue",
                     date: reminder.date || "No Date",
                     time: reminder.time || "No Time",
                     timezone: reminder.timezone || "No Timezone",
-                    creator: reminder.creatorLogin || "Unknown",
+                    creator: reminder.creatorName || "Unknown",
                 }))}
             />
             {alert.show && (
