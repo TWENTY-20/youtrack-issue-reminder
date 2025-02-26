@@ -90,32 +90,14 @@
   },
   "repeatScheduleSelector": {
     "labels": {
-      "repeatSchedule": "Wiederholungsplan"
+      "interval": "Intervall",
+      "timeframe": "Zeitraum"
     },
-    "options": {
-      "0_day": "Einmalig",
-      "1_day": "Jeden Tag",
-      "2_days": "Alle 2 Tage",
-      "3_days": "Alle 3 Tage",
-      "4_days": "Alle 4 Tage",
-      "5_days": "Alle 5 Tage",
-      "6_days": "Alle 6 Tage",
-      "1_week": "Jede Woche",
-      "2_weeks": "Alle 2 Wochen",
-      "3_weeks": "Alle 3 Wochen",
-      "1_month": "Jeden Monat",
-      "2_months": "Alle 2 Monate",
-      "3_months": "Alle 3 Monate",
-      "4_months": "Alle 4 Monate",
-      "5_months": "Alle 5 Monate",
-      "6_months": "Alle 6 Monate",
-      "7_months": "Alle 7 Monate",
-      "8_months": "Alle 8 Monate",
-      "9_months": "Alle 9 Monate",
-      "10_months": "Alle 10 Monate",
-      "11_months": "Alle 11 Monate",
-      "1_year": "Jedes Jahr",
-      "2_years": "Alle 2 Jahre"
+    "timeframes": {
+      "day": "Tage",
+      "week": "Wochen",
+      "month": "Monate",
+      "year": "Jahre"
     }
   },
   "userSelector": {

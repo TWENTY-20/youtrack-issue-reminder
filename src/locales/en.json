@@ -90,32 +90,14 @@
   },
   "repeatScheduleSelector": {
     "labels": {
-      "repeatSchedule": "Repeat Schedule"
+      "interval": "Interval",
+      "timeframe": "Timeframe"
     },
-    "options": {
-      "0_day": "Once",
-      "1_day": "Every Day",
-      "2_days": "Every 2 Days",
-      "3_days": "Every 3 Days",
-      "4_days": "Every 4 Days",
-      "5_days": "Every 5 Days",
-      "6_days": "Every 6 Days",
-      "1_week": "Every Week",
-      "2_weeks": "Every 2 Weeks",
-      "3_weeks": "Every 3 Weeks",
-      "1_month": "Every Month",
-      "2_months": "Every 2 Months",
-      "3_months": "Every 3 Months",
-      "4_months": "Every 4 Months",
-      "5_months": "Every 5 Months",
-      "6_months": "Every 6 Months",
-      "7_months": "Every 7 Months",
-      "8_months": "Every 8 Months",
-      "9_months": "Every 9 Months",
-      "10_months": "Every 10 Months",
-      "11_months": "Every 11 Months",
-      "1_year": "Every Year",
-      "2_years": "Every 2 Years"
+    "timeframes": {
+      "day": "Days",
+      "week": "Weeks",
+      "month": "Months",
+      "year": "Years"
     }
   },
   "userSelector": {

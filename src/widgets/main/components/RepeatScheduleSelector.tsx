@@ -1,63 +1,83 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Input, { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import Select from "@jetbrains/ring-ui-built/components/select/select";
-import { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
-import {ReminderData, RepeatOption} from "../types.ts";
 import { useTranslation } from "react-i18next";
 
-export default function RepeatScheduleSelector({ onChange, editingReminder }: { onChange: (repeat: RepeatOption | null) => void; editingReminder?: ReminderData | null; }) {
+export interface RepeatSchedule {
+    interval: number; // Wiederholungsintervall (z.B. 0 für keine Wiederholung)
+    timeframe: string; // Zeitrahmen (z.B. "day", "week", "month", "year")
+}
+
+export default function RepeatScheduleSelector({ onChange, editingReminder }: { onChange: (repeat: RepeatSchedule) => void; editingReminder?: { repeatSchedule?: RepeatSchedule } | null; }) {
     const { t } = useTranslation();
 
-    const repeatOptions: RepeatOption[] = [
-        { key: "0_day", label: t("repeatScheduleSelector.options.0_day") },
-        { key: "1_day", label: t("repeatScheduleSelector.options.1_day") },
-        { key: "2_days", label: t("repeatScheduleSelector.options.2_days") },
-        { key: "3_days", label: t("repeatScheduleSelector.options.3_days") },
-        { key: "4_days", label: t("repeatScheduleSelector.options.4_days") },
-        { key: "4_days", label: t("repeatScheduleSelector.options.5_days") },
-        { key: "6_days", label: t("repeatScheduleSelector.options.6_days") },
-
-        { key: "1_week", label: t("repeatScheduleSelector.options.1_week") },
-        { key: "2_weeks", label: t("repeatScheduleSelector.options.2_weeks") },
-        { key: "3_weeks", label: t("repeatScheduleSelector.options.3_weeks") },
-
-        { key: "1_month", label: t("repeatScheduleSelector.options.1_month") },
-        { key: "2_months", label: t("repeatScheduleSelector.options.2_months") },
-        { key: "3_months", label: t("repeatScheduleSelector.options.3_months") },
-        { key: "4_months", label: t("repeatScheduleSelector.options.4_months") },
-        { key: "5_months", label: t("repeatScheduleSelector.options.5_months") },
-        { key: "6_months", label: t("repeatScheduleSelector.options.6_months") },
-        { key: "7_months", label: t("repeatScheduleSelector.options.7_months") },
-        { key: "8_months", label: t("repeatScheduleSelector.options.8_months") },
-        { key: "9_months", label: t("repeatScheduleSelector.options.9_months") },
-        { key: "10_months", label: t("repeatScheduleSelector.options.10_months") },
-        { key: "11_months", label: t("repeatScheduleSelector.options.11_months") },
-
-        { key: "1_year", label: t("repeatScheduleSelector.options.1_year") },
-        { key: "2_years", label: t("repeatScheduleSelector.options.2_years") },
+    // Optionen für den Zeitrahmen
+    const repeatTimeframes = [
+        { key: "day", label: t("repeatScheduleSelector.timeframes.day") },
+        { key: "week", label: t("repeatScheduleSelector.timeframes.week") },
+        { key: "month", label: t("repeatScheduleSelector.timeframes.month") },
+        { key: "year", label: t("repeatScheduleSelector.timeframes.year") },
     ];
 
-    const initialRepeatSchedule = repeatOptions.find(option => option.key === editingReminder?.repeatSchedule?.key) || null;
+    // Hier die Standardwerte setzen (0 Tage = keine Wiederholung)
+    const defaultInterval = editingReminder?.repeatSchedule?.interval ?? 0;
+    const defaultTimeframe = editingReminder?.repeatSchedule?.timeframe ?? "day";
 
-    const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(initialRepeatSchedule);
+    const [repeatInterval, setRepeatInterval] = useState<number>(defaultInterval);
+    const [repeatTimeframe, setRepeatTimeframe] = useState<string>(defaultTimeframe);
 
-    const handleRepeatChange = (selected: RepeatOption | null) => {
-        setRepeatSchedule(selected);
-        onChange(selected);
+    // Effekt zur Initialisierung: Standardwert in den Parent senden
+    useEffect(() => {
+        onChange({ interval: repeatInterval, timeframe: repeatTimeframe });
+    }, []);
+
+    // Änderungen des Intervalls handhaben
+    const handleIntervalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(event.target.value, 10);
+        if (!isNaN(value) && value >= 0) {
+            setRepeatInterval(value);
+            onChange({ interval: value, timeframe: repeatTimeframe });
+        }
+    };
+
+    // Änderungen des Zeitrahmens handhaben
+    const handleTimeframeChange = (selected: { key: string; label: string } | null) => {
+        if (selected) {
+            setRepeatTimeframe(selected.key);
+            onChange({ interval: repeatInterval, timeframe: selected.key });
+        }
     };
 
     return (
-        <div className="flex flex-col">
-            <label className="text-[#9ea0a9] text-xs mb-1">{t("repeatScheduleSelector.labels.repeatSchedule")}</label>
-            <Select
-                size={Size.FULL}
-                height={ControlsHeight.L}
-                data={repeatOptions}
-                selected={repeatSchedule}
-                onChange={handleRepeatChange}
-                filter
-                className="w-full"
-            />
+        <div className="grid grid-cols-12 gap-4">
+            {/* Eingabefeld: Intervall */}
+            <div className="col-span-6">
+                <label className="text-[#9ea0a9] text-xs mb-1">{t("repeatScheduleSelector.labels.interval")}</label>
+                <Input
+                    type="number"
+                    min={0}
+                    value={repeatInterval}
+                    onChange={handleIntervalChange}
+                    size={Size.FULL}
+                    height={ControlsHeight.L}
+                    className="w-full"
+                />
+            </div>
+
+            {/* Dropdown: Zeitrahmen */}
+            <div className="col-span-6">
+                <label className="text-[#9ea0a9] text-xs mb-1">{t("repeatScheduleSelector.labels.timeframe")}</label>
+                <Select
+                    data={repeatTimeframes}
+                    selected={repeatTimeframes.find(tf => tf.key === repeatTimeframe) || repeatTimeframes[0]}
+                    onChange={handleTimeframeChange}
+                    size={Size.FULL}
+                    height={ControlsHeight.L}
+                    filter={false}
+                    className="w-full"
+                />
+            </div>
         </div>
     );
 }

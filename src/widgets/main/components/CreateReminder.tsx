@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import Input, {Size} from "@jetbrains/ring-ui-built/components/input/input";
 import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
-import {GroupTagDTO, ReminderData, RepeatOption, UserTagDTO} from "../types.ts";
+import {GroupTagDTO, ReminderData, UserTagDTO} from "../types.ts";
 import {fetchIssueUrl, removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
-import RepeatScheduleSelector from "./RepeatScheduleSelector.tsx";
+import RepeatScheduleSelector, {RepeatSchedule} from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
 import {v4 as uuidv4} from "uuid";
@@ -22,7 +22,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const [message, setMessage] = useState(editingReminder?.message || "");
     const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers || []);
     const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
-    const [repeatSchedule, setRepeatSchedule] = useState<RepeatOption | null>(editingReminder?.repeatSchedule || null);
+    const [repeatSchedule, setRepeatSchedule] = useState<RepeatSchedule>(() => editingReminder?.repeatSchedule || { interval: 0, timeframe: "day" });
     const [resetKey, setResetKey] = useState(0);
     const [onlyCreatorCanEdit, setOnlyCreatorCanEdit] = useState(editingReminder?.onlyCreatorCanEdit ?? true);
     const [allAssigneesCanEdit, setAllAssigneesCanEdit] = useState(editingReminder?.allAssigneesCanEdit ?? false);
@@ -57,7 +57,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         date: false,
         time: false,
         message: false,
-        repeatSchedule: false,
         selectedUsersOrGroups: false,
     });
 
@@ -92,7 +91,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             date: date.trim() ? "" : t("createReminder.errors.date"),
             time: time.trim() ? "" : t("createReminder.errors.time"),
             message: message.trim() ? "" : t("createReminder.errors.message"),
-            repeatSchedule: repeatSchedule ? "" : t("createReminder.errors.repeatSchedule"),
             selectedUsersOrGroups: selectedUsers.length > 0 || selectedGroups.length > 0
                 ? ""
                 : t("createReminder.errors.selectedUsersOrGroups"),
@@ -107,7 +105,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             date: true,
             time: true,
             message: true,
-            repeatSchedule: true,
             selectedUsersOrGroups: true,
         });
 
@@ -208,7 +205,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         setMessage("");
         setSelectedUsers([]);
         setSelectedGroups([]);
-        setRepeatSchedule(null);
+        setRepeatSchedule({ interval: 0, timeframe: "day" });
         setOnlyCreatorCanEdit(true);
         setAllAssigneesCanEdit(false);
         setResetKey((prevKey) => prevKey + 1);
@@ -217,7 +214,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             date: false,
             time: false,
             message: false,
-            repeatSchedule: false,
             selectedUsersOrGroups: false,
         });
     };
@@ -289,15 +285,9 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         key={resetKey}
                         onChange={(value) => {
                             setRepeatSchedule(value);
-                            if (!touched.repeatSchedule) {
-                                setTouched((prev) => ({ ...prev, repeatSchedule: true }));
-                            }
                         }}
                         editingReminder={editingReminder}
                     />
-                    {touched.repeatSchedule && errors.repeatSchedule && (
-                        <div className="text-[#e47875] text-xs mt-1">{errors.repeatSchedule}</div>
-                    )}
                 </div>
 
                 <div className="col-span-6">
