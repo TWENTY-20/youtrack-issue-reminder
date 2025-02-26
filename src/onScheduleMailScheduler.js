@@ -95,7 +95,7 @@ function sendMail(ctx, user, reminder, recipients) {
     const userEmail = userEntity.email;
     let userLanguage = userEntity.language
 
-    const nextReminder = calculateNextReminderDate(reminder);
+    const nextReminder = calculateNextReminderDate(ctx, reminder, userLanguage);
 
     const userNames = Array.from(recipients).map((user) => {
         const userEntity = entities.User.findByLogin(user);
@@ -120,17 +120,14 @@ function sendMail(ctx, user, reminder, recipients) {
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "subject_textblock", userLanguage)}</strong> ${reminder.subject}</p>
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "message", userLanguage)}</strong> ${reminder.message}</p>
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "planned_for", userLanguage)}</strong> ${reminder.date} ${reminder.time} (${reminder.timezone})</p>
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "rescheduled_for", userLanguage)}</strong> ${nextReminder.date} ${nextReminder.time} (${reminder.timezone})</p>                
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "rescheduled_for", userLanguage)}</strong> ${nextReminder.date} ${nextReminder.time}</p> 
+                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "recipients_footer", userLanguage)}</strong> ${userNames.join(", ")}</p>               
                 </div>
             </div>
         
             <div style="margin-top: 15px; font-size: 12px; color: #888; border-top: 1px solid #ddd; padding-top: 10px;">
                 ${getTranslation(ctx, "notification_footer", userLanguage)}
-            </div>
-            
-            <div style="margin-top: 15px; font-size: 12px; color: #888;">
-                ${getTranslation(ctx, "recipients_footer", userLanguage)} ${userNames.join(", ")}
-            </div>
+            </div>     
         
             <style>
                 @media (max-width: 600px) {
@@ -157,29 +154,34 @@ function sendMail(ctx, user, reminder, recipients) {
     //console.log(`Email sent to ${user} (${userEmail}) for reminder: ${reminder.subject}`);
 }
 
-function calculateNextReminderDate(reminder) {
+function calculateNextReminderDate(ctx, reminder, userLanguage) {
     const repeatInterval = reminder.repeatSchedule?.interval || 0;
     const timeframe = reminder.repeatSchedule?.timeframe || 'day';
 
+    if (repeatInterval === 0) {
+        return {
+            date: getTranslation(ctx, "rescheduled_for_once", userLanguage),
+            time: " ",
+        };
+    }
+
     const currentReminderDate = new Date(`${reminder.date}T${reminder.time}`);
 
-    if (repeatInterval > 0) {
-        switch (timeframe) {
-            case 'day':
-                currentReminderDate.setDate(currentReminderDate.getDate() + repeatInterval);
-                break;
-            case 'week':
-                currentReminderDate.setDate(currentReminderDate.getDate() + repeatInterval * 7);
-                break;
-            case 'month':
-                currentReminderDate.setMonth(currentReminderDate.getMonth() + repeatInterval);
-                break;
-            case 'year':
-                currentReminderDate.setFullYear(currentReminderDate.getFullYear() + repeatInterval);
-                break;
-            default:
-                throw new Error(`Unsupported timeframe: ${timeframe}`);
-        }
+    switch (timeframe) {
+        case 'day':
+            currentReminderDate.setDate(currentReminderDate.getDate() + repeatInterval);
+            break;
+        case 'week':
+            currentReminderDate.setDate(currentReminderDate.getDate() + repeatInterval * 7);
+            break;
+        case 'month':
+            currentReminderDate.setMonth(currentReminderDate.getMonth() + repeatInterval);
+            break;
+        case 'year':
+            currentReminderDate.setFullYear(currentReminderDate.getFullYear() + repeatInterval);
+            break;
+        default:
+            throw new Error(`Unsupported timeframe: ${timeframe}`);
     }
 
     return {
