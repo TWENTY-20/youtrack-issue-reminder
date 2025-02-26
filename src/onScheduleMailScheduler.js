@@ -158,106 +158,55 @@ function sendMail(ctx, user, reminder, recipients) {
 }
 
 function calculateNextReminderDate(reminder) {
-    const repeatMap = {
-        "0_day": 0,
-        "1_day": 1,
-        "2_days": 2,
-        "3_days": 3,
-        "4_days": 4,
-        "5_days": 5,
-        "6_days": 6,
-        "1_week": 7,
-        "2_weeks": 14,
-        "3_weeks": 21,
-        "1_month": 30,
-        "2_months": 60,
-        "3_months": 90,
-        "4_months": 120,
-        "5_months": 150,
-        "6_months": 180,
-        "7_months": 210,
-        "8_months": 240,
-        "9_months": 270,
-        "10_months": 300,
-        "11_months": 330,
-        "1_year": 365,
-        "2_years": 730,
-    };
+    const repeatInterval = reminder.repeatSchedule?.interval || 0;
+    const timeframe = reminder.repeatSchedule?.timeframe || 'day';
 
-    const repeatInterval = repeatMap[reminder.repeatSchedule?.key] || 0;
+    const currentReminderDate = new Date(`${reminder.date}T${reminder.time}`);
 
     if (repeatInterval > 0) {
-        const currentReminderDate = new Date(`${reminder.date}T${reminder.time}`);
-        currentReminderDate.setDate(currentReminderDate.getDate() + repeatInterval);
-
-        return {
-            date: currentReminderDate.toISOString().split('T')[0],
-            time: currentReminderDate.toTimeString().split(' ')[0],
-        };
+        switch (timeframe) {
+            case 'day':
+                currentReminderDate.setDate(currentReminderDate.getDate() + repeatInterval);
+                break;
+            case 'week':
+                currentReminderDate.setDate(currentReminderDate.getDate() + repeatInterval * 7);
+                break;
+            case 'month':
+                currentReminderDate.setMonth(currentReminderDate.getMonth() + repeatInterval);
+                break;
+            case 'year':
+                currentReminderDate.setFullYear(currentReminderDate.getFullYear() + repeatInterval);
+                break;
+            default:
+                throw new Error(`Unsupported timeframe: ${timeframe}`);
+        }
     }
 
     return {
-        date: reminder.date,
+        date: currentReminderDate.toISOString().split('T')[0],
         time: reminder.time,
     };
 }
 
 function handleRepeatSchedule(ctx, reminder) {
-    const repeatMap = {
-        "0_day": 0,
-        "1_day": 1,
-        "2_days": 2,
-        "3_days": 3,
-        "4_days": 4,
-        "5_days": 5,
-        "6_days": 6,
-        "1_week": 7,
-        "2_weeks": 14,
-        "3_weeks": 21,
-        "1_month": 30,
-        "2_months": 60,
-        "3_months": 90,
-        "4_months": 120,
-        "5_months": 150,
-        "6_months": 180,
-        "7_months": 210,
-        "8_months": 240,
-        "9_months": 270,
-        "10_months": 300,
-        "11_months": 330,
-        "1_year": 365,
-        "2_years": 730,
-    };
+    const repeatInterval = reminder.repeatSchedule?.interval || 0;
 
-    const repeatInterval = repeatMap[reminder.repeatSchedule?.key] || 0;
     if (repeatInterval > 0) {
-        const newReminderDate = new Date(`${reminder.date}T${reminder.time}`);
-        newReminderDate.setDate(newReminderDate.getDate() + repeatInterval);
+        const nextReminder = calculateNextReminderDate(reminder);
 
         const reminders = JSON.parse(ctx.issue.extensionProperties.activeReminders || '[]');
         const filteredReminders = reminders.filter((r) => r.uuid !== reminder.uuid);
 
         const formData = {
-            subject: reminder.subject,
-            date: newReminderDate.toISOString().split('T')[0],
+            ...reminder,
+            date: nextReminder.date,
             time: reminder.time,
-            repeatSchedule: reminder.repeatSchedule,
-            selectedUsers: reminder.selectedUsers,
-            selectedGroups: reminder.selectedGroups,
-            message: reminder.message,
-            issueId: reminder.issueId,
-            uuid: reminder.uuid,
-            isActive: reminder.isActive,
-            timezone: reminder.timezone,
-            creatorLogin: reminder.creatorLogin,
-            onlyCreatorCanEdit: reminder.onlyCreatorCanEdit,
-            allAssigneesCanEdit: reminder.allAssigneesCanEdit,
         };
 
         const updatedReminders = [...filteredReminders, formData];
         ctx.issue.extensionProperties.activeReminders = JSON.stringify(updatedReminders);
 
-        //console.log(`Reminder for issue ${ctx.issue.id} rescheduled to ${newReminderDate}`);
+        // console.log(`Reminder for issue ${ctx.issue.id} rescheduled to ${nextReminder.date} ${nextReminder.time}`);
     } else {
         deactivateReminder(ctx, reminder.uuid);
     }
