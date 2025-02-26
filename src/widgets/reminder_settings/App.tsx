@@ -7,22 +7,62 @@ import { ReminderDeleteDialog } from "../main/components/ReminderDeleteDialog.ts
 import {fetchAllReminders} from "./globalStorage.ts";
 import Loader from "@jetbrains/ring-ui-built/components/loader/loader";
 import CreateReminder from "../main/components/CreateReminder.tsx";
+import YTApp from "./youTrackApp.ts";
+import {fetchGroups, fetchGroupUsers} from "../main/youTrackHandler.ts";
 
 export default function App() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
     const [reminders, setReminders] = useState<ReminderData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [editingReminder, setEditingReminder] = useState<ReminderData | null>(null); // Neuer State für den Bearbeitungsmodus
+    const [editingReminder, setEditingReminder] = useState<ReminderData | null>(null);
+
+    const currentUserLogin = YTApp.me.login;
 
     const fetchReminders = async () => {
         setIsLoading(true);
         const fetchedReminders: ReminderData[] = [];
         const issues = await fetchAllReminders();
-        issues.forEach((issue: any) => {
+
+        const filteredReminders: ReminderData[] = [];
+
+        for (const issue of issues) {
             fetchedReminders.push(...issue.reminders);
-        });
-        setReminders(fetchedReminders);
+        }
+
+        for (const reminder of fetchedReminders) {
+            const isCreator = reminder.creatorLogin === currentUserLogin;
+            const isPartOfUsers = reminder.selectedUsers.some(user => user.login === currentUserLogin);
+
+            let isPartOfGroups = false;
+
+            for (const group of reminder.selectedGroups) {
+                const groups = await fetchGroups();
+                const groupMatch = groups.find((g: { name: any }) => g.name === group.label);
+
+                if (groupMatch) {
+                    const groupUsers = await fetchGroupUsers(groupMatch.id);
+                    const userInGroup = groupUsers.some((user: { login: string }) => user.login === currentUserLogin);
+
+                    if (userInGroup) {
+                        isPartOfGroups = true;
+                        break;
+                    }
+                }
+            }
+
+            const canEditOrDelete = reminder.onlyCreatorCanEdit
+                ? isCreator
+                : reminder.allAssigneesCanEdit
+                    ? isCreator || isPartOfUsers || isPartOfGroups
+                    : false;
+
+            if (isCreator || isPartOfUsers || isPartOfGroups) {
+                filteredReminders.push({ ...reminder, canEditOrDelete } as ReminderData & { canEditOrDelete: boolean });
+            }
+        }
+
+        setReminders(filteredReminders);
         setIsLoading(false);
     };
 

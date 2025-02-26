@@ -7,6 +7,7 @@ import {updateReminders} from "../../main/globalStorage.ts";
 import {useState} from "react";
 import Alert from "@jetbrains/ring-ui-built/components/alert/alert";
 import pencilIcon from "@jetbrains/icons/pencil";
+import YTApp from "../youTrackApp.ts";
 
 export default function ReminderTable({
                                           reminders,
@@ -18,6 +19,8 @@ export default function ReminderTable({
     onEditClick: (reminder: any) => void;
 }) {
     const [alert, setAlert] = useState({ show: false, isClosing: false, message: "" });
+
+    const currentUserLogin = YTApp.me.login;
 
     const handleToggleForTable = async (reminderId: string, newValue: boolean, issueId: string) => {
         try {
@@ -171,6 +174,14 @@ export default function ReminderTable({
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
 
+                            const isCreator = reminder.creatorLogin === currentUserLogin;
+                            const isAllowedUser = reminder.selectedUsers.some((user: { login: any; }) => user.login === currentUserLogin);
+                            const canEditOrDelete = reminder.onlyCreatorCanEdit
+                                ? isCreator
+                                : reminder.allAssigneesCanEdit
+                                    ? isCreator || isAllowedUser
+                                    : false;
+
                             return (
                                 <div
                                     style={{
@@ -183,24 +194,29 @@ export default function ReminderTable({
                                         checked={reminder.isActive}
                                         onChange={(e) => handleToggleForTable(reminder.uuid, e.target.checked, reminder.issueId)}
                                         className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-4"}
+                                        disabled={!canEditOrDelete}
                                     />
+
                                     <Button
                                         onClick={() => onEditClick(reminder)}
-                                        title="Edit"
+                                        title={t("edit")}
                                         className="ring-btn-small ring-btn-primary ring-btn-icon-only"
                                         icon={pencilIcon}
+                                        disabled={!canEditOrDelete}
                                     />
+
                                     <Button
                                         danger
                                         onClick={() => onDeleteClick(reminder)}
-                                        title="Delete"
+                                        title={t("delete")}
                                         className="ring-btn-small ring-btn-danger ring-btn-icon-only"
                                         icon={deleteIcon}
+                                        disabled={!canEditOrDelete}
                                     />
                                 </div>
                             );
                         },
-                    },
+                    }
                 ]}
                 data={reminders.map((reminder: { uuid: any; project: any; issueId: any; subject: any; date: any; time: any; timezone: any; creatorLogin: any; selectedUsers: any; selectedGroups: any }) => ({
                     id: reminder.uuid || "",
