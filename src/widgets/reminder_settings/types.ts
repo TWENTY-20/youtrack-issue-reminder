@@ -121,6 +121,8 @@ export interface ReminderData {
     allAssigneesCanEdit: boolean;
     project: string;
     issueUrl: string;
+    endRepeatDate?: string | null;
+    endRepeatTime?: string | null;
 }
 
 export interface CustomField {

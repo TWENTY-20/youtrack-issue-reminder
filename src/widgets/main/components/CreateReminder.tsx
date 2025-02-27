@@ -189,7 +189,9 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             onlyCreatorCanEdit,
             allAssigneesCanEdit,
             project: projectName,
-            issueUrl: issueUrl
+            issueUrl: issueUrl,
+            endRepeatDate: endRepeatDate || null,
+            endRepeatTime: endRepeatTime || null,
         };
 
 
