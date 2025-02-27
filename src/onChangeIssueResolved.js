@@ -9,13 +9,14 @@ exports.rule = entities.Issue.onChange({
     action: (ctx) => {
         const issue = ctx.issue;
 
-        const reminders = JSON.parse(ctx.globalStorage.extensionProperties.activeReminders || '[]');
+        const reminders = JSON.parse(issue.extensionProperties.activeReminders || '[]');
 
         const updatedReminders = reminders.map(reminder =>
             reminder.issueId === issue.id ? { ...reminder, isActive: false } : reminder
         );
 
-        ctx.globalStorage.extensionProperties.activeReminders = JSON.stringify(updatedReminders);
+        issue.extensionProperties.activeReminders = JSON.stringify(updatedReminders);
+
         workflow.message(
             `All reminders for issue ${issue.id} were deactivated.`
         );
