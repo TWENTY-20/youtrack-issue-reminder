@@ -32,7 +32,7 @@ Your YouTrack Issue Reminder App is now configured and ready to use. 🎉
 ---
 
 <div style="display: flex;">
-  <h3>t<img src="https://twenty20.de/favicon.ico" alt="twenty20 logo" width="24" style="vertical-align: -3.5px;"/>nty20 | YouTrack Apps and Extensions</h3>
+  <h3>t<img src="https://twenty20.de/favicon.ico" alt="twenty20 logo" width="24" style="vertical-align: -8.5px;"/>nty20 | YouTrack Apps and Extensions</h3>
 </div>
 
 
