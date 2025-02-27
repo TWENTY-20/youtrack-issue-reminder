@@ -117,6 +117,7 @@ export default function App() {
                 <div style={{ paddingLeft: "20px", paddingRight: "20px", paddingTop: "10px" }}>
                     <CreateReminder
                         editingReminder={editingReminder}
+                        cameFromReminderTable={true}
                         onCancelEdit={handleCancelEdit}
                         onReminderCreated={fetchReminders}
                     />

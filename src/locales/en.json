@@ -40,7 +40,9 @@
       "reset": "Reset",
       "submit": "Create Reminder",
       "saveEdit": "Save Changes",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "cancelCreate": "Reset",
+      "cancelEdit": "Cancel edit"
     }
   },
   "groupSelector": {

@@ -15,7 +15,7 @@ import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
 
 // @ts-ignore
-export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated}) {
+export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated, cameFromReminderTable = false}) {
     const [subject, setSubject] = useState(editingReminder?.subject || "");
     const [date, setDate] = useState(editingReminder?.date || "");
     const [time, setTime] = useState(editingReminder?.time || "");
@@ -250,6 +250,19 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
     const errors = validateFields();
 
+    const handleCancelButtonClick = () => {
+        if (cameFromReminderTable && editingReminder) {
+            onReminderCreated();
+            onCancelEdit();
+        }
+        else if (editingReminder && !cameFromReminderTable) {
+            onReminderCreated();
+        } else {
+            onCancelEdit();
+            handleCancel();
+        }
+    };
+
     return (
         <div>
             <div className="grid grid-cols-12 w-full h-full gap-4">
@@ -384,9 +397,9 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 </div>
 
                 <div className="col-span-12 flex justify-end gap-2 mt-4">
-                    {!editingReminder && (
-                        <Button danger={true} onClick={handleCancel}>{t("createReminder.actions.reset")}</Button>
-                    )}
+                    <Button danger onClick={handleCancelButtonClick}>
+                        {editingReminder ? t("createReminder.actions.cancelEdit") : t("createReminder.actions.cancelCreate")}
+                    </Button>
                     <Button primary onClick={handleSubmit}>
                         {editingReminder ? t("createReminder.actions.saveEdit") : t("createReminder.actions.submit")}
                     </Button>

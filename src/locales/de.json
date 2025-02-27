@@ -40,7 +40,9 @@
       "reset": "Zurücksetzen",
       "submit": "Erinnerung erstellen",
       "saveEdit": "Änderungen speichern",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "cancelCreate": "Zurücksetzen",
+      "cancelEdit": "Bearbeiten abbrechen"
     }
   },
   "groupSelector": {
