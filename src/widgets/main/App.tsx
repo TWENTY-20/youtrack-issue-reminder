@@ -54,7 +54,7 @@ export default function App() {
         <div>
             <div className="flex border-b">
                 <button
-                    className={`px-4 py-2 ${activeTab === "reminders" ? "border-b-2 border-blue-500" : ""}`}
+                    className={`px-4 cursor-pointer py-2 ${activeTab === "reminders" ? "border-b-2 border-blue-500" : ""}`}
                     onClick={() => {
                         setEditingReminder(null);
                         setActiveTab("reminders");
@@ -63,7 +63,7 @@ export default function App() {
                     {t("app.tabs.reminders")}
                 </button>
                 <button
-                    className={`px-4 py-2 ${activeTab === "settings" ? "border-b-2 border-blue-500" : ""}`}
+                    className={`px-4 cursor-pointer py-2 ${activeTab === "settings" ? "border-b-2 border-blue-500" : ""}`}
                     onClick={() => setActiveTab("settings")}
                 >
                     {t("app.tabs.settings")}
