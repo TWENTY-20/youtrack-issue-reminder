@@ -91,6 +91,10 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
     const handleRepeatChange = (value: RepeatSchedule) => {
         setRepeatSchedule(value);
+        if (value.interval === 0) {
+            setEndRepeatDate("");
+            setEndRepeatTime("");
+        }
         setShowEndRepeat(value.interval > 0);
     };
 
