@@ -222,6 +222,9 @@ export default function ReminderSettings({ onEditReminder }) {
                 isClosing: false,
                 message: t("reminderSettings.messages.alerts.deletedMessage"),
             });
+            host.alert(
+                t("reminderSettings.messages.alerts.deletedMessage")
+            );
 
             setReminderToDelete(null);
             setIsDeleteModalOpen(false);
@@ -316,9 +319,16 @@ export default function ReminderSettings({ onEditReminder }) {
                                                                 </div>
                                                             ))}
                                                             {reminder.selectedUsers.length > 2 && (
-                                                                <span className="flex items-center justify-center w-6 h-6 text-xs font-medium text-gray-600 bg-gray-200 rounded-full">
-                                                                    +{reminder.selectedUsers.length - 2}
-                                                                </span>
+                                                                <Tooltip
+                                                                    title={reminder.selectedUsers
+                                                                        .slice(2)
+                                                                        .map((user: UserTagDTO) => user.label)
+                                                                        .join(", ")}
+                                                                >
+                                                                    <span className="flex items-center justify-center w-6 h-6 text-xs font-medium text-gray-600 bg-gray-200 rounded-full cursor-pointer">
+                                                                        +{reminder.selectedUsers.length - 2}
+                                                                    </span>
+                                                                </Tooltip>
                                                             )}
                                                         </div>
                                                     </div>
@@ -335,9 +345,16 @@ export default function ReminderSettings({ onEditReminder }) {
                                                             </div>
                                                         ))}
                                                         {reminder.selectedGroups.length > 1 && (
-                                                            <span className="text-gray-500">
-                                                                +{reminder.selectedGroups.length - 1} {t("reminderSettings.messages.moreGroups")}
-                                                            </span>
+                                                            <Tooltip
+                                                                title={reminder.selectedGroups
+                                                                    .slice(1)
+                                                                    .map((group: GroupTagDTO) => group.label)
+                                                                    .join(", ")}
+                                                            >
+                                                                <span className="text-gray-500">
+                                                                    +{reminder.selectedGroups.length - 1} {t("reminderSettings.messages.moreGroups")}
+                                                                </span>
+                                                            </Tooltip>
                                                         )}
                                                     </div>
                                                 )}

@@ -31,8 +31,8 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const [projectName, setProjectName] = useState<string>("");
     const [issueUrl, setIssueUrl] = useState<string>("");
     const [showEndRepeat, setShowEndRepeat] = useState(false);
-    const [endRepeatDate, setEndRepeatDate] = useState("");
-    const [endRepeatTime, setEndRepeatTime] = useState("");
+    const [endRepeatDate, setEndRepeatDate] = useState(editingReminder?.endRepeatDate || "");
+    const [endRepeatTime, setEndRepeatTime] = useState(editingReminder?.endRepeatTime || "");
 
 
     const issueId = editingReminder?.issueId || YTApp.entity.id;
@@ -217,6 +217,8 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         setDate("");
         setTime("");
         setMessage("");
+        setEndRepeatDate("");
+        setEndRepeatTime("");
         setSelectedUsers([]);
         setSelectedGroups([]);
         setRepeatSchedule({ interval: 0, timeframe: "day" });
