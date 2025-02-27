@@ -1,13 +1,10 @@
-# YouTrack Issue-Reminder
+# <img src="src/logo.svg" alt="twenty20 logo" width="24"/> YouTrack Issue-Reminder
 
 A simple tool to set up reminders for existing issues in YouTrack.
 
 ---
 
-<div style="display: flex;">
-  <h3>t<img src="https://twenty20.de/favicon.ico" alt="twenty20 logo" width="24" style="vertical-align: -3.5px;"/>nty20 | YouTrack Apps and Extensions</h3>
-</div>
-
+# <img src="https://twenty20.de/favicon.ico" alt="twenty20 logo" width="24"/> **twenty20 | YouTrack Apps and Extensions**
 
 We specialize in developing custom YouTrack apps and extensions tailored specifically to your needs.
 
