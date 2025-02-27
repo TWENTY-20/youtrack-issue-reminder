@@ -18,7 +18,7 @@ function getSearchExpression() {
 exports.rule = entities.Issue.onSchedule({
     title: 'Reminder Email Scheduler with Time Zone Support',
     search: getSearchExpression,
-    cron: "0 * * * * ?",
+    cron: "2 * * * * ?",
     guard: () => getSearchExpression() != null,
     action: (ctx) => {
         const reminders = JSON.parse(ctx.issue.extensionProperties.activeReminders || '[]');
@@ -58,6 +58,16 @@ exports.rule = entities.Issue.onSchedule({
             const formattedCurrentUserTime = dateTime.format(currentUserTime, format, reminder.timezone)
             const dateOfCurrentUserTime = new Date(formattedCurrentUserTime).getTime()
 
+            if (reminder.endRepeatDate && reminder.endRepeatTime) {
+                const endDateTimeString = `${reminder.endRepeatDate}T${reminder.endRepeatTime}:00Z`;
+                const endReminderTime = new Date(endDateTimeString).getTime();
+
+                if (dateOfCurrentUserTime > endReminderTime) {
+                    deactivateReminder(ctx, reminder.uuid);
+                    return;
+                }
+            }
+
             recipients.forEach((user) => {
 
                 /*console.log(`Checking reminder for user ${user}" in "${reminder.timezone}":`);
@@ -95,8 +105,6 @@ function sendMail(ctx, user, reminder, recipients) {
     const userEmail = userEntity.email;
     let userLanguage = userEntity.language
 
-    const nextReminder = calculateNextReminderDate(ctx, reminder, userLanguage);
-
     const userNames = Array.from(recipients).map((user) => {
         const userEntity = entities.User.findByLogin(user);
         return userEntity.fullName;
@@ -107,6 +115,15 @@ function sendMail(ctx, user, reminder, recipients) {
     } else {
         userLanguage = "en";
     }
+
+    const nextReminder = calculateNextReminderDate(ctx, reminder);
+
+    const rescheduledForText = nextReminder
+        ? `<p style="margin-bottom: 10px;">
+          <strong>${getTranslation(ctx, "rescheduled_for", userLanguage)}</strong> ${nextReminder.date} ${nextReminder.time}
+       </p>`
+        : "";
+
 
     const text =
         `<div style="font-family: sans-serif; color: #333; max-width: 600px; word-wrap: break-word;">
@@ -120,7 +137,7 @@ function sendMail(ctx, user, reminder, recipients) {
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "subject_textblock", userLanguage)}</strong> ${reminder.subject}</p>
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "message", userLanguage)}</strong> ${reminder.message}</p>
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "planned_for", userLanguage)}</strong> ${reminder.date} ${reminder.time} (${reminder.timezone})</p>
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "rescheduled_for", userLanguage)}</strong> ${nextReminder.date} ${nextReminder.time}</p> 
+                    ${rescheduledForText}
                     <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "recipients_footer", userLanguage)}</strong> ${userNames.join(", ")}</p>               
                 </div>
             </div>
@@ -154,15 +171,12 @@ function sendMail(ctx, user, reminder, recipients) {
     //console.log(`Email sent to ${user} (${userEmail}) for reminder: ${reminder.subject}`);
 }
 
-function calculateNextReminderDate(ctx, reminder, userLanguage) {
+function calculateNextReminderDate(ctx, reminder) {
     const repeatInterval = reminder.repeatSchedule?.interval || 0;
     const timeframe = reminder.repeatSchedule?.timeframe || 'day';
 
     if (repeatInterval === 0) {
-        return {
-            date: getTranslation(ctx, "rescheduled_for_once", userLanguage),
-            time: " ",
-        };
+        return null;
     }
 
     const currentReminderDate = new Date(`${reminder.date}T${reminder.time}`);
@@ -194,7 +208,7 @@ function handleRepeatSchedule(ctx, reminder) {
     const repeatInterval = reminder.repeatSchedule?.interval || 0;
 
     if (repeatInterval > 0) {
-        const nextReminder = calculateNextReminderDate(reminder);
+        const nextReminder = calculateNextReminderDate(ctx, reminder);
 
         const reminders = JSON.parse(ctx.issue.extensionProperties.activeReminders || '[]');
         const filteredReminders = reminders.filter((r) => r.uuid !== reminder.uuid);
