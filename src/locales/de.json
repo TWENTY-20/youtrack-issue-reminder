@@ -131,5 +131,30 @@
     "loading": "Berechtigungen werden geladen, bitte warten...",
     "permission_denied_message": "Sie haben keine ausreichenden Berechtigungen, um auf diesen Inhalt zuzugreifen.",
     "ask_admin": "Bitte wenden Sie sich an einen Administrator, um die erforderlichen Berechtigungen zu erhalten (Gruppe einsehen)"
+  },
+  "reminderTable": {
+    "columns": {
+      "project": "Projekt",
+      "issue": "Ticket",
+      "subject": "Betreff",
+      "date": "Datum",
+      "time": "Uhrzeit",
+      "repeat": "Wiederholungen",
+      "timezone": "Zeitzone",
+      "creator": "Ersteller",
+      "members": "Mitglieder",
+      "groups": "Gruppen",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "messages": {
+      "unknownProject": "Unbekanntes Projekt",
+      "unknownIssue": "Unbekanntes Issue",
+      "unknownSubject": "Unbekannter Betreff",
+      "unknownDate": "Unbekanntes Datum",
+      "unknownTime": "Unbekannte Zeit",
+      "unknownTimezone": "Unbekannte Zeitzone",
+      "unknownCreator": "Unbekannter Ersteller"
+    }
   }
 }

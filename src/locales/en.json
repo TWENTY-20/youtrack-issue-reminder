@@ -131,5 +131,30 @@
     "loading": "Loading permissions, please wait...",
     "permission_denied_message": "You do not have sufficient permissions to access this content.",
     "ask_admin": "Please ask an administrator to grant you the necessary permissions (Read Group)"
+  },
+  "reminderTable": {
+    "columns": {
+      "project": "Project",
+      "issue": "Issue",
+      "subject": "Subject",
+      "date": "Date",
+      "time": "Time",
+      "repeat": "Repetition",
+      "timezone": "Timezone",
+      "creator": "Creator",
+      "members": "Members",
+      "groups": "Groups",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "messages": {
+      "unknownProject": "Unknown Project",
+      "unknownIssue": "Unknown Issue",
+      "unknownSubject": "Unknown Subject",
+      "unknownDate": "Unknown Date",
+      "unknownTime": "Unknown Time",
+      "unknownTimezone": "Unknown Timezone",
+      "unknownCreator": "Unknown Creator"
+    }
   }
 }

@@ -7,6 +7,7 @@ import {updateReminders} from "../../main/globalStorage.ts";
 import {useState} from "react";
 import pencilIcon from "@jetbrains/icons/pencil";
 import YTApp, {host} from "../youTrackApp.ts";
+import {ReminderData} from "../types.ts";
 
 export default function ReminderTable({
                                           reminders,
@@ -71,7 +72,7 @@ export default function ReminderTable({
                 columns={[
                     {
                         id: "project",
-                        title: "Project",
+                        title: t("reminderTable.columns.project"),
                         className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
@@ -85,7 +86,7 @@ export default function ReminderTable({
                     },
                     {
                         id: "issue",
-                        title: "Issue",
+                        title: t("reminderTable.columns.issue"),
                         className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
@@ -104,43 +105,43 @@ export default function ReminderTable({
                     },
                     {
                         id: "subject",
-                        title: "Subject",
+                        title: t("reminderTable.columns.subject"),
                         className: "w-2/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
                             return (
                                 <span
-                                    title={reminder.subject || "No Subject"}
+                                    title={reminder.subject || t("reminderTable.messages.unknownSubject")}
                                 >
-                                    {reminder.subject || "No Subject"}
+                                    {reminder.subject || t("reminderTable.messages.unknownSubject")}
                                 </span>
                             );
                         },
                     },
                     {
                         id: "date",
-                        title: "Date",
+                        title: t("reminderTable.columns.date"),
                         className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "time",
-                        title: "Time",
+                        title: t("reminderTable.columns.time"),
                         className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "timezone",
-                        title: "Timezone",
+                        title: t("reminderTable.columns.timezone"),
                         className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "creator",
-                        title: "Creator",
+                        title: t("reminderTable.columns.creator"),
                         className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "members",
-                        title: "Members",
+                        title: t("reminderTable.columns.members"),
                         className: "w-2/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
@@ -154,7 +155,7 @@ export default function ReminderTable({
                     },
                     {
                         id: "groups",
-                        title: "Groups",
+                        title: t("reminderTable.columns.groups"),
                         className: "w-2/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
@@ -168,7 +169,7 @@ export default function ReminderTable({
                     },
                     {
                         id: "status",
-                        title: "Status",
+                        title: t("reminderTable.columns.status"),
                         className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
@@ -194,7 +195,7 @@ export default function ReminderTable({
                     },
                     {
                         id: "actions",
-                        title: "Actions",
+                        title: t("reminderTable.columns.actions"),
                         className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
@@ -231,14 +232,14 @@ export default function ReminderTable({
                         },
                     }
                 ]}
-                data={reminders.map((reminder: { uuid: any; project: any; issueId: any; subject: any; date: any; time: any; timezone: any; creatorName: any; selectedUsers: any; selectedGroups: any }) => ({
+                data={reminders.map((reminder: ReminderData) => ({
                     id: reminder.uuid || "",
-                    project: reminder.project || "Unknown Project",
-                    issue: reminder.issueId || "Unknown Issue",
-                    date: reminder.date || "No Date",
-                    time: reminder.time || "No Time",
-                    timezone: reminder.timezone || "No Timezone",
-                    creator: reminder.creatorName || "Unknown",
+                    project: reminder.project || t("reminderTable.messages.unknownProject"),
+                    issue: reminder.issueId || t("reminderTable.messages.unknownIssue"),
+                    date: reminder.date || t("reminderTable.messages.unknownDate"),
+                    time: reminder.time || t("reminderTable.messages.unknownTime"),
+                    timezone: reminder.timezone || t("reminderTable.messages.unknownTimezone"),
+                    creator: reminder.creatorName || t("reminderTable.messages.unknownCreator"),
                 }))}
             />
         </div>
