@@ -6,7 +6,9 @@
       "subject": "Betreff eingeben",
       "date": "Datum auswählen",
       "time": "Uhrzeit auswählen",
-      "message": "Nachricht eingeben"
+      "message": "Nachricht eingeben",
+      "endRepeatDate": "Enddatum der Wiederholung",
+      "endRepeatTime": "Endzeit der Wiederholung"
     },
     "labels": {
       "subject": "Betreff",
@@ -15,7 +17,9 @@
       "message": "Nachricht",
       "permissions": "Berechtigungen",
       "onlyCreatorCanEdit": "Nur der Ersteller kann bearbeiten",
-      "allAssigneesCanEdit": "Alle Teilnehmer können bearbeiten"
+      "allAssigneesCanEdit": "Alle Teilnehmer können bearbeiten",
+      "endRepeatDate": "Enddatum der Wiederholung",
+      "endRepeatTime": "Endzeit der Wiederholung"
     },
     "messages": {
       "confirmCreateTitle": "Fehlende E-Mail-Adressen",
@@ -28,7 +32,9 @@
       "message": "Nachricht ist erforderlich.",
       "repeatSchedule": "Wiederholungsplan ist erforderlich.",
       "submitError": "Beim Absenden der Erinnerung ist ein Fehler aufgetreten.",
-      "selectedUsersOrGroups": "Mindestens ein Benutzer oder eine Gruppe muss ausgewählt werden."
+      "selectedUsersOrGroups": "Mindestens ein Benutzer oder eine Gruppe muss ausgewählt werden.",
+      "endRepeatDate": "Bitte ein gültiges Enddatum eingeben.",
+      "endRepeatTime": "Bitte eine gültige Endzeit eingeben."
     },
     "actions": {
       "reset": "Zurücksetzen",

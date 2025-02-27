@@ -6,7 +6,9 @@
       "subject": "Enter subject",
       "date": "Select date",
       "time": "Select time",
-      "message": "Enter message"
+      "message": "Enter message",
+      "endRepeatDate": "End date of repetition",
+      "endRepeatTime": "End time of repetition"
     },
     "labels": {
       "subject": "Subject",
@@ -15,7 +17,9 @@
       "message": "Message",
       "permissions": "Permissions",
       "onlyCreatorCanEdit": "Only creator can edit",
-      "allAssigneesCanEdit": "All assignees can edit"
+      "allAssigneesCanEdit": "All assignees can edit",
+      "endRepeatDate": "End date of repetition",
+      "endRepeatTime": "End time of repetition"
     },
     "errors": {
       "subject": "Subject is required.",
@@ -24,7 +28,9 @@
       "message": "Message is required.",
       "repeatSchedule": "Repeat schedule is required.",
       "submitError": "An error occurred while submitting the reminder.",
-      "selectedUsersOrGroups": "At least one user or group must be selected."
+      "selectedUsersOrGroups": "At least one user or group must be selected.",
+      "endRepeatDate": "Please enter a valid end date.",
+      "endRepeatTime": "Please enter a valid end time."
     },
     "messages": {
       "confirmCreateTitle": "Missing Email Addresses",

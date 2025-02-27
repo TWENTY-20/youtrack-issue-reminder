@@ -30,6 +30,10 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const [usersWithoutEmail, setUsersWithoutEmail] = useState<UserTagDTO[]>([]);
     const [projectName, setProjectName] = useState<string>("");
     const [issueUrl, setIssueUrl] = useState<string>("");
+    const [showEndRepeat, setShowEndRepeat] = useState(false);
+    const [endRepeatDate, setEndRepeatDate] = useState("");
+    const [endRepeatTime, setEndRepeatTime] = useState("");
+
 
     const issueId = editingReminder?.issueId || YTApp.entity.id;
 
@@ -84,6 +88,12 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             return false;
         });
     };
+
+    const handleRepeatChange = (value: RepeatSchedule) => {
+        setRepeatSchedule(value);
+        setShowEndRepeat(value.interval > 0);
+    };
+
 
     const validateFields = () => {
         return {
@@ -286,11 +296,40 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                     <RepeatScheduleSelector
                         key={resetKey}
                         onChange={(value) => {
-                            setRepeatSchedule(value);
+                            handleRepeatChange(value)
                         }}
                         editingReminder={editingReminder}
                     />
                 </div>
+
+                {showEndRepeat && (
+                    <>
+                        <div className="col-span-6">
+                            <Input
+                                size={Size.FULL}
+                                height={ControlsHeight.L}
+                                placeholder={t("createReminder.placeholders.endRepeatDate")}
+                                type="date"
+                                label={t("createReminder.labels.endRepeatDate")}
+                                value={endRepeatDate}
+                                min={date || new Date().toISOString().split("T")[0]} // Datum darf nicht vor dem Startdatum liegen
+                                onChange={(e) => setEndRepeatDate(e.target.value)}
+                            />
+                        </div>
+                        <div className="col-span-6">
+                            <Input
+                                size={Size.FULL}
+                                height={ControlsHeight.L}
+                                placeholder={t("createReminder.placeholders.endRepeatTime")}
+                                type="time"
+                                label={t("createReminder.labels.endRepeatTime")}
+                                value={endRepeatTime}
+                                onChange={(e) => setEndRepeatTime(e.target.value)}
+                            />
+                        </div>
+                    </>
+                )}
+
 
                 <div className="col-span-6">
                     <UserSelector
