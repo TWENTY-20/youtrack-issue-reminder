@@ -4,7 +4,7 @@ A simple tool to set up reminders for existing issues in YouTrack.
 
 ---
 
-# **t<img src="https://twenty20.de/favicon.ico" alt="twenty20 logo" width="22"/>nty20 | YouTrack Apps and Extensions**
+# **t<img src="https://twenty20.de/favicon.ico" alt="twenty20 logo" width="26"/>nty20 | YouTrack Apps and Extensions**
 
 We specialize in developing custom YouTrack apps and extensions tailored specifically to your needs.
 
