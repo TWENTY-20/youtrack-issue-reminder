@@ -27,7 +27,7 @@ export default function RepeatScheduleSelector({ onChange, editingReminder }: { 
 
     useEffect(() => {
         onChange({ interval: repeatInterval, timeframe: repeatTimeframe });
-    }, []);
+    }, [repeatInterval, repeatTimeframe]);
 
     const handleIntervalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(event.target.value, 10);

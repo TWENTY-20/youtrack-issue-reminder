@@ -100,13 +100,32 @@
   "repeatScheduleSelector": {
     "labels": {
       "interval": "Intervall",
-      "timeframe": "Zeitraum"
+      "timeframe": "Zeitrahmen",
+      "endRepeatDate": "Enddatum",
+      "endRepeatTime": "Endzeit"
     },
     "timeframes": {
-      "day": "Tage",
-      "week": "Wochen",
-      "month": "Monate",
-      "year": "Jahre"
+      "day": "Tag",
+      "days": "Tage",
+      "week": "Woche",
+      "weeks": "Wochen",
+      "month": "Monat",
+      "months": "Monate",
+      "year": "Jahr",
+      "years": "Jahre"
+    },
+    "reminder": {
+      "once": "Dieser Reminder wird einmalig ausgeführt.",
+      "recurring": {
+        "one": {
+          "day": "Dieser Reminder wird jeden Tag{{untilPart}} ausgeführt.",
+          "week": "Dieser Reminder wird jede Woche{{untilPart}} ausgeführt.",
+          "month": "Dieser Reminder wird jeden Monat{{untilPart}} ausgeführt.",
+          "year": "Dieser Reminder wird jedes Jahr{{untilPart}} ausgeführt."
+        },
+        "default": "Dieser Reminder wird alle {{interval}} {{timeframe}}{{untilPart}} ausgeführt."
+      },
+      "until": " bis zum {{endDate}} {{endTime}}"
     }
   },
   "userSelector": {

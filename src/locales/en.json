@@ -100,13 +100,32 @@
   "repeatScheduleSelector": {
     "labels": {
       "interval": "Interval",
-      "timeframe": "Timeframe"
+      "timeframe": "Timeframe",
+      "endRepeatDate": "End Date",
+      "endRepeatTime": "End Time"
     },
     "timeframes": {
-      "day": "Days",
-      "week": "Weeks",
-      "month": "Months",
-      "year": "Years"
+      "day": "Day",
+      "days": "Days",
+      "week": "Week",
+      "weeks": "Weeks",
+      "month": "Month",
+      "months": "Months",
+      "year": "Year",
+      "years": "Years"
+    },
+    "reminder": {
+      "once": "This reminder will run once.",
+      "recurring": {
+        "one": {
+          "day": "This reminder will run every day{{untilPart}}.",
+          "week": "This reminder will run every week{{untilPart}}.",
+          "month": "This reminder will run every month{{untilPart}}.",
+          "year": "This reminder will run every year{{untilPart}}."
+        },
+        "default": "This reminder will run every {{interval}} {{timeframe}}{{untilPart}}."
+      },
+      "until": " until {{endDate}} {{endTime}}"
     }
   },
   "userSelector": {

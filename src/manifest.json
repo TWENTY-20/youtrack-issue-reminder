@@ -15,7 +15,7 @@
       "indexPath": "main/index.html",
       "extensionPoint": "ISSUE_OPTIONS_MENU_ITEM",
       "expectedDimensions": {
-        "height": 700,
+        "height": 750,
         "width": 600
       }
     },
