@@ -1,6 +1,7 @@
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import {t} from "i18next";
 import {UserTagDTO} from "../types.ts";
+import Tag from "@jetbrains/ring-ui-built/components/tag/tag";
 
 interface CreateDialogProps {
     isOpen: boolean;
@@ -20,12 +21,24 @@ export const ReminderCreateDialog: React.FC<CreateDialogProps> = ({ isOpen, titl
                 <h2 className="text-lg mb-4">{title}</h2>
                 <p className="mb-4">{message}</p>
 
-                {/* Benutzerliste anzeigen */}
                 {usersWithoutEmail.length > 0 && (
                     <ul className="mb-6">
                         {usersWithoutEmail.map((user) => (
                             <li key={user.key} className="text-sm text-gray-700 dark:text-gray-300">
-                                {user.login}
+                                <Tag
+                                    key={user.key}
+                                    readOnly
+                                    className="flex items-center rounded"
+                                >
+                                    <div className="flex items-center py-4">
+                                        <img
+                                            src={user.avatar || "https://www.gravatar.com/avatar/?d=mp"}
+                                            alt={t("userSelector.messages.userAvatarAlt", { name: user.label })}
+                                            className="w-4 h-4 mr-2"
+                                        />
+                                        <span>{user.label}</span>
+                                    </div>
+                                </Tag>
                             </li>
                         ))}
                     </ul>
