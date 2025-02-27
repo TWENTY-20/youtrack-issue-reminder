@@ -33,10 +33,10 @@ export const ReminderCreateDialog: React.FC<CreateDialogProps> = ({ isOpen, titl
                                     <div className="flex items-center py-4">
                                         <img
                                             src={user.avatar || "https://www.gravatar.com/avatar/?d=mp"}
-                                            alt={t("userSelector.messages.userAvatarAlt", { name: user.label })}
+                                            alt={t("userSelector.messages.userAvatarAlt", { name: user.label || user.login })}
                                             className="w-4 h-4 mr-2"
                                         />
-                                        <span>{user.label}</span>
+                                        <span>{user.label || user.login}</span>
                                     </div>
                                 </Tag>
                             </li>
