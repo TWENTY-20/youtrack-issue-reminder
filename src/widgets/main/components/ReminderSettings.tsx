@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {fetchReminders, removeReminder, updateReminders} from "../globalStorage.ts";
 import { GroupTagDTO, ReminderData, UserTagDTO } from "../types.ts";
-import YTApp from "../youTrackApp.ts";
+import YTApp, {host} from "../youTrackApp.ts";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import pencilIcon from "@jetbrains/icons/pencil";
 import bellIcon from "@jetbrains/icons/bell-20px";
@@ -11,7 +11,6 @@ import trashIcon from "@jetbrains/icons/trash";
 import Icon from "@jetbrains/ring-ui-built/components/icon";
 import { useTranslation } from "react-i18next";
 import Toggle from "@jetbrains/ring-ui-built/components/toggle/toggle";
-import Alert from "@jetbrains/ring-ui-built/components/alert/alert";
 import {fetchGroups, fetchGroupUsers, getUserTimeZone} from "../youTrackHandler.ts";
 import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
 import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
@@ -22,7 +21,7 @@ import Loader from "@jetbrains/ring-ui-built/components/loader/loader";
 export default function ReminderSettings({ onEditReminder }) {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [alert, setAlert] = useState({ show: false, isClosing: false, message: "" });
+    const [_, setAlert] = useState({ show: false, isClosing: false, message: "" });
     const [timeZone, setTimeZone] = useState(null)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
@@ -187,6 +186,11 @@ export default function ReminderSettings({ onEditReminder }) {
                     ? t("reminderSettings.messages.alerts.activatedMessage")
                     : t("reminderSettings.messages.alerts.deactivatedMessage"),
             });
+            host.alert(
+                newValue
+                    ? t("reminderSettings.messages.alerts.activatedMessage")
+                    : t("reminderSettings.messages.alerts.deactivatedMessage")
+            );
         } catch (err) {
             console.error(t("reminderSettings.errors.toggleError"), err);
 
@@ -195,15 +199,10 @@ export default function ReminderSettings({ onEditReminder }) {
                 isClosing: false,
                 message: t("reminderSettings.messages.alerts.errorMessage"),
             });
+            host.alert(
+                t("reminderSettings.messages.alerts.errorMessage")
+            );
         }
-    };
-
-    const handleAlertClose = () => {
-        setAlert((prevAlert) => ({ ...prevAlert, show: false }));
-    };
-
-    const handleAlertCloseRequest = () => {
-        setAlert((prevAlert) => ({ ...prevAlert, isClosing: true }));
     };
 
     const handleDeleteClick = (reminder: ReminderData) => {
@@ -366,17 +365,6 @@ export default function ReminderSettings({ onEditReminder }) {
                     </ul>
                 </div>
             </div>
-            {alert.show && (
-                <Alert
-                    type={Alert.Type.SUCCESS}
-                    onClose={handleAlertClose}
-                    onCloseRequest={handleAlertCloseRequest}
-                    isClosing={alert.isClosing}
-                    timeout={3000}
-                >
-                    {alert.message}
-                </Alert>
-            )}
 
             <ReminderDeleteDialog
                 isOpen={isDeleteModalOpen}

@@ -5,9 +5,8 @@ import { t } from "i18next";
 import Toggle from "@jetbrains/ring-ui-built/components/toggle/toggle";
 import {updateReminders} from "../../main/globalStorage.ts";
 import {useState} from "react";
-import Alert from "@jetbrains/ring-ui-built/components/alert/alert";
 import pencilIcon from "@jetbrains/icons/pencil";
-import YTApp from "../youTrackApp.ts";
+import YTApp, {host} from "../youTrackApp.ts";
 
 export default function ReminderTable({
                                           reminders,
@@ -18,7 +17,7 @@ export default function ReminderTable({
     onDeleteClick: (reminder: any) => void;
     onEditClick: (reminder: any) => void;
 }) {
-    const [alert, setAlert] = useState({ show: false, isClosing: false, message: "" });
+    const [_, setAlert] = useState({ show: false, isClosing: false, message: "" });
 
     const currentUserLogin = YTApp.me.login;
 
@@ -39,6 +38,11 @@ export default function ReminderTable({
                     ? "Reminder successfully activated."
                     : "Reminder successfully deactivated.",
             });
+            host.alert(
+                newValue
+                    ? "Reminder successfully activated."
+                    : "Reminder successfully deactivated."
+            );
         } catch (err) {
             console.error("Error toggling reminder:", err);
 
@@ -47,17 +51,9 @@ export default function ReminderTable({
                 isClosing: false,
                 message: "An error occurred while updating the reminder.",
             });
+            host.alert("An error occurred while updating the reminder.");
         }
     };
-
-    const handleAlertClose = () => {
-        setAlert((prevAlert) => ({ ...prevAlert, show: false }));
-    };
-
-    const handleAlertCloseRequest = () => {
-        setAlert((prevAlert) => ({ ...prevAlert, isClosing: true }));
-    };
-
 
     if (reminders.length === 0) {
         return (
@@ -245,17 +241,6 @@ export default function ReminderTable({
                     creator: reminder.creatorName || "Unknown",
                 }))}
             />
-            {alert.show && (
-                <Alert
-                    type={Alert.Type.SUCCESS}
-                    onClose={handleAlertClose}
-                    onCloseRequest={handleAlertCloseRequest}
-                    isClosing={alert.isClosing}
-                    timeout={3000}
-                >
-                    {alert.message}
-                </Alert>
-            )}
         </div>
     );
 }
