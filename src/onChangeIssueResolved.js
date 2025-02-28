@@ -11,15 +11,19 @@ exports.rule = entities.Issue.onChange({
 
         const reminders = JSON.parse(issue.extensionProperties.activeReminders || '[]');
 
-        const updatedReminders = reminders.map(reminder =>
-            reminder.issueId === issue.id ? { ...reminder, isActive: false } : reminder
-        );
+        const hasActiveReminders = reminders.some(reminder => reminder.isActive);
 
-        issue.extensionProperties.activeReminders = JSON.stringify(updatedReminders);
+        if (hasActiveReminders) {
+            const updatedReminders = reminders.map(reminder =>
+                reminder.issueId === issue.id ? { ...reminder, isActive: false } : reminder
+            );
 
-        workflow.message(
-            `All reminders for issue ${issue.id} were deactivated.`
-        );
+            issue.extensionProperties.activeReminders = JSON.stringify(updatedReminders);
+
+            workflow.message(
+                `All reminders for issue ${issue.id} were deactivated.`
+            );
+        }
     },
     requirements: {}
 });
