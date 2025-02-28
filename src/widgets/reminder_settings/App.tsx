@@ -114,7 +114,7 @@ export default function App() {
     return (
         <div>
             {editingReminder ? (
-                <div style={{ paddingLeft: "20px", paddingRight: "20px", paddingTop: "10px" }}>
+                <div style={{ paddingLeft: "350px", paddingRight: "350px", paddingTop: "10px" }}>
                     <CreateReminder
                         editingReminder={editingReminder}
                         cameFromReminderTable={true}

@@ -5,13 +5,21 @@ const notifications = require('@jetbrains/youtrack-scripting-api/notifications')
 function getSearchExpression() {
     const issues = entities.Issue.findByExtensionProperties({
         hasReminders: true,
+    })
+
+    const filtered = JSON.parse(issues).filter((issue) => {
+        const updatedIssue = entities.Issue.findById(issue.id);
+
+        const reminders = JSON.parse(updatedIssue.extensionProperties.activeReminders || '[]');
+        return reminders.some((reminder) => reminder.isActive);
     });
 
-    if (!JSON.parse(issues) || JSON.parse(issues).length === 0) {
+
+    if (filtered.length === 0) {
         return null;
     }
 
-    const issueIds = JSON.parse(issues).map((issue) => issue.id);
+    const issueIds = filtered.map((issue) => issue.id);
     return issueIds.join(", ");
 }
 
