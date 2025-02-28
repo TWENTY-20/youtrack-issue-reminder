@@ -313,6 +313,36 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                     />
                 </div>
 
+                <p className="text-sm col-span-12 text-gray-500">
+                    {repeatSchedule.interval === 0 ? (
+                        t("repeatScheduleSelector.reminder.once")
+                    ) : (
+                        repeatSchedule.interval === 1
+                            ? t(`repeatScheduleSelector.reminder.recurring.one.${repeatSchedule.timeframe}`, {
+                                untilPart: endRepeatDate || endRepeatTime
+                                    ? t("repeatScheduleSelector.reminder.until", {
+                                        endDate: endRepeatDate || "",
+                                        endTime: endRepeatTime || ""
+                                    })
+                                    : ""
+                            })
+                            : t("repeatScheduleSelector.reminder.recurring.default", {
+                                interval: repeatSchedule.interval,
+                                timeframe: t(
+                                    `repeatScheduleSelector.timeframes.${repeatSchedule.timeframe}${
+                                        repeatSchedule.interval > 1 ? "s" : ""
+                                    }`
+                                ),
+                                untilPart: endRepeatDate || endRepeatTime
+                                    ? t("repeatScheduleSelector.reminder.until", {
+                                        endDate: endRepeatDate || "",
+                                        endTime: endRepeatTime || ""
+                                    })
+                                    : ""
+                            })
+                    )}
+                </p>
+
                 <div className="col-span-12">
                     <RepeatScheduleSelector
                         key={resetKey}
@@ -350,37 +380,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         </div>
                     </>
                 )}
-
-                <p className="text-sm col-span-12 text-gray-500">
-                    {repeatSchedule.interval === 0 ? (
-                        t("repeatScheduleSelector.reminder.once")
-                    ) : (
-                        repeatSchedule.interval === 1
-                            ? t(`repeatScheduleSelector.reminder.recurring.one.${repeatSchedule.timeframe}`, {
-                                untilPart: endRepeatDate || endRepeatTime
-                                    ? t("repeatScheduleSelector.reminder.until", {
-                                        endDate: endRepeatDate || "",
-                                        endTime: endRepeatTime || ""
-                                    })
-                                    : ""
-                            })
-                            : t("repeatScheduleSelector.reminder.recurring.default", {
-                                interval: repeatSchedule.interval,
-                                timeframe: t(
-                                    `repeatScheduleSelector.timeframes.${repeatSchedule.timeframe}${
-                                        repeatSchedule.interval > 1 ? "s" : ""
-                                    }`
-                                ),
-                                untilPart: endRepeatDate || endRepeatTime
-                                    ? t("repeatScheduleSelector.reminder.until", {
-                                        endDate: endRepeatDate || "",
-                                        endTime: endRepeatTime || ""
-                                    })
-                                    : ""
-                            })
-                    )}
-                </p>
-
 
                 <div className="col-span-6">
                     <UserSelector
