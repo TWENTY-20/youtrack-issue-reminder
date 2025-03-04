@@ -168,7 +168,7 @@ function sendMail(ctx, user, reminder, recipients) {
         </div>`;
 
     const message = {
-        fromName: "Ticket Reminder",
+        fromName: "Issue Reminder",
         to: [userEmail],
         subject: `${getTranslation(ctx, "subject", userLanguage)} ${reminder.subject}`,
         headers: { 'X-Custom-Header': 'Reminder Notification' },

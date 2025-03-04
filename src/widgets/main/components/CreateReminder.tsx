@@ -9,7 +9,7 @@ import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
 import {v4 as uuidv4} from "uuid";
 import {useTranslation} from "react-i18next";
-import YTApp from "../youTrackApp.ts";
+import YTApp, {host} from "../youTrackApp.ts";
 import {fetchGroupUsers, fetchIssueProjectId, getUserTimeZone} from "../youTrackHandler.ts";
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
@@ -132,7 +132,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 "reminder_sent": "möchte Sie an das Issue",
                 "reminder_sent2": "im Projekt",
                 "reminder_sent3": "erinnern",
-                "subject": "YouTrack Erinnerung:",
+                "subject": "YouTrack Issue Reminder:",
                 "subject_textblock": "Betreff:",
                 "planned_for": "Geplant für:",
                 "rescheduled_for": "Neu geplant für:",
@@ -146,7 +146,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 "reminder_sent": "wants to remind you about the issue",
                 "reminder_sent2": "in project",
                 "reminder_sent3": " ",
-                "subject": "YouTrack Reminder:",
+                "subject": "YouTrack Issue Reminder:",
                 "subject_textblock": "Subject:",
                 "planned_for": "Scheduled for:",
                 "rescheduled_for": "Rescheduled for:",
@@ -309,7 +309,35 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         label={t("createReminder.labels.time")}
                         value={time}
                         {...(touched.time && errors.time ? { error: errors.time } : {})}
-                        onChange={(e) => setTime(e.target.value)}
+                        onChange={(e) => {
+                            const selectedTime = e.target.value;
+                            const now = new Date();
+                            const selectedDate = date ? new Date(date) : new Date();
+
+                            const currentHours = now.getHours();
+                            const currentMinutes = now.getMinutes();
+
+                            const [selectedHours, selectedMinutes] = selectedTime.split(":").map(Number);
+
+                            const isToday =
+                                selectedDate.getFullYear() === now.getFullYear() &&
+                                selectedDate.getMonth() === now.getMonth() &&
+                                selectedDate.getDate() === now.getDate();
+
+                            if (isToday) {
+                                const isBeforeCurrentTime =
+                                    selectedHours < currentHours || (selectedHours === currentHours && selectedMinutes < currentMinutes);
+
+                                if (isBeforeCurrentTime) {
+                                    host.alert(t("createReminder.errors.timeInPast"));
+
+                                    e.target.value = "";
+                                    setTime("");
+                                    return;
+                                }
+                            }
+                            setTime(selectedTime);
+                        }}
                     />
                 </div>
 

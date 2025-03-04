@@ -30,7 +30,8 @@
       "submitError": "An error occurred while submitting the reminder.",
       "selectedUsersOrGroups": "At least one user or group must be selected.",
       "endRepeatDate": "Please enter a valid end date.",
-      "endRepeatTime": "Please enter a valid end time."
+      "endRepeatTime": "Please enter a valid end time.",
+      "timeInPast": "The entered time is in the past. Please choose a valid time."
     },
     "messages": {
       "confirmCreateTitle": "Missing Email Addresses",

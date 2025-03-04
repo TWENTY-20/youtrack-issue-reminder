@@ -34,7 +34,8 @@
       "submitError": "Beim Absenden der Erinnerung ist ein Fehler aufgetreten.",
       "selectedUsersOrGroups": "Mindestens ein Benutzer oder eine Gruppe muss ausgewählt werden.",
       "endRepeatDate": "Bitte ein gültiges Enddatum eingeben.",
-      "endRepeatTime": "Bitte eine gültige Endzeit eingeben."
+      "endRepeatTime": "Bitte eine gültige Endzeit eingeben.",
+      "timeInPast": "Die eingegebene Zeit liegt in der Vergangenheit. Bitte wählen Sie eine gültige Zeit."
     },
     "actions": {
       "reset": "Zurücksetzen",
