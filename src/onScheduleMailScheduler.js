@@ -128,7 +128,7 @@ function sendMail(ctx, user, reminder, recipients) {
 
     const rescheduledForText = nextReminder
         ? `<p style="margin-bottom: 10px;">
-          <strong>${getTranslation(ctx, "rescheduled_for", userLanguage)}</strong> ${nextReminder.date} ${nextReminder.time}
+          <strong>${getTranslation(ctx, "rescheduled_for", userLanguage)}</strong> ${nextReminder.date} ${nextReminder.time} (${reminder.timezone})
        </p>`
         : "";
 
