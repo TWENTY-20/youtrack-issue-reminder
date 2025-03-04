@@ -62,6 +62,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         time: false,
         message: false,
         selectedUsersOrGroups: false,
+        endRepeatFields: false,
     });
 
     const { t } = useTranslation();
@@ -108,6 +109,10 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             selectedUsersOrGroups: selectedUsers.length > 0 || selectedGroups.length > 0
                 ? ""
                 : t("createReminder.errors.selectedUsersOrGroups"),
+            endRepeatFields: (endRepeatDate && endRepeatTime) || (!endRepeatDate && !endRepeatTime)
+                ? ""
+                : t("createReminder.errors.missingEndDateOrTime"),
+
         };
     };
 
@@ -120,6 +125,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             time: true,
             message: true,
             selectedUsersOrGroups: true,
+            endRepeatFields: true,
         });
 
         const errors = validateFields();
@@ -235,6 +241,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             time: false,
             message: false,
             selectedUsersOrGroups: false,
+            endRepeatFields: false,
         });
     };
 
@@ -403,9 +410,44 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                                 type="time"
                                 label={t("createReminder.labels.endRepeatTime")}
                                 value={endRepeatTime}
-                                onChange={(e) => setEndRepeatTime(e.target.value)}
+                                onChange={(e) => {
+                                    const selectedTime = e.target.value;
+                                    const now = new Date();
+                                    const selectedDate = endRepeatDate
+                                        ? new Date(endRepeatDate
+                                        ) : new Date();
+
+                                    const currentHours = now.getHours();
+                                    const currentMinutes = now.getMinutes();
+
+                                    const [selectedHours, selectedMinutes] = selectedTime.split(":").map(Number);
+
+                                    const isToday =
+                                        selectedDate.getFullYear() === now.getFullYear() &&
+                                        selectedDate.getMonth() === now.getMonth() &&
+                                        selectedDate.getDate() === now.getDate();
+
+                                    if (isToday) {
+                                        const isBeforeCurrentTime =
+                                            selectedHours < currentHours || (selectedHours === currentHours && selectedMinutes < currentMinutes);
+
+                                        if (isBeforeCurrentTime) {
+                                            host.alert(t("createReminder.errors.timeInPast"));
+
+                                            e.target.value = "";
+                                            setEndRepeatTime("");
+                                            return;
+                                        }
+                                    }
+                                    setEndRepeatTime(selectedTime);
+                                }}
                             />
                         </div>
+                        {touched.endRepeatFields && errors.endRepeatFields && (
+                            <div className="col-span-12 -mt-3">
+                                <div className="text-[#cc3646] text-xs">{errors.endRepeatFields}</div>
+                            </div>
+                        )}
                     </>
                 )}
 
@@ -426,7 +468,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
                 {touched.selectedUsersOrGroups && errors.selectedUsersOrGroups && (
                     <div className="col-span-12 -mt-6">
-                        <div className="text-[#e47875] text-xs">{errors.selectedUsersOrGroups}</div>
+                        <div className="text-[#cc3646] text-xs">{errors.selectedUsersOrGroups}</div>
                     </div>
                 )}
 

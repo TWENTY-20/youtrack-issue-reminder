@@ -31,7 +31,8 @@
       "selectedUsersOrGroups": "At least one user or group must be selected.",
       "endRepeatDate": "Please enter a valid end date.",
       "endRepeatTime": "Please enter a valid end time.",
-      "timeInPast": "The entered time is in the past. Please choose a valid time."
+      "timeInPast": "The entered time is in the past. Please choose a valid time.",
+      "missingEndDateOrTime": "Please set both an end date and an end time or leave both fields empty."
     },
     "messages": {
       "confirmCreateTitle": "Missing Email Addresses",

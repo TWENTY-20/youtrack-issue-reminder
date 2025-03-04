@@ -35,7 +35,8 @@
       "selectedUsersOrGroups": "Mindestens ein Benutzer oder eine Gruppe muss ausgewählt werden.",
       "endRepeatDate": "Bitte ein gültiges Enddatum eingeben.",
       "endRepeatTime": "Bitte eine gültige Endzeit eingeben.",
-      "timeInPast": "Die eingegebene Zeit liegt in der Vergangenheit. Bitte wählen Sie eine gültige Zeit."
+      "timeInPast": "Die eingegebene Zeit liegt in der Vergangenheit. Bitte wählen Sie eine gültige Zeit.",
+      "missingEndDateOrTime": "Bitte legen Sie sowohl ein Enddatum als auch eine Endzeit fest oder lassen Sie beide Felder leer."
     },
     "actions": {
       "reset": "Zurücksetzen",
