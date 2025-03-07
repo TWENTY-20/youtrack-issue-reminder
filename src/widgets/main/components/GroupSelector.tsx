@@ -102,6 +102,7 @@ export default function GroupSelector({
                     loading={isLoading}
                     filter
                     className="w-full mb-4"
+                    popupClassName={"remove-input-focus"}
                 />
             </div>
 

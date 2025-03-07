@@ -69,6 +69,7 @@ export default function RepeatScheduleSelector({ onChange, editingReminder }: { 
                     height={ControlsHeight.L}
                     filter={false}
                     className="w-full"
+                    popupClassName={"remove-input-focus"}
                 />
             </div>
         </div>
