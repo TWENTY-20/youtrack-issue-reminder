@@ -5,7 +5,7 @@ const notifications = require('@jetbrains/youtrack-scripting-api/notifications')
 function getSearchExpression() {
     const issues = entities.Issue.findByExtensionProperties({
         hasReminders: true,
-    })
+    });
 
     const filtered = JSON.parse(issues).filter((issue) => {
         const updatedIssue = entities.Issue.findById(issue.id);
@@ -60,11 +60,11 @@ exports.rule = entities.Issue.onSchedule({
 
             const format = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
-            const userReminderTime = new Date(dateTimeString).getTime()
+            const userReminderTime = new Date(dateTimeString).getTime();
 
             const currentUserTime = new Date().getTime();
-            const formattedCurrentUserTime = dateTime.format(currentUserTime, format, reminder.timezone)
-            const dateOfCurrentUserTime = new Date(formattedCurrentUserTime).getTime()
+            const formattedCurrentUserTime = dateTime.format(currentUserTime, format, reminder.timezone);
+            const dateOfCurrentUserTime = new Date(formattedCurrentUserTime).getTime();
 
             if (reminder.endRepeatDate && reminder.endRepeatTime) {
                 const endDateTimeString = `${reminder.endRepeatDate}T${reminder.endRepeatTime}:00Z`;
@@ -111,7 +111,7 @@ function sendMail(ctx, user, reminder, recipients) {
     const issue = entities.Issue.findById(reminder.issueId);
     const userEntity = entities.User.findByLogin(user);
     const userEmail = userEntity.email;
-    let userLanguage = userEntity.language
+    let userLanguage = userEntity.language;
 
     const userNames = Array.from(recipients).map((user) => {
         const userEntity = entities.User.findByLogin(user);
