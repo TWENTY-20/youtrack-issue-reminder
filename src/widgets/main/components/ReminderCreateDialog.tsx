@@ -2,6 +2,7 @@ import Button from "@jetbrains/ring-ui-built/components/button/button";
 import {t} from "i18next";
 import {UserTagDTO} from "../types.ts";
 import Tag from "@jetbrains/ring-ui-built/components/tag/tag";
+import React from "react";
 
 interface CreateDialogProps {
     isOpen: boolean;

@@ -1,5 +1,6 @@
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import {t} from "i18next";
+import React from "react";
 
 interface DeleteDialog {
     isOpen: boolean;

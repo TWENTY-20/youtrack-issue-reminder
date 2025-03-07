@@ -118,7 +118,7 @@ function sendMail(ctx, user, reminder, recipients) {
         return userEntity.fullName;
     });
 
-    if(userLanguage == "Deutsch") {
+    if(userLanguage === "Deutsch") {
         userLanguage = "de";
     } else {
         userLanguage = "en";
