@@ -62,8 +62,6 @@ export default function App() {
             }
         }
 
-        console.log(filteredReminders);
-
         setReminders(filteredReminders);
         setIsLoading(false);
     };
