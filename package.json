@@ -14,7 +14,6 @@
     "@jetbrains/ring-ui-built": "6.0.56",
     "@jetbrains/youtrack-scripting": "^0.2.1",
     "@jetbrains/youtrack-scripting-api": "^2022.1.46592",
-    "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
     "build": "^0.1.4",
     "cron": "^3.5.0",
@@ -30,19 +29,20 @@
     "tailwindcss": "^3.4.10",
     "usehooks-ts": "^3.1.0",
     "uuid": "^11.0.5",
-    "vite": "6.2.1",
     "vite-plugin-static-copy": "^1.0.6"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.32",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "@typescript-eslint/parser": "^7.17.0",
+    "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.35.2",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.11",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vite": "^5.4.14"
   }
 }
