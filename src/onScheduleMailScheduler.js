@@ -15,9 +15,8 @@ function getSearchExpression() {
     });
 
 
-    if (filtered.length === 0) {
-        return null;
-    }
+    const emptyResultQuery = 'created: Tomorrow';
+    if (filtered.length === 0) return emptyResultQuery;
 
     const issueIds = filtered.map((issue) => issue.id);
     return issueIds.join(", ");

@@ -3,7 +3,7 @@
   "name": "issue_reminder",
   "title": "Issue Reminder",
   "description": "A tool to setup reminders for an existing issue.",
-  "changeNotes": "See ...",
+  "changeNotes": "See https://plugins.jetbrains.com/plugin/26771-issue-reminder/release-notes",
   "version": "1.0.0",
   "icon": "logo.svg",
   "iconDark": "logoDark.svg",
