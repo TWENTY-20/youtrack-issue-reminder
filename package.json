@@ -16,7 +16,7 @@
     "@jetbrains/youtrack-scripting-api": "^2022.1.46592",
     "autoprefixer": "^10.4.20",
     "build": "^0.1.4",
-    "cron": "^3.5.0",
+    "cron": "^4.0.0",
     "i18next": "^23.14.0",
     "jquery": "^3.7.1",
     "npm": "^10.9.0",
