@@ -28,7 +28,19 @@ exports.httpHandler = {
                 const issue = entities.Issue.findById(issueId)
 
                 issue.extensionProperties.activeReminders = body.value;
-                ctx.response.json({body: body.value});
+
+                const reminderData = JSON.parse(body.value);
+
+                const reminderShort = reminderData.map((reminder) => ({
+                    issueId,
+                    dateTime: `${reminder.date}T${reminder.time}:00Z`,
+                    timezone: reminder.timezone,
+                    isActive: reminder.isActive,
+                }));
+
+                ctx.globalStorage.extensionProperties.reminderShortData = JSON.stringify(reminderShort);
+
+                ctx.response.json({ body: body.value });
             }
         },
         {

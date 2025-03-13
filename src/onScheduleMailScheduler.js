@@ -7,26 +7,27 @@ function getSearchExpression() {
         hasReminders: true,
     });
 
-    const filtered = JSON.parse(issues).filter((issue) => {
-        const updatedIssue = entities.Issue.findById(issue.id);
+    const resultArray = [];
+    issues.forEach((issue) => {
+        const reminders = JSON.parse(issue.extensionProperties.activeReminders || '[]');
 
-        const reminders = JSON.parse(updatedIssue.extensionProperties.activeReminders || '[]');
-        return reminders.some((reminder) => reminder.isActive);
+        if (reminders.some((reminder) => reminder.isActive)) {
+            resultArray.push({ id: issue.id });
+        }
     });
 
-
     const emptyResultQuery = 'created: Tomorrow';
-    if (filtered.length === 0) return emptyResultQuery;
+    if (resultArray.length === 0) return emptyResultQuery;
 
-    const issueIds = filtered.map((issue) => issue.id);
+    const issueIds = resultArray.map((issue) => issue.id);
     return issueIds.join(", ");
 }
 
 exports.rule = entities.Issue.onSchedule({
     title: 'Reminder Email Scheduler with Time Zone Support',
     search: getSearchExpression,
-    cron: "2 * * * * ?",
-    guard: () => getSearchExpression() != null,
+    cron: "2 0/15 * * * ?",
+    guard: () => true,
     action: (ctx) => {
         const reminders = JSON.parse(ctx.issue.extensionProperties.activeReminders || '[]');
         const activatedReminders = reminders.filter((reminder) => reminder.isActive);

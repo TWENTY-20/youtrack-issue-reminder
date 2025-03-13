@@ -5,6 +5,9 @@
       "properties": {
         "translations": {
           "type": "string"
+        },
+        "reminderShortData": {
+          "type": "string"
         }
       }
     },

@@ -9,10 +9,11 @@ import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
 import {v4 as uuidv4} from "uuid";
 import {useTranslation} from "react-i18next";
-import YTApp, {host} from "../youTrackApp.ts";
+import YTApp from "../youTrackApp.ts";
 import {fetchGroupUsers, fetchIssueProjectId, getUserTimeZone} from "../youTrackHandler.ts";
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
+import Select, {SelectItem} from "@jetbrains/ring-ui-built/components/select/select";
 
 // @ts-ignore
 export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated, cameFromReminderTable = false}) {
@@ -295,56 +296,55 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 </div>
 
                 <div className="col-span-6">
+                    <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.date")}</label>
                     <Input
                         size={Size.FULL}
                         height={ControlsHeight.L}
                         placeholder={t("createReminder.placeholders.date")}
                         type="date"
-                        label={t("createReminder.labels.date")}
                         value={date}
                         min={new Date().toISOString().split("T")[0]}
                         {...(touched.date && errors.date ? { error: errors.date } : {})}
                         onChange={(e) => setDate(e.target.value)}
                     />
                 </div>
+
                 <div className="col-span-6">
-                    <Input
+                    <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.time")}</label>
+                    <Select
                         size={Size.FULL}
                         height={ControlsHeight.L}
-                        placeholder={t("createReminder.placeholders.time")}
-                        type="time"
-                        label={t("createReminder.labels.time")}
-                        value={time}
-                        {...(touched.time && errors.time ? { error: errors.time } : {})}
-                        onChange={(e) => {
-                            const selectedTime = e.target.value;
+                        selected={time ? { label: time, key: time, value: time } : null}
+                        onChange={(selected: SelectItem<{ label: any; key: any; value: any; }> | null) => setTime(selected?.value || "")}
+                        filter
+                        data={Array.from({ length: 96 }, (_, i) => {
+                            const hours = Math.floor(i / 4);
+                            const minutes = (i % 4) * 15;
+                            const timeString = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
                             const now = new Date();
-                            const selectedDate = date ? new Date(date) : new Date();
-
-                            const currentHours = now.getHours();
-                            const currentMinutes = now.getMinutes();
-
-                            const [selectedHours, selectedMinutes] = selectedTime.split(":").map(Number);
-
+                            const selectedDate = date ? new Date(date) : now;
                             const isToday =
                                 selectedDate.getFullYear() === now.getFullYear() &&
                                 selectedDate.getMonth() === now.getMonth() &&
                                 selectedDate.getDate() === now.getDate();
 
-                            if (isToday) {
-                                const isBeforeCurrentTime =
-                                    selectedHours < currentHours || (selectedHours === currentHours && selectedMinutes < currentMinutes);
+                            const currentHours = now.getHours();
+                            const currentMinutes = now.getMinutes();
 
-                                if (isBeforeCurrentTime) {
-                                    host.alert(t("createReminder.errors.timeInPast"));
+                            const isPastTime =
+                                isToday &&
+                                (hours < currentHours || (hours === currentHours && minutes <= currentMinutes));
 
-                                    e.target.value = "";
-                                    setTime("");
-                                    return;
-                                }
+                            if (!isPastTime) {
+                                return {
+                                    label: timeString,
+                                    key: timeString,
+                                    value: timeString,
+                                };
                             }
-                            setTime(selectedTime);
-                        }}
+                            return undefined;
+                        }).filter((item): item is { label: string; key: string; value: string } => Boolean(item))} // Nur gültige Zeiten behalten
                     />
                 </div>
 
@@ -391,56 +391,53 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 {showEndRepeat && (
                     <>
                         <div className="col-span-6">
+                            <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.endRepeatDate")}</label>
                             <Input
                                 size={Size.FULL}
                                 height={ControlsHeight.L}
                                 placeholder={t("createReminder.placeholders.endRepeatDate")}
                                 type="date"
-                                label={t("createReminder.labels.endRepeatDate")}
                                 value={endRepeatDate}
-                                min={date || new Date().toISOString().split("T")[0]} // Datum darf nicht vor dem Startdatum liegen
+                                min={date || new Date().toISOString().split("T")[0]}
                                 onChange={(e) => setEndRepeatDate(e.target.value)}
                             />
                         </div>
                         <div className="col-span-6">
-                            <Input
+                            <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.placeholders.endRepeatTime")}</label>
+                            <Select
                                 size={Size.FULL}
                                 height={ControlsHeight.L}
-                                placeholder={t("createReminder.placeholders.endRepeatTime")}
-                                type="time"
-                                label={t("createReminder.labels.endRepeatTime")}
-                                value={endRepeatTime}
-                                onChange={(e) => {
-                                    const selectedTime = e.target.value;
+                                selected={endRepeatTime ? { label: endRepeatTime, key: endRepeatTime, value: endRepeatTime } : null}
+                                onChange={(value: { value: string } | null) => setEndRepeatTime(value?.value || "")}
+                                data={Array.from({ length: 96 }, (_, i) => {
+                                    const hours = Math.floor(i / 4);
+                                    const minutes = (i % 4) * 15;
+                                    const timeString = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
                                     const now = new Date();
-                                    const selectedDate = endRepeatDate
-                                        ? new Date(endRepeatDate
-                                        ) : new Date();
-
-                                    const currentHours = now.getHours();
-                                    const currentMinutes = now.getMinutes();
-
-                                    const [selectedHours, selectedMinutes] = selectedTime.split(":").map(Number);
-
+                                    const selectedDate = endRepeatDate ? new Date(endRepeatDate) : now;
                                     const isToday =
                                         selectedDate.getFullYear() === now.getFullYear() &&
                                         selectedDate.getMonth() === now.getMonth() &&
                                         selectedDate.getDate() === now.getDate();
 
-                                    if (isToday) {
-                                        const isBeforeCurrentTime =
-                                            selectedHours < currentHours || (selectedHours === currentHours && selectedMinutes < currentMinutes);
+                                    const currentHours = now.getHours();
+                                    const currentMinutes = now.getMinutes();
 
-                                        if (isBeforeCurrentTime) {
-                                            host.alert(t("createReminder.errors.timeInPast"));
+                                    const isPastTime =
+                                        isToday &&
+                                        (hours < currentHours || (hours === currentHours && minutes < currentMinutes));
 
-                                            e.target.value = "";
-                                            setEndRepeatTime("");
-                                            return;
-                                        }
+                                    if (!isPastTime) {
+                                        return {
+                                            label: timeString,
+                                            key: timeString,
+                                            value: timeString,
+                                        };
                                     }
-                                    setEndRepeatTime(selectedTime);
-                                }}
+                                    return undefined;
+                                }).filter((item): item is { label: string; key: string; value: string } => Boolean(item))}
+                                label={t("createReminder.labels.endRepeatTime")}
                             />
                         </div>
                         {touched.endRepeatFields && errors.endRepeatFields && (
