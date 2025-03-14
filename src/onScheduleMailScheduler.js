@@ -7,7 +7,7 @@ function getSearchExpression() {
         {
             hasReminders: true,
         }
-    )
+    );
 
     let resultArray = [];
     projects.forEach((project) => {
