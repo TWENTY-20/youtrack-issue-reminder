@@ -317,9 +317,10 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         selected={time ? { label: time, key: time, value: time } : null}
                         onChange={(selected: SelectItem<{ label: any; key: any; value: any; }> | null) => setTime(selected?.value || "")}
                         filter
-                        data={Array.from({ length: 1440 }, (_, i) => {  // 1440 Minuten in einem Tag
-                            const hours = Math.floor(i / 60);           // Stunden
-                            const minutes = i % 60;                    // Minuten
+                        data={Array.from({ length: 96 }, (_, i) => {
+                            const totalMinutes = i * 15;
+                            const hours = Math.floor(totalMinutes / 60);
+                            const minutes = totalMinutes % 60;
                             const timeString = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 
                             const now = new Date();
@@ -344,7 +345,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                                 };
                             }
                             return undefined;
-                        }).filter((item): item is { label: string; key: string; value: string } => Boolean(item))} // Nur gültige Zeiten behalten                    />
+                        }).filter((item): item is { label: string; key: string; value: string } => Boolean(item))}
                     />
                 </div>
 

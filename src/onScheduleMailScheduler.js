@@ -41,7 +41,7 @@ function getSearchExpression() {
 exports.rule = entities.Issue.onSchedule({
     title: 'Reminder Email Scheduler with Time Zone Support',
     search: getSearchExpression,
-    cron: "2 * * * * ?",
+    cron: "2 0/15 * * * ?",
     guard: () => true,
     action: (ctx) => {
         const reminders = JSON.parse(ctx.issue.extensionProperties.activeReminders || '[]');
