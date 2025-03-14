@@ -17,16 +17,16 @@ export async function fetchAllReminders(): Promise<{ issueId: string; reminders:
         const result = await host.fetchApp("backend/fetchAllReminders", { method: "GET" });
 
         if (result.result && Array.isArray(result.result)) {
-            const remindersPromises = result.result.map(async (issue: { id: string }) => {
+            const remindersPromises = result.result.map(async (issue: any) => {
                 try {
                     const reminders = await host.fetchApp("backend/fetchReminders", {
-                        query: { issueId: issue.id },
+                        query: { issueId: issue },
                     });
 
-                    return { issueId: issue.id, reminders: reminders.result || [] };
+                    return { issueId: issue, reminders: reminders.result || [] };
                 } catch (error) {
-                    console.error(`Fehler beim Abrufen von Erinnerungen für Issue ${issue.id}:`, error);
-                    return { issueId: issue.id, reminders: [] };
+                    console.error(`Fehler beim Abrufen von Erinnerungen für Issue ${issue}:`, error);
+                    return { issueId: issue, reminders: [] };
                 }
             });
 

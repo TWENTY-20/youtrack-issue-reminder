@@ -151,7 +151,14 @@
     },
     "loading": "Berechtigungen werden geladen, bitte warten...",
     "permission_denied_message": "Sie haben keine ausreichenden Berechtigungen, um auf diesen Inhalt zuzugreifen.",
-    "ask_admin": "Bitte wenden Sie sich an einen Administrator, um die erforderlichen Berechtigungen zu erhalten (Gruppe einsehen)"
+    "ask_admin": "Bitte wenden Sie sich an einen Administrator, um die erforderlichen Berechtigungen zu erhalten:",
+    "permission": "Gruppe einsehen",
+    "example_path_text": "Um Berechtigungen zu konfigurieren, folgen Sie diesem Pfad:",
+    "example_path_1": "Administration",
+    "example_path_2": "Rechteverwaltung",
+    "example_path_3": "Rollen",
+    "example_path_4": "(Mitwirkender) oder eine Rolle Ihrer Wahl",
+    "example_path_5": "Berechtigungen"
   },
   "reminderTable": {
     "columns": {

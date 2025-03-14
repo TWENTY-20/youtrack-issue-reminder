@@ -15,7 +15,7 @@ export async function saveReminder(data: ReminderData, issueId?: string) {
         body: { value: JSON.stringify(updatedReminders) },
     });
 
-    await setReminderBool(true, idToFetch);
+    await saveReminderProject(data);
 }
 
 export async function updateReminders(reminderId: string, updates: Partial<ReminderData>, issueId?: string): Promise<void> {
@@ -27,17 +27,19 @@ export async function updateReminders(reminderId: string, updates: Partial<Remin
             reminder.uuid === reminderId ? { ...reminder, ...updates } : reminder
         );
 
+        const reminderToUpdate = reminders.find((reminder) => reminder.uuid === reminderId);
+        if (!reminderToUpdate) {
+            console.warn("Reminder not found");
+            return;
+        }
+
         await host.fetchApp(`backend/saveReminders`, {
             method: 'POST',
             query: {issueId: idToFetch},
             body: { value: JSON.stringify(updatedReminders) },
         });
 
-        if (updatedReminders.length === 0) {
-            await setReminderBool(null, idToFetch);
-        } else {
-            await setReminderBool(true, idToFetch);
-        }
+        await updateRemindersProject(reminderId, updates, reminderToUpdate.project);
     } catch (error) {
         console.error("Error updating reminders:", error);
     }
@@ -56,11 +58,86 @@ export async function fetchReminders(issueId?: string): Promise<ReminderData[]> 
     }
 }
 
+export async function fetchRemindersProject(project?: string): Promise<ReminderData[]> {
+    try {
+        const result = await host.fetchApp("backend/fetchRemindersProject", {query: {projectName: project}});
+
+        return result.result || [];
+    } catch (error) {
+        console.error("Error fetching reminders:", error);
+        return [];
+    }
+}
+
+export async function saveReminderProject(data: ReminderData) {
+    const existingReminders = await fetchRemindersProject(data.project);
+
+    const updatedReminders = [...existingReminders, data];
+
+    await host.fetchApp(`backend/saveRemindersProject`, {
+        method: 'POST',
+        query: {projectName: data.project},
+        body: { value: JSON.stringify(updatedReminders) },
+    })
+
+    await setReminderBoolProject(true, data.project);
+}
+
+export async function updateRemindersProject(reminderId: string, updates: Partial<ReminderData>, project?: string): Promise<void> {
+    try {
+        const reminders = await fetchRemindersProject(project);
+
+        const updatedReminders = reminders.map((reminder) =>
+            reminder.uuid === reminderId ? { ...reminder, ...updates } : reminder
+        );
+
+        await host.fetchApp(`backend/saveRemindersProject`, {
+            method: 'POST',
+            query: {projectName: project},
+            body: { value: JSON.stringify(updatedReminders) },
+        });
+
+        if (updatedReminders.length === 0) {
+            await setReminderBoolProject(null, project);
+        } else {
+            await setReminderBoolProject(true, project);
+        }
+    } catch (error) {
+        console.error("Error updating reminders:", error);
+    }
+}
+
+export async function removeReminderProject(reminderId: string, project?: string): Promise<void> {
+    try {
+        const existingReminders = await fetchRemindersProject(project);
+
+        const updatedReminders = existingReminders.filter((reminder) => reminder.uuid !== reminderId);
+
+        await host.fetchApp(`backend/saveRemindersProject`, {
+            method: 'POST',
+            query: {projectName: project},
+            body: { value: JSON.stringify(updatedReminders) },
+        });
+
+        if (updatedReminders.length === 0) {
+            await setReminderBoolProject(null, project);
+        }
+    } catch (error) {
+        console.error("Error removing reminder:", error);
+    }
+}
+
 export async function removeReminder(reminderId: string, issueId?: string): Promise<void> {
     try {
         const idToFetch = issueId || YTApp.entity.id;
 
         const existingReminders = await fetchReminders(idToFetch);
+
+        const reminderToRemove = existingReminders.find((reminder) => reminder.uuid === reminderId);
+        if (!reminderToRemove) {
+            console.warn("Reminder not found");
+            return;
+        }
 
         const updatedReminders = existingReminders.filter((reminder) => reminder.uuid !== reminderId);
 
@@ -70,9 +147,7 @@ export async function removeReminder(reminderId: string, issueId?: string): Prom
             body: { value: JSON.stringify(updatedReminders) },
         });
 
-        if (updatedReminders.length === 0) {
-            await setReminderBool(null, idToFetch);
-        }
+        await removeReminderProject(reminderId, reminderToRemove.project);
     } catch (error) {
         console.error("Error removing reminder:", error);
     }
@@ -89,16 +164,13 @@ export async function uploadTranslations(translations: Record<string, any>): Pro
     }
 }
 
-async function setReminderBool(hasActiveReminders: boolean | null, issueId?: string): Promise<void> {
-
-    const idToFetch = issueId || YTApp.entity.id;
-
+async function setReminderBoolProject(hasActiveReminders: boolean | null, project?: string): Promise<void> {
     try {
-        await host.fetchApp(`backend/setReminderBool`, {
+        await host.fetchApp(`backend/setReminderBoolProject`, {
             method: 'POST',
-            query: {issueId: idToFetch},
+            query: {projectName: project},
             body: hasActiveReminders
-        });
+        })
     } catch (error) {
         console.error("Error setting reminder bool:", error);
     }

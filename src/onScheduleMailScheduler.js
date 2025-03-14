@@ -3,30 +3,45 @@ const dateTime = require('@jetbrains/youtrack-scripting-api/date-time');
 const notifications = require('@jetbrains/youtrack-scripting-api/notifications');
 
 function getSearchExpression() {
-    const issues = entities.Issue.findByExtensionProperties({
-        hasReminders: true,
-    });
-
-    const resultArray = [];
-    issues.forEach((issue) => {
-        const reminders = JSON.parse(issue.extensionProperties.activeReminders || '[]');
-
-        if (reminders.some((reminder) => reminder.isActive)) {
-            resultArray.push({ id: issue.id });
+    const projects = entities.Project.findByExtensionProperties(
+        {
+            hasReminders: true,
         }
+    )
+
+    let resultArray = [];
+    projects.forEach((project) => {
+        const reminders = JSON.parse(project.extensionProperties.reminderShortData || '[]');
+        reminders
+            .filter((reminder) => reminder.isActive)
+            .forEach((reminder) => {
+                const dateTimeString = `${reminder.date}T${reminder.time}:00Z`;
+
+                const format = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
+                const userReminderTime = new Date(dateTimeString).getTime();
+
+                const currentUserTime = new Date().getTime();
+                const formattedCurrentUserTime = dateTime.format(currentUserTime, format, reminder.timezone);
+                const dateOfCurrentUserTime = new Date(formattedCurrentUserTime).getTime();
+
+                if (userReminderTime <= dateOfCurrentUserTime) {
+                    resultArray.push({ id: reminder.issueId });
+                }
+            });
     });
 
     const emptyResultQuery = 'created: Tomorrow';
     if (resultArray.length === 0) return emptyResultQuery;
 
-    const issueIds = resultArray.map((issue) => issue.id);
+    const issueIds = [...new Set(resultArray.map((issue) => issue.id))];
     return issueIds.join(", ");
 }
 
 exports.rule = entities.Issue.onSchedule({
     title: 'Reminder Email Scheduler with Time Zone Support',
     search: getSearchExpression,
-    cron: "2 0/15 * * * ?",
+    cron: "2 * * * * ?",
     guard: () => true,
     action: (ctx) => {
         const reminders = JSON.parse(ctx.issue.extensionProperties.activeReminders || '[]');
@@ -230,6 +245,21 @@ function handleRepeatSchedule(ctx, reminder) {
         const updatedReminders = [...filteredReminders, formData];
         ctx.issue.extensionProperties.activeReminders = JSON.stringify(updatedReminders);
 
+        const reminderShort = JSON.parse(ctx.issue.project.extensionProperties.reminderShortData || '[]');
+        const filteredRemindersShort = reminderShort.filter((r) => r.uuid !== reminder.uuid);
+
+        const shortReminder = {
+            issueId: reminder.issueId,
+            date: nextReminder.date,
+            time: reminder.time,
+            timezone: reminder.timezone,
+            isActive: reminder.isActive,
+            uuid: reminder.uuid,
+        };
+
+        const updatedShortReminders = [...filteredRemindersShort, shortReminder];
+        ctx.issue.project.extensionProperties.reminderShortData = JSON.stringify(updatedShortReminders);
+
         // console.log(`Reminder for issue ${ctx.issue.id} rescheduled to ${nextReminder.date} ${nextReminder.time}`);
     } else {
         deactivateReminder(ctx, reminder.uuid);
@@ -242,6 +272,30 @@ function deactivateReminder(ctx, reminderId) {
         reminder.uuid === reminderId ? { ...reminder, isActive: false } : reminder
     );
     ctx.issue.extensionProperties.activeReminders = JSON.stringify(updatedReminders);
+
+    const remindersShort = JSON.parse(ctx.issue.project.extensionProperties.reminderShortData || '[]');
+
+    const updatedShortReminders = remindersShort.map((reminder) =>
+        reminder.uuid === reminderId
+            ? {
+                issueId: reminder.issueId,
+                date: reminder.date,
+                time: reminder.time,
+                timezone: reminder.timezone,
+                isActive: false,
+                uuid: reminder.uuid,
+            }
+            : {
+                issueId: reminder.issueId,
+                date: reminder.date,
+                time: reminder.time,
+                timezone: reminder.timezone,
+                isActive: reminder.isActive,
+                uuid: reminder.uuid,
+            }
+    );
+
+    ctx.issue.project.extensionProperties.reminderShortData = JSON.stringify(updatedShortReminders);
 
     //console.log(`Reminder with ID ${reminderId} has been deactivated.`);
 }

@@ -5,9 +5,6 @@
       "properties": {
         "translations": {
           "type": "string"
-        },
-        "reminderShortData": {
-          "type": "string"
         }
       }
     },
@@ -15,6 +12,14 @@
       "entityType": "Issue",
       "properties": {
         "activeReminders": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "entityType": "Project",
+      "properties": {
+        "reminderShortData": {
           "type": "string"
         },
         "hasReminders": {

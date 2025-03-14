@@ -27,7 +27,9 @@ body.plugin {
     background-color: rgb(184, 210, 228);
 }
 
-
+.remove-input-focus input:focus {
+    outline: none !important;
+}
 
 .attachmentIcon {
     color: var(--ring-icon-color);

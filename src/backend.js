@@ -29,17 +29,6 @@ exports.httpHandler = {
 
                 issue.extensionProperties.activeReminders = body.value;
 
-                const reminderData = JSON.parse(body.value);
-
-                const reminderShort = reminderData.map((reminder) => ({
-                    issueId,
-                    dateTime: `${reminder.date}T${reminder.time}:00Z`,
-                    timezone: reminder.timezone,
-                    isActive: reminder.isActive,
-                }));
-
-                ctx.globalStorage.extensionProperties.reminderShortData = JSON.stringify(reminderShort);
-
                 ctx.response.json({ body: body.value });
             }
         },
@@ -50,6 +39,48 @@ exports.httpHandler = {
                 const issueId = ctx.request.getParameter('issueId')
                 const issue = entities.Issue.findById(issueId)
                 const reminders = issue.extensionProperties.activeReminders;
+
+                try {
+                    const parsedReminders = JSON.parse(reminders);
+                    ctx.response.json({ result: parsedReminders });
+                } catch (error) {
+                    console.error("Error parsing reminders:", error);
+                    ctx.response.json({ result: [] });
+                }
+            }
+        },
+        {
+            method: 'POST',
+            path: 'saveRemindersProject',
+            handle: (ctx) => {
+                const body = JSON.parse(ctx.request.body)
+
+                const projectName = ctx.request.getParameter('projectName')
+                const project = entities.Project.findByName(projectName)
+
+                const reminderData = JSON.parse(body.value);
+
+                const reminderShort = reminderData.map((reminder) => ({
+                    issueId: reminder.issueId,
+                    date: reminder.date,
+                    time: reminder.time,
+                    timezone: reminder.timezone,
+                    isActive: reminder.isActive,
+                    uuid: reminder.uuid,
+                }));
+
+                project.extensionProperties.reminderShortData = JSON.stringify(reminderShort);
+
+                ctx.response.json({ body: project });
+            }
+        },
+        {
+            method: 'GET',
+            path: 'fetchRemindersProject',
+            handle: (ctx) => {
+                const projectName = ctx.request.getParameter('projectName')
+                const project = entities.Project.findByName(projectName)
+                const reminders = project.extensionProperties.reminderShortData;
 
                 try {
                     const parsedReminders = JSON.parse(reminders);
@@ -85,13 +116,13 @@ exports.httpHandler = {
         },
         {
             method: 'POST',
-            path: 'setReminderBool',
+            path: 'setReminderBoolProject',
             handle: (ctx) => {
-                const issueId = ctx.request.getParameter('issueId')
-                const issue = entities.Issue.findById(issueId)
+                const projectName = ctx.request.getParameter('projectName')
+                const project = entities.Project.findByName(projectName)
                 try {
                     const bodyValue = ctx.request.body
-                    issue.extensionProperties.hasReminders = bodyValue === "" ? null : bodyValue;
+                    project.extensionProperties.hasReminders = bodyValue === "" ? null : bodyValue;
                     ctx.response.json({ success: true, message: "Bool stored successfully" });
                 } catch (error) {
                     console.error("Error saving bool:", error);
@@ -103,13 +134,23 @@ exports.httpHandler = {
             method: 'GET',
             path: 'fetchAllReminders',
             handle: (ctx) => {
-                const issues = entities.Issue.findByExtensionProperties(
-                    {
-                        hasReminders: true,
-                    }
-                )
                 try {
-                    ctx.response.json({result: JSON.parse(issues), size: issues.size, first: issues.first()});
+                    const projects = entities.Project.findByExtensionProperties(
+                        {
+                            hasReminders: true,
+                        }
+                    )
+
+                    let resultArray = [];
+                    projects.forEach((project) => {
+                        const reminders = JSON.parse(project.extensionProperties.reminderShortData || '[]');
+                        reminders.forEach((reminder) => {
+                            resultArray.push({ id: reminder.issueId });
+                        });
+                    });
+
+                    const issueIds = [...new Set(resultArray.map((issue) => issue.id))];
+                    ctx.response.json({result: issueIds});
                 } catch (error) {
                     console.error("Unexpected error:", error);
                     ctx.response.json({success: false, error: "Unexpected error occurred"});

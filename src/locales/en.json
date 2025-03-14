@@ -151,7 +151,14 @@
     },
     "loading": "Loading permissions, please wait...",
     "permission_denied_message": "You do not have sufficient permissions to access this content.",
-    "ask_admin": "Please ask an administrator to grant you the necessary permissions (Read Group)"
+    "ask_admin": "Please ask an administrator to grant you the necessary permissions:",
+    "permission": "Read Group",
+    "example_path_text": "To configure permissions, follow this path:",
+    "example_path_1": "Administration",
+    "example_path_2": "Access Management",
+    "example_path_3": "Roles",
+    "example_path_4": "(Contributor) or any role of your choice",
+    "example_path_5": "Permissions"
   },
   "reminderTable": {
     "columns": {
