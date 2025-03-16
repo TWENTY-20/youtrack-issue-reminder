@@ -183,6 +183,14 @@
       "unknownTime": "Unbekannte Zeit",
       "unknownTimezone": "Unbekannte Zeitzone",
       "unknownCreator": "Unbekannter Ersteller"
+    },
+    "tabs": {
+      "myReminders": "Meine Erinnerungen",
+      "allReminders": "Alle Erinnerungen"
+    },
+    "refreshButton":{
+      "tooltip": "Erinnerungen aktualisieren",
+      "label": "Aktualisieren"
     }
   }
 }

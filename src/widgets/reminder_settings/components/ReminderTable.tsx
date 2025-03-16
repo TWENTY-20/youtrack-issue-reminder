@@ -12,11 +12,13 @@ import {ReminderData} from "../types.ts";
 export default function ReminderTable({
                                           reminders,
                                           onDeleteClick,
-                                          onEditClick
+                                          onEditClick,
+                                          isAdminView = false
                                       }: {
     reminders: any[];
     onDeleteClick: (reminder: any) => void;
     onEditClick: (reminder: any) => void;
+    isAdminView?: boolean;
 }) {
     const [_, setAlert] = useState({ show: false, isClosing: false, message: "" });
 
@@ -175,8 +177,8 @@ export default function ReminderTable({
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
 
-                            const isCreator = reminder.creatorLogin === currentUserLogin;
-                            const isAllowedUser = reminder.selectedUsers.some((user: { login: any }) => user.login === currentUserLogin);
+                            const isCreator = isAdminView || reminder.creatorLogin === currentUserLogin;
+                            const isAllowedUser = isAdminView || reminder.selectedUsers.some((user: { login: any }) => user.login === currentUserLogin);
                             const canToggle = reminder.onlyCreatorCanEdit
                                 ? isCreator
                                 : reminder.allAssigneesCanEdit
@@ -201,8 +203,8 @@ export default function ReminderTable({
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
 
-                            const isCreator = reminder.creatorLogin === currentUserLogin;
-                            const isAllowedUser = reminder.selectedUsers.some((user: { login: any; }) => user.login === currentUserLogin);
+                            const isCreator = isAdminView || reminder.creatorLogin === currentUserLogin;
+                            const isAllowedUser = isAdminView || reminder.selectedUsers.some((user: { login: any; }) => user.login === currentUserLogin);
                             const canEditOrDelete = reminder.onlyCreatorCanEdit
                                 ? isCreator
                                 : reminder.allAssigneesCanEdit
