@@ -75,7 +75,7 @@ export default function App() {
     useEffect(() => {
         void fetchPermissionsCache().then(result => {
             const hasAdminPermission = result.some((item: any) => {
-                return item.permission?.key === ("jetbrains.jetpass.low-level" || item.permission?.key === "jetbrains.jetpass.low-level-read") && item.global;
+                return (item.permission?.key === "jetbrains.jetpass.low-level" || item.permission?.key === "jetbrains.jetpass.low-level-read") && item.global;
             });
 
             setHasAdminPermission(hasAdminPermission);

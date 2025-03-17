@@ -275,7 +275,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                         checked={reminder.isActive}
                                                         /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
                                                         onChange={(e) => handleToggle(reminder.uuid, e.target.checked)}
-                                                        className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-2 mr-1"}
+                                                        className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-2 mr-2"}
                                                         disabled={!canEditOrDelete}
                                                     />
                                                     <Button
@@ -283,7 +283,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                         onClick={() => onEditReminder(reminder)}
                                                         title={t("reminderSettings.actions.edit")}
                                                         icon={pencilIcon}
-                                                        className="ring-btn-small ring-btn-primary ring-btn-icon-only"
+                                                        className="ring-btn-small ring-btn-primary ring-btn-icon-only mr-2"
                                                         disabled={!canEditOrDelete}
                                                     />
                                                     <Button

@@ -443,7 +443,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         </div>
                         {touched.endRepeatFields && errors.endRepeatFields && (
                             <div className="col-span-12 -mt-3">
-                                <div className="text-[#cc3646] text-xs">{errors.endRepeatFields}</div>
+                                <div className="text-[#d36e6d] text-xs">{errors.endRepeatFields}</div>
                             </div>
                         )}
                     </>
