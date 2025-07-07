@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@jetbrains/icons": "^5.0.0",
-    "@jetbrains/ring-ui-built": "7.0.34",
+    "@jetbrains/ring-ui-built": "7.0.53",
     "@jetbrains/youtrack-scripting": "^0.2.1",
     "@jetbrains/youtrack-scripting-api": "^2022.1.46592",
     "autoprefixer": "^10.4.20",
