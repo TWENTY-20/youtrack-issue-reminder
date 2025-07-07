@@ -75,7 +75,7 @@ export default function ReminderTable({
                     {
                         id: "project",
                         title: t("reminderTable.columns.project"),
-                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -89,7 +89,7 @@ export default function ReminderTable({
                     {
                         id: "issue",
                         title: t("reminderTable.columns.issue"),
-                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -108,7 +108,7 @@ export default function ReminderTable({
                     {
                         id: "subject",
                         title: t("reminderTable.columns.subject"),
-                        className: "w-2/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-2/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -124,27 +124,27 @@ export default function ReminderTable({
                     {
                         id: "date",
                         title: t("reminderTable.columns.date"),
-                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "time",
                         title: t("reminderTable.columns.time"),
-                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "timezone",
                         title: t("reminderTable.columns.timezone"),
-                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "creator",
                         title: t("reminderTable.columns.creator"),
-                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                     },
                     {
                         id: "members",
                         title: t("reminderTable.columns.members"),
-                        className: "w-2/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-2/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -158,7 +158,7 @@ export default function ReminderTable({
                     {
                         id: "groups",
                         title: t("reminderTable.columns.groups"),
-                        className: "w-2/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-2/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -172,7 +172,7 @@ export default function ReminderTable({
                     {
                         id: "status",
                         title: t("reminderTable.columns.status"),
-                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;
@@ -198,7 +198,7 @@ export default function ReminderTable({
                     {
                         id: "actions",
                         title: t("reminderTable.columns.actions"),
-                        className: "w-1/12 overflow-ellipsis overflow-hidden max-w-44",
+                        className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
                             const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
                             if (!reminder) return null;

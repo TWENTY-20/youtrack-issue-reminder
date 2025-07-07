@@ -14,6 +14,7 @@
     "@jetbrains/ring-ui-built": "7.0.34",
     "@jetbrains/youtrack-scripting": "^0.2.1",
     "@jetbrains/youtrack-scripting-api": "^2022.1.46592",
+    "@tailwindcss/postcss": "^4.1.11",
     "autoprefixer": "^10.4.20",
     "build": "^0.1.4",
     "cron": "^4.0.0",
@@ -26,7 +27,7 @@
     "react-i18next": "^15.0.1",
     "react-router-dom": "^7.0.0",
     "run": "^1.5.0",
-    "tailwindcss": "^4.0.0",
+    "tailwindcss": "^4.1.11",
     "usehooks-ts": "^3.1.0",
     "uuid": "^11.0.5",
     "vite-plugin-static-copy": "^1.0.6"
