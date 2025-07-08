@@ -267,33 +267,37 @@ export default function ReminderSettings({ onEditReminder }) {
                                         <Icon glyph={bellIcon} className="ring-icon" />
                                         <div className={"flex w-full flex-col"}>
                                             <div className="flex items-center mb-2">
-                                                <span className="text-md font-semibold w-full overflow-ellipsis">
+                                                <span className="text-md font-semibold w-full text-ellipsis">
                                                     {reminder.subject}
                                                 </span>
-                                                <div className="flex justify-end items-center">
-                                                    <Toggle
-                                                        checked={reminder.isActive}
-                                                        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
-                                                        onChange={(e) => handleToggle(reminder.uuid, e.target.checked)}
-                                                        className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-2 mr-2"}
-                                                        disabled={!canEditOrDelete}
-                                                    />
-                                                    <Button
-                                                        /* eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return */
-                                                        onClick={() => onEditReminder(reminder)}
-                                                        title={t("reminderSettings.actions.edit")}
-                                                        icon={pencilIcon}
-                                                        className="ring-btn-small ring-btn-primary ring-btn-icon-only mr-2"
-                                                        disabled={!canEditOrDelete}
-                                                    />
-                                                    <Button
-                                                        danger
-                                                        onClick={() => handleDeleteClick(reminder)}
-                                                        title={t("reminderSettings.actions.delete")}
-                                                        icon={trashIcon}
-                                                        className="ring-btn-small ring-btn-danger ring-btn-icon-only"
-                                                        disabled={!canEditOrDelete}
-                                                    />
+                                                <div className="flex justify-end items-center space-x-2">
+                                                    <div>
+                                                        <Toggle
+                                                            checked={reminder.isActive}
+                                                            onChange={(e) => handleToggle(reminder.uuid, e.target.checked)}
+                                                            className="ring-btn-small ring-btn-primary ring-btn-icon-only m-0 mb-1"
+                                                            disabled={!canEditOrDelete}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Button
+                                                            onClick={() => onEditReminder(reminder)}
+                                                            title={t("reminderSettings.actions.edit")}
+                                                            icon={pencilIcon}
+                                                            className="ring-btn-small ring-btn-primary ring-btn-icon-only"
+                                                            disabled={!canEditOrDelete}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Button
+                                                            danger
+                                                            onClick={() => handleDeleteClick(reminder)}
+                                                            title={t("reminderSettings.actions.delete")}
+                                                            icon={trashIcon}
+                                                            className="ring-btn-small ring-btn-danger ring-btn-icon-only"
+                                                            disabled={!canEditOrDelete}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="flex items-center w-full gap-4 text-sm text-gray-600">
@@ -303,7 +307,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                             {reminder.selectedUsers.slice(0, 2).map((user: UserTagDTO, index) => (
                                                                 <div
                                                                     key={user.key}
-                                                                    className="relative w-6 h-6 rounded-full bg-gray-300 flex-shrink-0"
+                                                                    className="relative w-6 h-6 rounded-full bg-gray-300 shrink-0"
                                                                     style={{ zIndex: 10 - index }}
                                                                 >
                                                                     <img
