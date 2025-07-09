@@ -275,6 +275,33 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         }
     };
 
+    const handleDateAndTimeChange = (
+        newDate: string,
+        setDateFn: (value: string) => void,
+        currentTimeValue: string,
+        setTimeFn: (value: string) => void
+    ) => {
+        setDateFn(newDate);
+
+        const now = new Date();
+        const selectedDate = new Date(`${newDate}T00:00:00`);
+        const isToday =
+            selectedDate.getFullYear() === now.getFullYear() &&
+            selectedDate.getMonth() === now.getMonth() &&
+            selectedDate.getDate() === now.getDate();
+
+        if (isToday && currentTimeValue) {
+            const [hours, minutes] = currentTimeValue.split(":").map(Number);
+            const isPastTime =
+                hours < now.getHours() ||
+                (hours === now.getHours() && minutes < now.getMinutes());
+
+            if (isPastTime) {
+                setTimeFn("");
+            }
+        }
+    };
+
     return (
         <div>
             <div className="grid grid-cols-12 w-full h-full gap-4">
@@ -303,9 +330,11 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         placeholder={t("createReminder.placeholders.date")}
                         type="date"
                         value={date}
-                        min={new Date().toISOString().split("T")[0]}
+                        min={new Date().toLocaleDateString("sv-SE")}
                         {...(touched.date && errors.date ? { error: errors.date } : {})}
-                        onChange={(e) => setDate(e.target.value)}
+                        onChange={(e) =>
+                            handleDateAndTimeChange(e.target.value, setDate, time, setTime)
+                        }
                     />
                 </div>
 
@@ -324,7 +353,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                             const timeString = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 
                             const now = new Date();
-                            const selectedDate = date ? new Date(date) : now;
+                            const selectedDate = date ? new Date(`${date}T00:00:00`) : now;
                             const isToday =
                                 selectedDate.getFullYear() === now.getFullYear() &&
                                 selectedDate.getMonth() === now.getMonth() &&
@@ -333,9 +362,10 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                             const currentHours = now.getHours();
                             const currentMinutes = now.getMinutes();
 
-                            const isPastTime =
-                                isToday &&
-                                (hours < currentHours || (hours === currentHours && minutes <= currentMinutes));
+                            const isPastTime = isToday && (
+                                hours < currentHours ||
+                                (hours === currentHours && minutes < currentMinutes)
+                            );
 
                             if (!isPastTime) {
                                 return {
@@ -399,8 +429,10 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                                 placeholder={t("createReminder.placeholders.endRepeatDate")}
                                 type="date"
                                 value={endRepeatDate}
-                                min={date || new Date().toISOString().split("T")[0]}
-                                onChange={(e) => setEndRepeatDate(e.target.value)}
+                                min={date || new Date().toLocaleDateString("sv-SE")}
+                                onChange={(e) =>
+                                    handleDateAndTimeChange(e.target.value, setEndRepeatDate, endRepeatTime, setEndRepeatTime)
+                                }
                             />
                         </div>
                         <div className="col-span-6">
@@ -416,7 +448,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                                     const timeString = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 
                                     const now = new Date();
-                                    const selectedDate = endRepeatDate ? new Date(endRepeatDate) : now;
+                                    const selectedDate = endRepeatDate ? new Date(`${endRepeatDate}T00:00:00`) : now;
                                     const isToday =
                                         selectedDate.getFullYear() === now.getFullYear() &&
                                         selectedDate.getMonth() === now.getMonth() &&
@@ -425,9 +457,10 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                                     const currentHours = now.getHours();
                                     const currentMinutes = now.getMinutes();
 
-                                    const isPastTime =
-                                        isToday &&
-                                        (hours < currentHours || (hours === currentHours && minutes < currentMinutes));
+                                    const isPastTime = isToday && (
+                                        hours < currentHours ||
+                                        (hours === currentHours && minutes < currentMinutes)
+                                    );
 
                                     if (!isPastTime) {
                                         return {
