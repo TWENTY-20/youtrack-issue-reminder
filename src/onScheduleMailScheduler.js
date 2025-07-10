@@ -21,8 +21,17 @@ function getSearchExpression() {
 
                 const userReminderTime = new Date(dateTimeString).getTime();
 
+                let effectiveTimeZone = reminder.timezone;
+                if (
+                    effectiveTimeZone === "Etc/UTC" ||
+                    effectiveTimeZone === "UTC" ||
+                    effectiveTimeZone === "Etc/GMT"
+                ) {
+                    effectiveTimeZone = null;
+                }
+
                 const currentUserTime = new Date().getTime();
-                const formattedCurrentUserTime = dateTime.format(currentUserTime, format, reminder.timezone);
+                const formattedCurrentUserTime = dateTime.format(currentUserTime, format, effectiveTimeZone);
                 const dateOfCurrentUserTime = new Date(formattedCurrentUserTime).getTime();
 
                 if (userReminderTime <= dateOfCurrentUserTime) {
@@ -71,6 +80,15 @@ exports.rule = entities.Issue.onSchedule({
                 }
             });
 
+            let effectiveTimeZone = reminder.timezone;
+            if (
+                effectiveTimeZone === "Etc/UTC" ||
+                effectiveTimeZone === "UTC" ||
+                effectiveTimeZone === "Etc/GMT"
+            ) {
+                effectiveTimeZone = null;
+            }
+
             const dateTimeString = `${reminder.date}T${reminder.time}:00Z`;
 
             const format = "yyyy-MM-dd'T'HH:mm:ss'Z'";
@@ -78,7 +96,7 @@ exports.rule = entities.Issue.onSchedule({
             const userReminderTime = new Date(dateTimeString).getTime();
 
             const currentUserTime = new Date().getTime();
-            const formattedCurrentUserTime = dateTime.format(currentUserTime, format, reminder.timezone);
+            const formattedCurrentUserTime = dateTime.format(currentUserTime, format, effectiveTimeZone);
             const dateOfCurrentUserTime = new Date(formattedCurrentUserTime).getTime();
 
             if (reminder.endRepeatDate && reminder.endRepeatTime) {

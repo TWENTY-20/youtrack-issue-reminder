@@ -102,25 +102,48 @@ export default function ReminderSettings({ onEditReminder }) {
         }
     };
 
-    const formatDateTooltip = (dateStr: string, timeStr: string, creatorTimeZone: string, userTimeZone: any) => {
-        if (!dateStr || !timeStr || !creatorTimeZone || !userTimeZone) return t("reminderSettings.errors.date");
+    const normalizeTimeZone = (tz: string | null): string => {
+        if (!tz || tz === "Etc/UTC" || tz === "UTC" || tz === "Etc/GMT") {
+            return "Africa/Accra";
+        }
+        return tz;
+    };
+
+    const formatDateTooltip = (
+        dateStr: string,
+        timeStr: string,
+        creatorTimeZone: string,
+        userTimeZone: string | null
+    ): string => {
+        if (!dateStr || !timeStr || !creatorTimeZone || !userTimeZone) {
+            return t("reminderSettings.errors.date");
+        }
 
         try {
             const isoDateTime = `${dateStr}T${timeStr}:00`;
-
             const creatorDate = new Date(isoDateTime);
 
-            const getOffset = (date: number | Date | undefined, timeZone: string) => {
-                const formatter = new Intl.DateTimeFormat("en-US", {timeZone, timeZoneName: "shortOffset"});
-                const parts = formatter.formatToParts(date);
-                const timeZonePart = parts.find((part) => part.type === "timeZoneName");
-                return timeZonePart ? parseInt(timeZonePart.value.replace("GMT", ""), 10) * 60 : 0;
+            const getOffset = (date: Date, timeZone: string): number => {
+                try {
+                    const formatter = new Intl.DateTimeFormat("en-US", {
+                        timeZone: normalizeTimeZone(timeZone),
+                        timeZoneName: "shortOffset",
+                    });
+                    const parts = formatter.formatToParts(date);
+                    const timeZonePart = parts.find((p) => p.type === "timeZoneName");
+                    const offsetString = timeZonePart?.value?.replace("GMT", "") ?? "0";
+                    const parsed = parseInt(offsetString, 10);
+                    return isNaN(parsed) ? 0 : parsed * 60;
+                } catch (err) {
+                    console.warn("Fallback to offset 0 for timeZone:", timeZone);
+                    return 0;
+                }
             };
 
             const creatorOffset = getOffset(creatorDate, creatorTimeZone);
             const userOffset = getOffset(creatorDate, userTimeZone);
-
             const timeDifference = creatorOffset - userOffset;
+
             const adjustedDate = new Date(creatorDate.getTime() - timeDifference * 60000);
 
             return new Intl.DateTimeFormat(YTApp.locale, {
@@ -129,12 +152,17 @@ export default function ReminderSettings({ onEditReminder }) {
                 day: "2-digit",
             }).format(adjustedDate);
         } catch (error) {
-            console.error("Error formatting time:", error);
-            return t("reminderSettings.errors.time");
+            console.error("Error formatting date tooltip:", error);
+            return t("reminderSettings.errors.date");
         }
-    }
+    };
 
-    const formatTimeTooltip = (timeStr: string, creatorTimeZone: string, userTimeZone: any) => {
+
+    const formatTimeTooltip = (
+        timeStr: string,
+        creatorTimeZone: string,
+        userTimeZone: string | null
+    ): string => {
         if (!timeStr || !creatorTimeZone || !userTimeZone) return t("reminderSettings.messages.noTime");
 
         try {
@@ -143,31 +171,36 @@ export default function ReminderSettings({ onEditReminder }) {
 
             const creatorDate = new Date(isoDateTime);
 
-            const getOffset = (date: number | Date | undefined, timeZone: string) => {
-                const formatter = new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "shortOffset" });
-                const parts = formatter.formatToParts(date);
-                const timeZonePart = parts.find((part) => part.type === "timeZoneName");
-                return timeZonePart ? parseInt(timeZonePart.value.replace("GMT", ""), 10) * 60 : 0;
+            const getOffset = (date: Date, timeZone: string): number => {
+                try {
+                    const formatter = new Intl.DateTimeFormat("en-US", {
+                        timeZone: normalizeTimeZone(timeZone),
+                        timeZoneName: "shortOffset"
+                    });
+                    const parts = formatter.formatToParts(date);
+                    const tzPart = parts.find(p => p.type === "timeZoneName");
+                    const offsetStr = tzPart?.value?.replace("GMT", "") ?? "0";
+                    const parsed = parseInt(offsetStr, 10);
+                    return isNaN(parsed) ? 0 : parsed * 60;
+                } catch {
+                    return 0;
+                }
             };
 
             const creatorOffset = getOffset(creatorDate, creatorTimeZone);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             const userOffset = getOffset(creatorDate, userTimeZone);
-
             const timeDifference = userOffset - creatorOffset;
             const adjustedTime = new Date(creatorDate.getTime() + timeDifference * 60000);
 
             return new Intl.DateTimeFormat(YTApp.locale, {
                 hour: "2-digit",
-                minute: "2-digit",
+                minute: "2-digit"
             }).format(adjustedTime);
         } catch (error) {
-            console.error("Error formatting time:", error);
+            console.error("Error formatting time tooltip:", error);
             return t("reminderSettings.errors.time");
         }
     };
-
-
 
     const handleToggle = async (reminderId: string, newValue: boolean) => {
         try {
@@ -261,6 +294,9 @@ export default function ReminderSettings({ onEditReminder }) {
                             const canEditOrDelete =
                                 reminder.onlyCreatorCanEdit ? isCreator : reminder.allAssigneesCanEdit ? (isCreator || isAllowedUser) : false;
 
+                            // @ts-ignore
+                            // @ts-ignore
+                            // @ts-ignore
                             return (
                                 <li key={index} className="flex flex-col gap-2">
                                     <div className="flex gap-4 border border-[#9ea0a9] p-4 rounded-md shadow-sm items-center">
