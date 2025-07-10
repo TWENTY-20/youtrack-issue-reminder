@@ -102,13 +102,6 @@ export default function ReminderSettings({ onEditReminder }) {
         }
     };
 
-    const normalizeTimeZone = (tz: string | null): string => {
-        if (!tz || tz === "Etc/UTC" || tz === "UTC" || tz === "Etc/GMT") {
-            return "Africa/Accra";
-        }
-        return tz;
-    };
-
     const formatDateTooltip = (
         dateStr: string,
         timeStr: string,
@@ -126,7 +119,7 @@ export default function ReminderSettings({ onEditReminder }) {
             const getOffset = (date: Date, timeZone: string): number => {
                 try {
                     const formatter = new Intl.DateTimeFormat("en-US", {
-                        timeZone: normalizeTimeZone(timeZone),
+                        timeZone: timeZone,
                         timeZoneName: "shortOffset",
                     });
                     const parts = formatter.formatToParts(date);
@@ -174,7 +167,7 @@ export default function ReminderSettings({ onEditReminder }) {
             const getOffset = (date: Date, timeZone: string): number => {
                 try {
                     const formatter = new Intl.DateTimeFormat("en-US", {
-                        timeZone: normalizeTimeZone(timeZone),
+                        timeZone: timeZone,
                         timeZoneName: "shortOffset"
                     });
                     const parts = formatter.formatToParts(date);
