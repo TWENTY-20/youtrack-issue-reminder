@@ -5,8 +5,8 @@
   "description": "A tool to setup reminders for an existing issue.",
   "changeNotes": "See https://plugins.jetbrains.com/plugin/26771-issue-reminder/release-notes",
   "version": "1.1.0",
-  "icon": "logo.svg",
-  "iconDark": "logoDark.svg",
+  "icon": "logo.png",
+  "iconDark": "logoDark.png",
   "minYouTrackVersion": "2024.3.0",
   "widgets": [
     {
@@ -15,7 +15,7 @@
       "indexPath": "main/index.html",
       "extensionPoint": "ISSUE_OPTIONS_MENU_ITEM",
       "expectedDimensions": {
-        "height": 750,
+        "height": 760,
         "width": 600
       }
     },

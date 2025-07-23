@@ -4,7 +4,6 @@ import { GroupTagDTO, ReminderData, UserTagDTO } from "../types.ts";
 import YTApp, {host} from "../youTrackApp.ts";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import pencilIcon from "@jetbrains/icons/pencil";
-import bellIcon from "@jetbrains/icons/bell-20px";
 import groupIcon from "@jetbrains/icons/group";
 import tooltipIcon from "@jetbrains/icons/info";
 import trashIcon from "@jetbrains/icons/trash";
@@ -264,12 +263,17 @@ export default function ReminderSettings({ onEditReminder }) {
         setIsDeleteModalOpen(false);
     };
 
+    const areTimeZonesSame = (creatorTimeZone: string, userTimeZone: string | null): boolean => {
+        if (!creatorTimeZone || !userTimeZone) return false;
+        return creatorTimeZone === userTimeZone;
+    };
+
     if (isLoading) {
         return <Loader message={t("reminderSettings.messages.loading")} />;
     }
 
     if (reminders.length === 0) {
-        return <div>{t("reminderSettings.messages.noReminders")}</div>;
+        return <div className={"flex justify-center"}>{t("reminderSettings.messages.noReminders")}</div>;
     }
 
     return (
@@ -287,13 +291,11 @@ export default function ReminderSettings({ onEditReminder }) {
                             const canEditOrDelete =
                                 reminder.onlyCreatorCanEdit ? isCreator : reminder.allAssigneesCanEdit ? (isCreator || isAllowedUser) : false;
 
-                            // @ts-ignore
-                            // @ts-ignore
-                            // @ts-ignore
+                            const showTimeZoneTooltip = !areTimeZonesSame(reminder.timezone, timeZone);
+
                             return (
                                 <li key={index} className="flex flex-col gap-2">
                                     <div className="flex gap-4 border border-[#9ea0a9] p-4 rounded-md shadow-sm items-center">
-                                        <Icon glyph={bellIcon} className="ring-icon" />
                                         <div className={"flex w-full flex-col"}>
                                             <div className="flex items-center mb-2">
                                                 <span className="text-md font-semibold w-full text-ellipsis">
@@ -396,17 +398,19 @@ export default function ReminderSettings({ onEditReminder }) {
                                                     <span className={"dark:text-white"}>{formatTime(reminder.time)}</span>
                                                 </div>
                                             </div>
-                                            <div className={"mt-2 flex text-gray-500 items-center"}>
-                                                <span className="mr-1 text-gray-500">
+                                            {showTimeZoneTooltip && (
+                                                <div className={"mt-2 flex text-gray-500 items-center"}>
+                                                    <span className="mr-1 text-gray-500">
                                                         ({formatDateTooltip(reminder.date, reminder.time, reminder.timezone, timeZone)},
                                                     </span>
-                                                <span className="mr-2 text-gray-500">
+                                                    <span className="mr-2 text-gray-500">
                                                         {formatTimeTooltip(reminder.time, reminder.timezone, timeZone)})
                                                     </span>
-                                                <Tooltip title={t("reminderSettings.messages.notificationTimeTooltip")}>
-                                                    <Icon glyph={tooltipIcon} className="ring-icon" />
-                                                </Tooltip>
-                                            </div>
+                                                    <Tooltip title={t("reminderSettings.messages.notificationTimeTooltip")}>
+                                                        <Icon glyph={tooltipIcon} className="ring-icon" />
+                                                    </Tooltip>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </li>
@@ -420,7 +424,6 @@ export default function ReminderSettings({ onEditReminder }) {
                 isOpen={isDeleteModalOpen}
                 title={t("reminderSettings.messages.confirmDeleteTitle")}
                 message={t("reminderSettings.messages.confirmDeleteMessage")}
-                /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
                 onConfirm={confirmDelete}
                 onCancel={cancelDelete}
             />

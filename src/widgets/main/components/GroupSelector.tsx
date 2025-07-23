@@ -28,7 +28,9 @@ export default function GroupSelector({
                 `groups?fields=id,name,usersCount${query ? `&query=${encodeURIComponent(query)}` : ""}&$skip=${offset}&$top=${PAGE_SIZE}`
             );
 
-            const formattedGroups: GroupTagDTO[] = data.map((group) => ({
+            const groupsWithUsers = data.filter((group) => group.usersCount > 0);
+
+            const formattedGroups: GroupTagDTO[] = groupsWithUsers.map((group) => ({
                 key: group.id,
                 label: group.name,
                 description: `${group.usersCount} ${t("groupSelector.messages.groupDescription")}`,
