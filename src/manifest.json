@@ -4,7 +4,7 @@
   "title": "Issue Reminder",
   "description": "A tool to setup reminders for an existing issue.",
   "changeNotes": "See https://plugins.jetbrains.com/plugin/26771-issue-reminder/release-notes",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "icon": "logo.png",
   "iconDark": "logoDark.png",
   "minYouTrackVersion": "2024.3.0",

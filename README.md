@@ -1,4 +1,4 @@
-# <img src="src/logo.svg" alt="twenty20 logo" width="35"/> YouTrack Issue-Reminder
+# <img src="src/logo.png" alt="twenty20 logo" width="35"/> YouTrack Issue-Reminder
 
 Once installed into [JetBrains YouTrack](https://www.jetbrains.com/youtrack/), this app offers a convenient tool for creating and managing issue reminders.
 
@@ -28,16 +28,12 @@ Follow these steps to install and configure the Issue Reminder App in YouTrack.
 2. Open YouTrack and navigate to the **Apps** window.
 3. Search for **Issue Reminder** and select it.
 
-![Installation Screenshot](src/readme/step1.png)
-
 ---
 
 ### 📌 Step 2: Assign the App to Projects
 1. Click on the **Issue Reminder App**.
 2. Go to the **Projects** tab.
 3. Click **Manage Projects** and add the app to the necessary projects.
-
-![Manage Projects Screenshot](src/readme/step2.png)
 
 ---
 
