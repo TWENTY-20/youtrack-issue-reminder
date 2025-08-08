@@ -34,8 +34,8 @@ export default defineConfig(({mode}) => {
             tailwindcss(),
             viteStaticCopy({
                 targets: [
-                    { src: "./logo.png", dest: "." },
-                    { src: "./logoDark.png", dest: "." },
+                    { src: "./logo.svg", dest: "." },
+                    { src: "./logoDark.svg", dest: "." },
                     { src: "./manifest.json", dest: "." },
                     { src: "./entity-extensions.json", dest: "." },
                     { src: "./settings.json", dest: "." },
