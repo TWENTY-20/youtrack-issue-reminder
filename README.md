@@ -1,4 +1,4 @@
-# <img src="src/logo.png" alt="twenty20 logo" width="35"/> YouTrack Issue-Reminder
+# <img src="src/logo.svg" alt="twenty20 logo" width="35"/> YouTrack Issue-Reminder
 
 Once installed into [JetBrains YouTrack](https://www.jetbrains.com/youtrack/), this app offers a convenient tool for creating and managing issue reminders.
 
