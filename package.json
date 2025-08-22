@@ -1,5 +1,5 @@
 {
-  "name": "youtrack-ticket-reminder",
+  "name": "youtrack-issue-reminder",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -16,32 +16,32 @@
     "@jetbrains/youtrack-scripting-api": "^2022.1.46592",
     "build": "^0.1.4",
     "cron": "^4.3.2",
-    "i18next": "^25.3.2",
+    "i18next": "^25.4.0",
     "jquery": "^3.7.1",
     "npm": "^11.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-i18next": "^15.6.1",
-    "react-router-dom": "^7.7.0",
+    "react-i18next": "^15.7.1",
+    "react-router-dom": "^7.8.1",
     "run": "^1.5.0",
-    "tailwindcss": "^4.1.11",
+    "tailwindcss": "^4.1.12",
     "usehooks-ts": "^3.1.0",
     "uuid": "^11.0.5",
-    "vite-plugin-static-copy": "^3.1.1"
+    "vite-plugin-static-copy": "^3.1.2"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "4.1.11",
-    "@types/jquery": "^3.5.32",
-    "@types/react": "^19.1.8",
+    "@tailwindcss/vite": "^4.1.12",
+    "@types/jquery": "^3.5.33",
+    "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.6",
-    "@typescript-eslint/eslint-plugin": "^8.38.0",
-    "@typescript-eslint/parser": "^8.38.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "eslint": "^9.31.0",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
+    "@vitejs/plugin-react": "^5.0.1",
+    "eslint": "^9.33.0",
     "eslint-plugin-react": "^7.35.2",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.11",
     "typescript": "^5.5.4",
-    "vite": "^7.0.6"
+    "vite": "^7.1.3"
   }
 }
