@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, useMemo} from "react";
 import Select from "@jetbrains/ring-ui-built/components/select/select";
 import YTApp, {host} from "../youTrackApp.ts";
 import Tag from "@jetbrains/ring-ui-built/components/tag/tag";
@@ -6,41 +6,38 @@ import {Size} from "@jetbrains/ring-ui-built/components/input/input";
 import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import {ReminderData, UserDTO, UserTagDTO} from "../types.ts";
 import {useTranslation} from "react-i18next";
+import useFetchPaginated from "../util/useFetchPaginated.tsx";
+import {useDebounceCallback} from "usehooks-ts";
 
 export default function UserSelector({ onChange, editingReminder }: { onChange: (users: UserTagDTO[]) => void; editingReminder?: ReminderData | null; }) {
-    const [users, setUsers] = useState<UserTagDTO[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers || []);
-    const [isLoading, setIsLoading] = useState(true);
     const { t } = useTranslation();
 
     const PAGE_SIZE = 50;
+    
+    const {results: rawUsers, loading, fetchNextPage, setQuery, hasNextPage} = useFetchPaginated<UserDTO>(
+        'users?fields=id,login,fullName,avatarUrl,email', 
+        '', 
+        PAGE_SIZE, 
+        true
+    );
 
-    const loadUsers = async (query: string = "") => {
-        try {
-            const data: UserDTO[] = await host.fetchYouTrack(
-                `users?fields=id,login,fullName,avatarUrl,email${query ? `&query=${encodeURIComponent(query)}` : ""}&$top=${PAGE_SIZE}`
-            );
+    const users = useMemo(() => rawUsers.map((user) => ({
+        key: user.id,
+        label: user.fullName || user.login,
+        login: user.login,
+        avatar: user.avatarUrl,
+        email: user.email,
+    })), [rawUsers]);
 
-            const formattedUsers: UserTagDTO[] = data.map((user) => ({
-                key: user.id,
-                label: user.fullName || user.login,
-                login: user.login,
-                avatar: user.avatarUrl,
-                email: user.email,
-            }));
-
-            setUsers(formattedUsers);
-        } catch (error) {
-            console.error(t("userSelector.errors.fetchUsers"), error);
-        }
-    };
+    const debouncedSetQuery = useDebounceCallback((query: string) => {
+        setQuery(query ? `&query=${encodeURIComponent(query)}` : '');
+    }, 300);
 
     useEffect(() => {
-        const fetchInitialUsers = async () => {
-            try {
-                await loadUsers();
-
-                if (!editingReminder) {
+        const fetchCurrentUser = async () => {
+            if (!editingReminder) {
+                try {
                     const user: UserDTO = await host.fetchYouTrack(`users/${YTApp.me.id}?fields=id,login,fullName,avatarUrl,email`);
                     const currentUser: UserTagDTO = {
                         key: YTApp.me.id,
@@ -51,13 +48,13 @@ export default function UserSelector({ onChange, editingReminder }: { onChange: 
                     };
                     setSelectedUsers([currentUser]);
                     onChange([currentUser]);
+                } catch (error) {
+                    console.error(t("userSelector.errors.fetchUsers"), error);
                 }
-            } catch (error) {
-                console.error(t("userSelector.errors.fetchUsers"), error);
             }
         };
 
-        fetchInitialUsers();
+        fetchCurrentUser();
     }, [t, onChange, editingReminder]);
 
     const handleUserChange = (selected: UserTagDTO | null) => {
@@ -74,57 +71,14 @@ export default function UserSelector({ onChange, editingReminder }: { onChange: 
         onChange(updatedUsers);
     };
 
-    const loadMore = async (query: string = "") => {
-        try {
-            setIsLoading(true);
-            const offset = query ? 0 : users.length;
-            const data: UserDTO[] = await host.fetchYouTrack(
-                `users?query=${encodeURIComponent(query)}&fields=id,login,fullName,avatarUrl,email&$skip=${offset}&$top=${PAGE_SIZE}`
-            );
-
-            const additionalUsers = data.map((user) => ({
-                key: user.id,
-                label: user.fullName || user.login,
-                login: user.login,
-                avatar: user.avatarUrl,
-                email: user.email,
-            }));
-
-            setUsers((prevUsers) => {
-                if (query) {
-                    return additionalUsers;
-                } else {
-                    return [...prevUsers, ...additionalUsers].reduce<UserTagDTO[]>(
-                        (unique, user) => {
-                            if (!unique.some((u) => u.key === user.key)) {
-                                unique.push(user);
-                            }
-                            return unique;
-                        },
-                        []
-                    );
-                }
-            });
-            setIsLoading(false);
-        } catch (error) {
-            console.error(t("userSelector.errors.loadMoreUsers"), error);
-        }
-    };
-
     const onFilter = async (input: string) => {
-        try {
-            if (input && input.trim().length >= 1) {
-                await loadMore(input.trim());
-            } else {
-                await loadUsers();
-            }
-        } catch (error) {
-            console.error(t("userSelector.errors.filter"), error);
-        }
+        debouncedSetQuery(input.trim());
     };
 
-    const onOpen = async () => {
-        await loadUsers();
+    const loadMore = () => {
+        if (hasNextPage) {
+            void fetchNextPage();
+        }
     };
 
     return (
@@ -138,9 +92,9 @@ export default function UserSelector({ onChange, editingReminder }: { onChange: 
                     selected={null}
                     onChange={handleUserChange}
                     onFilter={onFilter}
-                    onOpen={onOpen}
                     onLoadMore={loadMore}
-                    loading={isLoading}
+                    loading={loading}
+                    renderOptimization={false}
                     filter
                     className="w-full mb-4"
                     popupClassName={"remove-input-focus"}

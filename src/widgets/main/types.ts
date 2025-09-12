@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 
 export interface Host {
     alert(message: ReactNode, type?: AlertType, timeout?: number, options?: Partial<AlertItem>): void;
-    fetchYouTrack(relativeURL: string, requestParams?: RequestParams): Promise<any>;
+    fetchYouTrack: <T = unknown>(relativeURL: string, requestParams?: RequestParams) => Promise<T>;
     fetchApp(relativeURL: string, requestParams: RequestParams & { scope?: boolean }): Promise<any>;
 }
 

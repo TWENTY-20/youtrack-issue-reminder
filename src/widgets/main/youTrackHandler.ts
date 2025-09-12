@@ -1,45 +1,45 @@
 import { host } from "./youTrackApp.ts";
 
 export async function getUserTimeZone(userId: string) {
-    const timeZoneResponse =  await host.fetchYouTrack(`users/${userId}/profiles/general?fields=timezone(id,presentation,offset)`);
+    const timeZoneResponse = await host.fetchYouTrack<{timezone: {id: string}}>(`users/${userId}/profiles/general?fields=timezone(id,presentation,offset)`);
     return timeZoneResponse.timezone.id
 }
 
-export const fetchGroups = async (): Promise<any> => {
+export const fetchGroups = async (): Promise<any[]> => {
     try {
-        const response = await host.fetchYouTrack(`groups?fields=id,name`);
+        const response = await host.fetchYouTrack<any[]>(`groups?fields=id,name`);
 
         if (!response || response.length === 0) {
-            return null;
+            return [];
         }
 
         return response
     } catch (error) {
-        return null;
+        return [];
     }
 };
 
 
-export const fetchGroupUsers = async (groupId: string): Promise<any> => {
+export const fetchGroupUsers = async (groupId: string): Promise<any[]> => {
     try {
-        const response = await host.fetchYouTrack(`groups/${groupId}/users?fields=id,login,name,email`);
+        const response = await host.fetchYouTrack<any[]>(`groups/${groupId}/users?fields=id,login,name,email`);
 
         if (!response || response.length === 0) {
             console.warn(`No users found for group ID '${groupId}'.`);
-            return null;
+            return [];
         }
 
         return response;
     } catch (error) {
         console.error(`Error fetching users for group ID '${groupId}':`, error);
-        return null;
+        return [];
     }
 };
 
 
-export const fetchPermissionsCache = async (): Promise<any> => {
+export const fetchPermissionsCache = async (): Promise<any[]> => {
     try {
-        const response = await host.fetchYouTrack('permissions/cache', {
+        const response = await host.fetchYouTrack<any[]>('permissions/cache', {
             query: {
                 fields: 'global,permission(key),projects(id,projectType(id))'
             }
@@ -47,20 +47,20 @@ export const fetchPermissionsCache = async (): Promise<any> => {
 
         if (!response) {
             console.warn('No data received from permissions cache API.');
-            return null;
+            return [];
         }
 
         return response;
     } catch (error) {
         console.error('Error fetching permissions cache:', error);
-        return null;
+        return [];
     }
 };
 
 
 export const fetchIssueProjectId = async (issueId: string): Promise<any> => {
     try {
-        const response = await host.fetchYouTrack(`issues/${issueId}/project?fields=id,name,shortName`);
+        const response = await host.fetchYouTrack<any>(`issues/${issueId}/project?fields=id,name,shortName`);
 
         if (!response) {
             console.warn(`No project information found for issue ID '${issueId}'.`);

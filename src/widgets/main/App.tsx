@@ -40,34 +40,6 @@ export default function App() {
         return <Loader message={t("reminderSettings.messages.loading")}/>;
     }
 
-    if (!hasPermission) {
-        return (
-            <div className="text-center" style={{ padding: "50px" }}>
-                {t("app.permission_denied_message")}
-                <br />
-                {t("app.ask_admin")} <b>{t("app.permission")}</b>
-                <br />
-                <br />
-                {t("app.example_path_text")}
-                <br />
-                <br />
-                <div>
-                    <div>{t("app.example_path_1")}</div>
-                    <div>↓</div>
-                    <div>{t("app.example_path_2")}</div>
-                    <div>↓</div>
-                    <div>{t("app.example_path_3")}</div>
-                    <div>↓</div>
-                    <div>{t("app.example_path_4")}</div>
-                    <div>↓</div>
-                    <div>{t("app.example_path_5")}</div>
-                    <div>↓</div>
-                    <div><b>{t("app.permission")}</b></div>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className={"-mx-4"}>
             <div className="flex border-b">
@@ -95,6 +67,7 @@ export default function App() {
                         cameFromReminderTable={false}
                         onCancelEdit={() => setEditingReminder(null)}
                         onReminderCreated={() => setActiveTab("settings")}
+                        hasGroupPermission={hasPermission}
                     />
                 ) : (
                     <ReminderSettings onEditReminder={handleEditReminder} />

@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
 import Select from "@jetbrains/ring-ui-built/components/select/select";
-import { host } from "../youTrackApp.ts";
 import Tag from "@jetbrains/ring-ui-built/components/tag/tag";
 import { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
 import { GroupDTO, GroupTagDTO, ReminderData } from "../types.ts";
 import { useTranslation } from "react-i18next";
+import useFetchPaginated from "../util/useFetchPaginated.tsx";
+import { useDebounceCallback } from "usehooks-ts";
 
 export default function GroupSelector({
                                           onChange,
@@ -14,49 +15,32 @@ export default function GroupSelector({
     onChange: (groups: any[]) => void;
     editingReminder?: ReminderData | null;
 }) {
-    const [groups, setGroups] = useState<GroupTagDTO[]>([]);
     const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
-    const [isLoading, setIsLoading] = useState(true);
     const { t } = useTranslation();
 
     const PAGE_SIZE = 50;
+    
+    const {results: rawGroups, loading, fetchNextPage, setQuery, hasNextPage} = useFetchPaginated<GroupDTO>(
+        'groups?fields=id,name,usersCount', 
+        '', 
+        PAGE_SIZE, 
+        true
+    );
 
-    const loadGroups = async (query: string = "", offset: number = 0) => {
-        try {
-            setIsLoading(true);
-            const data: GroupDTO[] = await host.fetchYouTrack(
-                `groups?fields=id,name,usersCount${query ? `&query=${encodeURIComponent(query)}` : ""}&$skip=${offset}&$top=${PAGE_SIZE}`
-            );
-
-            const groupsWithUsers = data.filter((group) => group.usersCount > 0);
-
-            const formattedGroups: GroupTagDTO[] = groupsWithUsers.map((group) => ({
+    const groups = useMemo(() => 
+        rawGroups
+            .filter((group) => group.usersCount > 0)
+            .map((group) => ({
                 key: group.id,
                 label: group.name,
                 description: `${group.usersCount} ${t("groupSelector.messages.groupDescription")}`,
-            }));
+            })), 
+        [rawGroups, t]
+    );
 
-            setGroups((prevGroups) => {
-                if (offset === 0 || query) {
-                    return formattedGroups;
-                }
-                return [...prevGroups, ...formattedGroups].reduce<GroupTagDTO[]>((uniqueGroups, group) => {
-                    if (!uniqueGroups.some((g) => g.key === group.key)) {
-                        uniqueGroups.push(group);
-                    }
-                    return uniqueGroups;
-                }, []);
-            });
-        } catch (error) {
-            console.error(t("groupSelector.errors.fetchGroups"), error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        void loadGroups();
-    }, [t]);
+    const debouncedSetQuery = useDebounceCallback((query: string) => {
+        setQuery(query ? `&query=${encodeURIComponent(query)}` : '');
+    }, 300);
 
     const handleGroupChange = (selected: GroupTagDTO | null) => {
         if (selected && !selectedGroups.find((group) => group.key === selected.key)) {
@@ -72,20 +56,14 @@ export default function GroupSelector({
         onChange(updatedGroups);
     };
 
-    const loadMore = async () => {
-        await loadGroups("", groups.length);
-    };
-
-    const onFilter = async (input: string) => {
-        if (input && input.trim().length > 0) {
-            await loadGroups(input.trim());
-        } else {
-            await loadGroups();
+    const loadMore = () => {
+        if (hasNextPage) {
+            void fetchNextPage();
         }
     };
 
-    const onOpen = async () => {
-        await loadGroups();
+    const onFilter = async (input: string) => {
+        debouncedSetQuery(input.trim());
     };
 
     return (
@@ -99,9 +77,9 @@ export default function GroupSelector({
                     selected={null}
                     onChange={handleGroupChange}
                     onFilter={onFilter}
-                    onOpen={onOpen}
                     onLoadMore={loadMore}
-                    loading={isLoading}
+                    loading={loading}
+                    renderOptimization={false}
                     filter
                     className="w-full mb-4"
                     popupClassName={"remove-input-focus"}

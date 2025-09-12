@@ -59,6 +59,10 @@
     },
     "actions": {
       "removeGroup": "Gruppe entfernen"
+    },
+    "tooltip": {
+      "noPermission": "Sie benötigen die Berechtigung 'Gruppe einsehen', um Gruppen zu Erinnerungen hinzuzufügen. Zusätzlich wird die Berechtigung 'Vollständige Projektdaten einsehen' benötigt, wenn Sie Projektteams hinzufügen möchten. Wenden Sie sich an Ihren Administrator.",
+      "permissionRequired": "Gruppenberechtigung erforderlich"
     }
   },
   "reminderDeleteDialog": {

@@ -14,9 +14,10 @@ import {fetchGroupUsers, fetchIssueProjectId, getUserTimeZone} from "../youTrack
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
 import Select, {SelectItem} from "@jetbrains/ring-ui-built/components/select/select";
+import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
 
 // @ts-ignore
-export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated, cameFromReminderTable = false}) {
+export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated, cameFromReminderTable = false, hasGroupPermission = true}) {
     const [subject, setSubject] = useState(editingReminder?.subject || "");
     const [date, setDate] = useState(editingReminder?.date || "");
     const [time, setTime] = useState(editingReminder?.time || "");
@@ -73,7 +74,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
         for (const group of selectedGroups) {
             const groupUsers = await fetchGroupUsers(group.key);
-            const missingEmailsInGroup = groupUsers.filter((user: { email: string | null }) => !user.email);
+            const missingEmailsInGroup = groupUsers?.filter((user: { email: string | null }) => !user.email) || [];
             usersWithoutEmails.push(...missingEmailsInGroup);
         }
 
@@ -490,11 +491,28 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                     />
                 </div>
                 <div className="col-span-6">
-                    <GroupSelector
-                        key={resetKey}
-                        onChange={setSelectedGroups}
-                        editingReminder={editingReminder}
-                    />
+                    {hasGroupPermission ? (
+                        <GroupSelector
+                            key={resetKey}
+                            onChange={setSelectedGroups}
+                            editingReminder={editingReminder}
+                        />
+                    ) : (
+                        <Tooltip title={t("groupSelector.tooltip.noPermission")}>
+                            <div className="flex flex-col">
+                                <label className="text-[#9ea0a9] text-xs mb-1">{t("groupSelector.labels.addGroups")}</label>
+                                <Select
+                                    size={Size.FULL}
+                                    height={ControlsHeight.L}
+                                    selected={null}
+                                    filter
+                                    disabled
+                                    className="w-full mb-4"
+                                    popupClassName={"remove-input-focus"}
+                                />
+                            </div>
+                        </Tooltip>
+                    )}
                 </div>
 
                 {touched.selectedUsersOrGroups && errors.selectedUsersOrGroups && (

@@ -21,6 +21,7 @@ export default function App() {
     const [isLoading, setIsLoading] = useState(true);
     const [editingReminder, setEditingReminder] = useState<ReminderData | null>(null);
     const [hasAdminPermission, setHasAdminPermission] = useState<boolean | null>(null);
+    const [hasGroupPermission, setHasGroupPermission] = useState<boolean | null>(null);
 
     const currentUserLogin = YTApp.me.login;
 
@@ -43,11 +44,11 @@ export default function App() {
 
             for (const group of reminder.selectedGroups) {
                 const groups = await fetchGroups();
-                const groupMatch = groups.find((g: { name: any }) => g.name === group.label);
+                const groupMatch = groups?.find((g: { name: any }) => g.name === group.label);
 
                 if (groupMatch) {
                     const groupUsers = await fetchGroupUsers(groupMatch.id);
-                    const userInGroup = groupUsers.some((user: { login: string }) => user.login === currentUserLogin);
+                    const userInGroup = groupUsers?.some((user: { login: string }) => user.login === currentUserLogin);
 
                     if (userInGroup) {
                         isPartOfGroups = true;
@@ -78,7 +79,13 @@ export default function App() {
                 return (item.permission?.key === "jetbrains.jetpass.low-level" || item.permission?.key === "jetbrains.jetpass.low-level-read") && item.global;
             });
 
+            const hasGroupPermission = result.some((item: any) => {
+                const hasPermissionKey = item.permission?.key === "jetbrains.jetpass.group-read";
+                return hasPermissionKey && (item.projects === null || item.projects?.length > 0);
+            });
+
             setHasAdminPermission(hasAdminPermission);
+            setHasGroupPermission(hasGroupPermission);
         });
         void fetchReminders();
     }, []);
@@ -180,6 +187,7 @@ export default function App() {
                         cameFromReminderTable={true}
                         onCancelEdit={handleCancelEdit}
                         onReminderCreated={fetchReminders}
+                        hasGroupPermission={hasGroupPermission}
                     />
                 </div>
             ) : (

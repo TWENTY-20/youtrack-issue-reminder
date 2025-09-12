@@ -59,6 +59,10 @@
     },
     "actions": {
       "removeGroup": "Remove Group"
+    },
+    "tooltip": {
+      "noPermission": "You need the 'Read Group' permission to add groups to reminders. Additionally, the 'Read Project Full' permission is required if you want to add project teams. Please contact your administrator.",
+      "permissionRequired": "Group permission required"
     }
   },
   "reminderDeleteDialog": {
