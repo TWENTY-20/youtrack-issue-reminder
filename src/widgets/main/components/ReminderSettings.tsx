@@ -21,7 +21,7 @@ export default function ReminderSettings({ onEditReminder }) {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [_, setAlert] = useState({ show: false, isClosing: false, message: "" });
-    const [timeZone, setTimeZone] = useState(null)
+    const [timeZone, setTimeZone] = useState<string | null>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [reminderToDelete, setReminderToDelete] = useState<ReminderData | null>(null);
 

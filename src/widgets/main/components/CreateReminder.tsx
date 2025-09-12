@@ -16,8 +16,16 @@ import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
 import Select, {SelectItem} from "@jetbrains/ring-ui-built/components/select/select";
 import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
 
+type CreateReminderProps = {
+    editingReminder?: ReminderData | null;
+    onCancelEdit: () => void;
+    onReminderCreated: () => void;
+    cameFromReminderTable?: boolean;
+    hasGroupPermission?: boolean | null;
+};
+
 // @ts-ignore
-export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated, cameFromReminderTable = false, hasGroupPermission = true}) {
+export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated, cameFromReminderTable = false, hasGroupPermission = true}: CreateReminderProps) {
     const [subject, setSubject] = useState(editingReminder?.subject || "");
     const [date, setDate] = useState(editingReminder?.date || "");
     const [time, setTime] = useState(editingReminder?.time || "");
