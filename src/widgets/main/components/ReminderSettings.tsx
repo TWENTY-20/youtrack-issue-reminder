@@ -72,13 +72,17 @@ export default function ReminderSettings({ onEditReminder }) {
 
     const formatDate = (dateStr: string | undefined): string => {
         if (!dateStr) return t("reminderSettings.errors.date");
-        const date = new Date(dateStr);
-
-        return new Intl.DateTimeFormat(YTApp.locale, {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit"
-        }).format(date);
+        try {
+            const [year, month, day] = dateStr.split("-").map(Number);
+            const date = new Date(year, month - 1, day);
+            return new Intl.DateTimeFormat(YTApp.locale, {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+            }).format(date);
+        } catch {
+            return dateStr;
+        }
     };
 
     const formatTime = (timeStr: string | undefined): string => {
@@ -86,18 +90,16 @@ export default function ReminderSettings({ onEditReminder }) {
 
         try {
             const [hours, minutes] = timeStr.split(":").map(Number);
-
-            const now = new Date();
-            now.setHours(hours, minutes, 0, 0);
+            const date = new Date(1970, 0, 1, hours, minutes);
 
             return new Intl.DateTimeFormat(YTApp.locale, {
                 hour: "2-digit",
                 minute: "2-digit",
-                hour12: YTApp.locale === "en"
-            }).format(now);
+                hour12: YTApp.locale === "en",
+            }).format(date);
         } catch (error) {
             console.error("Error formatting time:", error);
-            return t("reminderSettings.errors.time");
+            return timeStr;
         }
     };
 
