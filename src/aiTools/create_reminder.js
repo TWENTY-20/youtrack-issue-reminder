@@ -33,39 +33,43 @@ exports.aiTool = {
         const issue = entities.Issue.findById(ctx.arguments.issueId);
         const currentReminders = JSON.parse(issue.extensionProperties.activeReminders);
         const reminder = {
-                "subject": ctx.arguments.text,
-                "date": ctx.arguments.date,
-                "time": ctx.arguments.time,
-                "repeatSchedule": {
-                    "interval": 0,
-                    "timeframe": "day"
-                },
-                "selectedUsers": [
-                    {
-                        "key": ctx.currentUser.login,
-                        "label": ctx.currentUser.login,
-                        "login": ctx.currentUser.login,
-                        "avatar": ctx.currentUser.avatarUrl,
-                        "email": ctx.currentUser.email
-                    }
-                ],
-                "selectedGroups": [],
-                "message": ctx.arguments.text,
-                "issueId": ctx.arguments.issueId,
-                "uuid": Date.now().toString(),
-                "isActive": true,
-                "timezone": ctx.currentUser.timeZoneId,
-                "creatorLogin": ctx.currentUser.login,
-                "creatorName": ctx.currentUser.login,
-                "onlyCreatorCanEdit": true,
-                "allAssigneesCanEdit": false,
-                "project": issue.project.name,
-                "issueUrl": issue.url,
-                "endRepeatDate": null,
-                "endRepeatTime": null
-            }
+            "subject": ctx.arguments.text,
+            "date": ctx.arguments.date,
+            "time": ctx.arguments.time,
+            "repeatSchedule": {
+                "interval": 0,
+                "timeframe": "day"
+            },
+            "selectedUsers": [
+                {
+                    "key": ctx.currentUser.login,
+                    "label": ctx.currentUser.login,
+                    "login": ctx.currentUser.login,
+                    "avatar": ctx.currentUser.avatarUrl,
+                    "email": ctx.currentUser.email
+                }
+            ],
+            "selectedGroups": [],
+            "message": ctx.arguments.text,
+            "issueId": ctx.arguments.issueId,
+            "uuid": Date.now().toString(),
+            "isActive": true,
+            "timezone": ctx.currentUser.timeZoneId,
+            "creatorLogin": ctx.currentUser.login,
+            "creatorName": ctx.currentUser.login,
+            "onlyCreatorCanEdit": true,
+            "allAssigneesCanEdit": false,
+            "project": issue.project.name,
+            "issueUrl": issue.url,
+            "endRepeatDate": null,
+            "endRepeatTime": null
+        }
 
         issue.extensionProperties.activeReminders = JSON.stringify(currentReminders ? [...currentReminders, reminder] : [reminder]);
+
+        const projectReminders = JSON.parse(issue.project.extensionProperties.reminderShortData);
+        issue.project.extensionProperties.reminderShortData = JSON.stringify(projectReminders ? [...projectReminders, reminder] : [reminder]);
+        issue.project.extensionProperties.hasReminders = true;
         return "Reminder added successfully."
     }
 };
