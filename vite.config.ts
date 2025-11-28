@@ -34,14 +34,15 @@ export default defineConfig(({mode}) => {
             tailwindcss(),
             viteStaticCopy({
                 targets: [
-                    { src: "./logo.svg", dest: "." },
-                    { src: "./logoDark.svg", dest: "." },
-                    { src: "./manifest.json", dest: "." },
-                    { src: "./entity-extensions.json", dest: "." },
-                    { src: "./settings.json", dest: "." },
-                    { src: "./onScheduleMailScheduler.js", dest: "."},
-                    { src: "./onChangeIssueResolved.js", dest: "."},
-                    { src: "./onChangeIssueRemoved.js", dest: "."}
+                    {src: "./logo.svg", dest: "."},
+                    {src: "./logoDark.svg", dest: "."},
+                    {src: "./manifest.json", dest: "."},
+                    {src: "./entity-extensions.json", dest: "."},
+                    {src: "./settings.json", dest: "."},
+                    {src: "./onScheduleMailScheduler.js", dest: "."},
+                    {src: "./onChangeIssueResolved.js", dest: "."},
+                    {src: "./onChangeIssueRemoved.js", dest: "."},
+                    {src: "./aiTools/*", dest: "."}
                 ]
             })
         ],
