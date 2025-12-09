@@ -396,16 +396,16 @@ export default function ReminderSettings({ onEditReminder }) {
                                                     </div>
                                                 )}
                                                 <div className={"px-2 py-1 rounded-md"}>
-                                                    <span className="mr-2 dark:text-white">{formatDate(reminder.date)},</span>
-                                                    <span className={"dark:text-white"}>{formatTime(reminder.time)}</span>
+                                                    <span className="mr-2 text-(--ring-text-color)">{formatDate(reminder.date)},</span>
+                                                    <span className={"text-(--ring-text-color)"}>{formatTime(reminder.time)}</span>
                                                 </div>
                                             </div>
                                             {showTimeZoneTooltip && (
-                                                <div className={"mt-2 flex text-gray-500 items-center"}>
-                                                    <span className="mr-1 text-gray-500">
+                                                <div className={"mt-2 flex items-center"}>
+                                                    <span className="mr-1 text-(--ring-text-color)">
                                                         ({formatDateTooltip(reminder.date, reminder.time, reminder.timezone, timeZone)},
                                                     </span>
-                                                    <span className="mr-2 text-gray-500">
+                                                    <span className="mr-2 text-(--ring-text-color)">
                                                         {formatTimeTooltip(reminder.time, reminder.timezone, timeZone)})
                                                     </span>
                                                     <Tooltip title={t("reminderSettings.messages.notificationTimeTooltip")}>
