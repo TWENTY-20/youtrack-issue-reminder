@@ -109,7 +109,7 @@ export default function UserSelector({ onChange, editingReminder }: { onChange: 
                         aria-label={t("userSelector.actions.removeUser")}
                         className="flex items-center rounded"
                     >
-                        <div className="flex items-center py-4">
+                        <div className="flex items-center">
                             <img
                                 src={user.avatar || "https://www.gravatar.com/avatar/?d=mp"}
                                 alt={t("userSelector.messages.userAvatarAlt", { name: user.label })}

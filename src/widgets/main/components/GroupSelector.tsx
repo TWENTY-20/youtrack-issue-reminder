@@ -94,7 +94,7 @@ export default function GroupSelector({
                         aria-label={t("groupSelector.actions.removeGroup")}
                         className="flex items-center rounded"
                     >
-                        <div className="flex items-center py-4">
+                        <div className="flex items-center">
                             <span>{group.label}</span>
                         </div>
                     </Tag>
