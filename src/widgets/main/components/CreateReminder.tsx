@@ -326,10 +326,15 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         type="text"
                         label={t("createReminder.labels.subject")}
                         value={subject}
-                        {...(touched.subject && errors.subject ? { error: errors.subject } : {})}
                         onChange={(e) => setSubject(e.target.value)}
                     />
                 </div>
+
+                {touched.subject && errors.subject && (
+                    <div className="col-span-12 -mt-3">
+                        <div className="text-[#d36e6d] text-xs">{errors.subject}</div>
+                    </div>
+                )}
 
                 <div className="col-span-6">
                     <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.date")}</label>
@@ -340,11 +345,13 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         type="date"
                         value={date}
                         min={new Date().toLocaleDateString("sv-SE")}
-                        {...(touched.date && errors.date ? { error: errors.date } : {})}
                         onChange={(e) =>
                             handleDateAndTimeChange(e.target.value, setDate, time, setTime)
                         }
                     />
+                    {touched.date && errors.date && (
+                        <div className="text-[#d36e6d] text-xs mt-1">{errors.date}</div>
+                    )}
                 </div>
 
                 <div className="col-span-6">
@@ -386,6 +393,9 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                             return undefined;
                         }).filter((item): item is { label: string; key: string; value: string } => Boolean(item))}
                     />
+                    {touched.time && errors.time && (
+                        <div className="text-[#d36e6d] text-xs mt-1">{errors.time}</div>
+                    )}
                 </div>
 
                 <p className="text-sm col-span-12 text-gray-500">
@@ -525,7 +535,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
                 {touched.selectedUsersOrGroups && errors.selectedUsersOrGroups && (
                     <div className="col-span-12 -mt-6">
-                        <div className="text-[#cc3646] text-xs">{errors.selectedUsersOrGroups}</div>
+                        <div className="text-[#d36e6d] text-xs">{errors.selectedUsersOrGroups}</div>
                     </div>
                 )}
 
@@ -537,10 +547,15 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         label={t("createReminder.labels.message")}
                         multiline
                         value={message}
-                        {...(touched.message && errors.message ? { error: errors.message } : {})}
                         onChange={(e) => setMessage(e.target.value)}
                     />
                 </div>
+
+                {touched.message && errors.message && (
+                    <div className="col-span-12 -mt-3">
+                        <div className="text-[#d36e6d] text-xs">{errors.message}</div>
+                    </div>
+                )}
 
                 <div className={"col-span-12 flex flex-col"}>
                     <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.permissions")}</label>
