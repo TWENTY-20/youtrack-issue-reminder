@@ -1,6 +1,6 @@
 {
   "name": "youtrack-issue-reminder",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -42,6 +42,6 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "typescript": "^5.9.3",
-    "vite": "^7.2.7"
+    "vite": "^7.3.1"
   }
 }

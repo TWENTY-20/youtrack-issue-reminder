@@ -169,17 +169,16 @@ function sendMail(ctx, user, reminder, recipients) {
     const text =
         `<div style="font-family: sans-serif; color: #333; max-width: 600px; word-wrap: break-word;">
             <div style="margin-bottom: 10px; display: flex; flex-wrap: wrap; border-bottom: 1px solid #ddd; padding-bottom: 10px; gap: 10px;">
-                <p style="margin-bottom: 10px;"><b>${reminder.creatorName}</b> ${getTranslation(ctx, "reminder_sent", userLanguage)} <a href="${issue.url}" style="color: #000000; text-decoration: none;"><b>${issue.id}</b></a> ${getTranslation(ctx, "reminder_sent2", userLanguage)} <b>${issue.project.name}</b> ${getTranslation(ctx, "reminder_sent3", userLanguage)}</p>
+                <p style="margin-bottom: 10px;"><b>${reminder.creatorName}</b> ${getTranslation(ctx, "reminder_sent", userLanguage)} <b>${issue.id}</b> ${issue.summary} ${getTranslation(ctx, "reminder_sent2", userLanguage)} <b>${issue.project.name}</b> ${getTranslation(ctx, "reminder_sent3", userLanguage)}</p>
             </div>
         
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
-                <div style="margin-top: 5px; font-size: 13px;">
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "issue", userLanguage)}</strong> <a href="${issue.url}" style="color: #0057b7; text-decoration: none;">${issue.id}</a> (${issue.summary})</p>
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "subject_textblock", userLanguage)}</strong> ${reminder.subject}</p>
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "message", userLanguage)}</strong> ${reminder.message}</p>
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "planned_for", userLanguage)}</strong> ${reminder.date} ${reminder.time} (${reminder.timezone})</p>
+                <div style="margin-top: 5px; font-size: 14px;">
+                    <p style="margin-bottom: 7px;"><strong>${getTranslation(ctx, "issue", userLanguage)}</strong> <b>${issue.summary}</b> <a href="${issue.url}" style="color: #0057b7; text-decoration: none;">${issue.id}</a></p>
+                    <p style="margin-bottom: 7px;"><strong>${getTranslation(ctx, "message", userLanguage)}</strong> ${reminder.message}</p>
+                    <p style="margin-bottom: 7px;"><strong>${getTranslation(ctx, "planned_for", userLanguage)}</strong> ${reminder.date} ${reminder.time}</p>
                     ${rescheduledForText}
-                    <p style="margin-bottom: 10px;"><strong>${getTranslation(ctx, "recipients_footer", userLanguage)}</strong> ${userNames.join(", ")}</p>               
+                    <p style="margin-bottom: 7px;"><strong>${getTranslation(ctx, "recipients_footer", userLanguage)}</strong> ${userNames.join(", ")}</p>               
                 </div>
             </div>
         
