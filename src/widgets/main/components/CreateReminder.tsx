@@ -35,6 +35,7 @@ type CreateReminderProps = {
 };
 
 // @ts-ignore
+
 export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated, cameFromReminderTable = false, hasGroupPermission = true}: CreateReminderProps) {
     const DAY_IN_MS = 24 * 60 * 60 * 1000;
     // Get user's timezone from YouTrack profile, fallback to API if not present
@@ -207,7 +208,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 "reminder_sent2": "im Projekt",
                 "reminder_sent3": "erinnern",
                 "subject": "YouTrack Issue Reminder:",
-                "subject_textblock": "Betreff:",
                 "planned_for": "Geplant für:",
                 "rescheduled_for": "Neu geplant für:",
                 "rescheduled_for_once": "Einmalig",
@@ -217,11 +217,10 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 "recipients_footer": "Alle Empfänger:"
             },
             en: {
-                "reminder_sent": "wants to remind you about the issue",
+                "reminder_sent": "scheduled a reminder for",
                 "reminder_sent2": "in project",
                 "reminder_sent3": " ",
                 "subject": "YouTrack Issue Reminder:",
-                "subject_textblock": "Subject:",
                 "planned_for": "Scheduled for:",
                 "rescheduled_for": "Rescheduled for:",
                 "rescheduled_for_once": "Once",
@@ -244,9 +243,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     };
 
     const handleSubmitSecond = async () => {
-
         setShowEmailWarningDialog(false)
-
         const uuid = uuidv4();
         // Always use the user's YouTrack profile timezone for new reminders
         const timeZone = youTrackTimeZone;
@@ -271,16 +268,12 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             endRepeatDate: endRepeatDate || null,
             endRepeatTime: endRepeatTime || null,
         };
-
-
         try {
             if (editingReminder) {
                 await removeReminder(editingReminder.uuid, issueId);
             }
             await saveReminder(formData, issueId);
-
             onReminderCreated();
-
             await handleCancel();
             if (editingReminder) {
                 onCancelEdit();
