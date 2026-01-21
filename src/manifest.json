@@ -5,7 +5,7 @@
   "description": "A tool to setup reminders for an existing issue.",
   "changeNotes": "See https://plugins.jetbrains.com/plugin/26771-issue-reminder/release-notes",
   "aiToolPrefix": "issue_reminder",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "icon": "logo.svg",
   "iconDark": "logoDark.svg",
   "minYouTrackVersion": "2025.3.0",

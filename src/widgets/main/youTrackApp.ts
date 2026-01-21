@@ -12,6 +12,10 @@ declare const YTApp: {
         id: string,
         login: string,
         name: string,
+        timeZone?: {
+            id: string;
+            displayName?: string;
+        } | string;
     }
 };
 

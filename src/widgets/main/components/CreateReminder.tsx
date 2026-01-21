@@ -4,6 +4,16 @@ import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/control
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import {GroupTagDTO, ReminderData, UserTagDTO} from "../types.ts";
 import {fetchIssueUrl, removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
+// Helper to fetch issue summary using host.fetchYouTrack
+import { host } from "../youTrackApp.ts";
+async function fetchIssueSummary(issueId: string): Promise<string> {
+    try {
+        // Try direct fetch by id
+        const data = await host.fetchYouTrack<any>(`issues/${issueId}?fields=summary`);
+        if (data && data.summary) return data.summary;
+    } catch {}
+    return "";
+}
 import RepeatScheduleSelector, {RepeatSchedule} from "./RepeatScheduleSelector.tsx";
 import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
@@ -26,10 +36,45 @@ type CreateReminderProps = {
 
 // @ts-ignore
 export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated, cameFromReminderTable = false, hasGroupPermission = true}: CreateReminderProps) {
+    const DAY_IN_MS = 24 * 60 * 60 * 1000;
+    // Get user's timezone from YouTrack profile, fallback to API if not present
+    const [youTrackTimeZone, setYouTrackTimeZone] = useState<string>(
+        typeof YTApp.me?.timeZone === 'object'
+            ? (YTApp.me.timeZone as any).id
+            : (YTApp.me?.timeZone || "UTC")
+    );
+
+    useEffect(() => {
+        // If timeZone is not present, fetch it from API
+        if (!YTApp.me?.timeZone) {
+            getUserTimeZone(YTApp.me.id).then(tz => {
+                if (tz) setYouTrackTimeZone(tz);
+            });
+        }
+    }, []);
+
+    function getDefaultDateInUserTZ() {
+        // Two days from now, set to 8 AM in user's timezone
+        const now = new Date();
+        const target = new Date(now.getTime() + 2 * DAY_IN_MS);
+        target.setHours(8, 0, 0, 0); // set to 8 AM
+        try {
+            const tzDate = new Date(target.toLocaleString("en-US", { timeZone: youTrackTimeZone }));
+            const pad = (n: number) => n.toString().padStart(2, '0');
+            const yyyy = tzDate.getFullYear();
+            const mm = pad(tzDate.getMonth() + 1);
+            const dd = pad(tzDate.getDate());
+            return [`${yyyy}-${mm}-${dd}`, '08:00'];
+        } catch {
+            // fallback to UTC
+            return [target.toISOString().slice(0, 10), '08:00'];
+        }
+    }
+    const [defaultDate, defaultTime] = getDefaultDateInUserTZ();
     const [subject, setSubject] = useState(editingReminder?.subject || "");
-    const [date, setDate] = useState(editingReminder?.date || "");
-    const [time, setTime] = useState(editingReminder?.time || "");
-    const [message, setMessage] = useState(editingReminder?.message || "");
+    const [date, setDate] = useState<string>(editingReminder?.date || defaultDate);
+    const [time, setTime] = useState<string>(editingReminder?.time || defaultTime);
+    const [message, setMessage] = useState(editingReminder?.message || "Requested reminder notification.");
     const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers || []);
     const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
     const [repeatSchedule, setRepeatSchedule] = useState<RepeatSchedule>(() => editingReminder?.repeatSchedule || { interval: 0, timeframe: "day" });
@@ -44,8 +89,16 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const [endRepeatDate, setEndRepeatDate] = useState(editingReminder?.endRepeatDate || "");
     const [endRepeatTime, setEndRepeatTime] = useState(editingReminder?.endRepeatTime || "");
 
-
     const issueId = editingReminder?.issueId || YTApp.entity.id;
+
+    // Fetch issue summary for new reminders
+    useEffect(() => {
+        if (!editingReminder) {
+            fetchIssueSummary(issueId).then(summary => {
+                if (summary && !subject) setSubject(summary);
+            });
+        }
+    }, [editingReminder, issueId]);
 
     useEffect(() => {
         void fetchIssueProjectId(issueId).then(result => {
@@ -56,13 +109,18 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         })
         if (editingReminder) {
             setSubject(editingReminder.subject || "");
-            setDate(editingReminder.date || "");
-            setTime(editingReminder.time || "");
-            setMessage(editingReminder.message || "");
+            setDate(editingReminder.date || defaultDate);
+            setTime(editingReminder.time || "08:00");
+            setMessage(editingReminder.message || "Requested reminder notification.");
             setOnlyCreatorCanEdit(editingReminder.onlyCreatorCanEdit ?? true);
             setAllAssigneesCanEdit(editingReminder.allAssigneesCanEdit ?? false);
         } else {
-            handleCancel();
+            setSubject("");
+            setDate(defaultDate);
+            setTime("08:00");
+            setMessage("Requested reminder notification.");
+            setOnlyCreatorCanEdit(true);
+            setAllAssigneesCanEdit(false);
         }
     }, [editingReminder]);
 
@@ -190,8 +248,8 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         setShowEmailWarningDialog(false)
 
         const uuid = uuidv4();
-        const timeZone = editingReminder?.timezone || await getUserTimeZone(YTApp.me.id);
-
+        // Always use the user's YouTrack profile timezone for new reminders
+        const timeZone = youTrackTimeZone;
         const formData: ReminderData = {
             subject,
             date,
