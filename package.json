@@ -16,7 +16,7 @@
     "@jetbrains/youtrack-scripting-api": "^2022.1.46592",
     "build": "^0.1.4",
     "cron": "^4.3.5",
-    "i18next": "^25.7.2",
+    "i18next": "^26.0.0",
     "jquery": "^3.7.1",
     "npm": "^11.6.4",
     "react": "^19.2.1",
