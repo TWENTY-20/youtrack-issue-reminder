@@ -27,6 +27,29 @@ export default defineConfig(({mode}) => {
         };
     }
 
+    if (mode === "workflows") {
+        return {
+            build: {
+                outDir: "build",
+                emptyOutDir: false,
+                lib: {
+                    entry: [
+                        "./src/onScheduleMailScheduler.js",
+                        "./src/onChangeIssueResolved.js",
+                        "./src/onChangeIssueRemoved.js",
+                        "./src/aiTools/create_reminder.js",
+                        "./src/aiTools/get_reminders.js",
+                    ],
+                    formats: ["cjs"],
+                    fileName: (_format, entryName) => `${entryName}.js`,
+                },
+                rollupOptions: {
+                    external: [/^@jetbrains\/youtrack-scripting-api/],
+                },
+            },
+        };
+    }
+
 
     return {
 
@@ -39,12 +62,7 @@ export default defineConfig(({mode}) => {
                     {src: "./logoDark.svg", dest: "."},
                     {src: "./manifest.json", dest: "."},
                     {src: "./entity-extensions.json", dest: "."},
-                    {src: "./settings.json", dest: "."},
-                    {src: "./onScheduleMailScheduler.js", dest: "."},
-                    {src: "./onChangeIssueResolved.js", dest: "."},
-                    {src: "./onChangeIssueRemoved.js", dest: "."},
-                    {src: "./aiTools/*", dest: "."},
-                    {src: "./testReminderSetup/*", dest: "."}
+                    {src: "./settings.json", dest: "."}
                 ]
             })
         ],
