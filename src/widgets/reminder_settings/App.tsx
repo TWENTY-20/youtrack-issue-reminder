@@ -7,8 +7,7 @@ import {ReminderDeleteDialog} from "../main/components/ReminderDeleteDialog.tsx"
 import {fetchAllReminders} from "./globalStorage.ts";
 import Loader from "@jetbrains/ring-ui-built/components/loader/loader";
 import CreateReminder from "../main/components/CreateReminder.tsx";
-import YTApp from "./youTrackApp.ts";
-import {fetchGroups, fetchGroupUsers, fetchPermissionsCache} from "../main/youTrackHandler.ts";
+import {canReadGroups, fetchGroups, fetchGroupUsers, fetchPermissionsCache} from "../main/youTrackHandler.ts";
 import refreshIcon from "@jetbrains/icons/update";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 
@@ -78,15 +77,9 @@ export default function App() {
             const hasAdminPermission = result.some((item: any) => {
                 return (item.permission?.key === "jetbrains.jetpass.low-level" || item.permission?.key === "jetbrains.jetpass.low-level-read") && item.global;
             });
-
-            const hasGroupPermission = result.some((item: any) => {
-                const hasPermissionKey = item.permission?.key === "jetbrains.jetpass.group-read";
-                return hasPermissionKey && (item.projects === null || item.projects?.length > 0);
-            });
-
             setHasAdminPermission(hasAdminPermission);
-            setHasGroupPermission(hasGroupPermission);
         });
+        void canReadGroups().then(setHasGroupPermission);
         void fetchReminders();
     }, []);
 

@@ -17,21 +17,21 @@ export const ReminderCreateDialog: React.FC<CreateDialogProps> = ({ isOpen, titl
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 flex justify-center items-center z-50 bg-black bg-opacity-50">
-            <div className="rounded-lg shadow-xl w-96 p-6 bg-white dark:bg-[#1e1f22]">
+        <div className="fixed inset-0 flex justify-center items-center z-50 bg-(--ring-table-loader-background-color)">
+            <div className="rounded-lg shadow-xl w-96 p-6 bg-(--ring-popup-background-color) border border-(--ring-popup-border-color) text-(--ring-text-color)">
                 <h2 className="text-lg mb-4">{title}</h2>
                 <p className="mb-4">{message}</p>
 
                 {usersWithoutEmail.length > 0 && (
                     <ul className="mb-6">
                         {usersWithoutEmail.map((user) => (
-                            <li key={user.key} className="text-sm text-gray-700 dark:text-gray-300">
+                            <li key={user.key} className="text-sm text-(--ring-secondary-color)">
                                 <Tag
                                     key={user.key}
                                     readOnly
                                     className="flex items-center rounded"
                                 >
-                                    <div className="flex items-center py-4">
+                                    <div className="flex items-center">
                                         <img
                                             src={user.avatar || "https://www.gravatar.com/avatar/?d=mp"}
                                             alt={t("userSelector.messages.userAvatarAlt", { name: user.label || user.login })}

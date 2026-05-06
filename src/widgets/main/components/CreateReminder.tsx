@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Input, {Size} from "@jetbrains/ring-ui-built/components/input/input";
-import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
+import {ControlsHeight, ControlsHeightContext} from "@jetbrains/ring-ui-built/components/global/controls-height";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import {GroupTagDTO, ReminderData, UserTagDTO} from "../types.ts";
 import {fetchIssueUrl, removeReminder, saveReminder, uploadTranslations} from "../globalStorage.ts";
@@ -9,12 +9,13 @@ import UserSelector from "./UserSelector.tsx";
 import GroupSelector from "./GroupSelector.tsx";
 import {v4 as uuidv4} from "uuid";
 import {useTranslation} from "react-i18next";
-import YTApp from "../youTrackApp.ts";
+import YTApp from "../../../lib/youTrackApp.ts";
 import {fetchGroupUsers, fetchIssueProjectId, getUserTimeZone} from "../youTrackHandler.ts";
 import Checkbox from "@jetbrains/ring-ui-built/components/checkbox/checkbox";
 import {ReminderCreateDialog} from "./ReminderCreateDialog.tsx";
 import Select, {SelectItem} from "@jetbrains/ring-ui-built/components/select/select";
 import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
+import DatePicker from "@jetbrains/ring-ui-built/components/date-picker/date-picker";
 
 type CreateReminderProps = {
     editingReminder?: ReminderData | null;
@@ -338,17 +339,19 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
                 <div className="col-span-6">
                     <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.date")}</label>
-                    <Input
-                        size={Size.FULL}
-                        height={ControlsHeight.L}
-                        placeholder={t("createReminder.placeholders.date")}
-                        type="date"
-                        value={date}
-                        min={new Date().toLocaleDateString("sv-SE")}
-                        onChange={(e) =>
-                            handleDateAndTimeChange(e.target.value, setDate, time, setTime)
-                        }
-                    />
+                    <ControlsHeightContext.Provider value={ControlsHeight.L}>
+                        <DatePicker
+                            size={Size.FULL}
+                            date={date || null}
+                            className={!date ? "datepicker-empty" : ""}
+                            minDate={new Date().toLocaleDateString("sv-SE")}
+                            datePlaceholder={t("createReminder.placeholders.date")}
+                            clear
+                            onChange={(d: Date | null | undefined) => {
+                                handleDateAndTimeChange(d ? d.toLocaleDateString("sv-SE") : "", setDate, time, setTime);
+                            }}
+                        />
+                    </ControlsHeightContext.Provider>
                     {touched.date && errors.date && (
                         <div className="text-[#d36e6d] text-xs mt-1">{errors.date}</div>
                     )}
@@ -398,7 +401,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                     )}
                 </div>
 
-                <p className="text-sm col-span-12 text-gray-500">
+                <p className="text-sm col-span-12 text-(--ring-secondary-color)">
                     {repeatSchedule.interval === 0 ? (
                         t("repeatScheduleSelector.reminder.once")
                     ) : (
@@ -442,17 +445,19 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                     <>
                         <div className="col-span-6">
                             <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.endRepeatDate")}</label>
-                            <Input
-                                size={Size.FULL}
-                                height={ControlsHeight.L}
-                                placeholder={t("createReminder.placeholders.endRepeatDate")}
-                                type="date"
-                                value={endRepeatDate}
-                                min={date || new Date().toLocaleDateString("sv-SE")}
-                                onChange={(e) =>
-                                    handleDateAndTimeChange(e.target.value, setEndRepeatDate, endRepeatTime, setEndRepeatTime)
-                                }
-                            />
+                            <ControlsHeightContext.Provider value={ControlsHeight.L}>
+                                <DatePicker
+                                    size={Size.FULL}
+                                    date={endRepeatDate || null}
+                                    className={!endRepeatDate ? "datepicker-empty" : ""}
+                                    minDate={date || new Date().toLocaleDateString("sv-SE")}
+                                    datePlaceholder={t("createReminder.placeholders.endRepeatDate")}
+                                    clear
+                                    onChange={(d: Date | null | undefined) =>
+                                        handleDateAndTimeChange(d ? d.toLocaleDateString("sv-SE") : "", setEndRepeatDate, endRepeatTime, setEndRepeatTime)
+                                    }
+                                />
+                            </ControlsHeightContext.Provider>
                         </div>
                         <div className="col-span-6">
                             <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.placeholders.endRepeatTime")}</label>

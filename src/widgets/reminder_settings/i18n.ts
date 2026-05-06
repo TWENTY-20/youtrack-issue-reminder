@@ -1,7 +1,7 @@
 import i18next, { ResourceLanguage } from "i18next";
 import { initReactI18next } from "react-i18next";
-import YTApp, { host } from "./youTrackApp.ts";
 import English from "../../locales/en.json";
+import {host} from "../../lib/youTrackApp.ts";
 
 let translations;
 if (YTApp.locale !== "en") {

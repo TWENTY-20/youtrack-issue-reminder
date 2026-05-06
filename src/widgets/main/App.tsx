@@ -3,8 +3,7 @@ import CreateReminder from "./components/CreateReminder.tsx";
 import ReminderSettings from "./components/ReminderSettings.tsx";
 import { useTranslation } from "react-i18next";
 import {ReminderData} from "./types.ts";
-import {fetchIssueProjectId, fetchPermissionsCache} from "./youTrackHandler.ts";
-import YTApp from "./youTrackApp.ts";
+import {canReadGroups} from "./youTrackHandler.ts";
 import Loader from "@jetbrains/ring-ui-built/components/loader/loader";
 
 export default function App() {
@@ -19,21 +18,7 @@ export default function App() {
     };
 
     useEffect(() => {
-        void fetchIssueProjectId(YTApp.entity.id).then(fetchIssueProjectId => {
-
-            void fetchPermissionsCache().then(result => {
-                const hasGroupReadPermission = result.some((item: any) => {
-                    const hasPermissionKey = item.permission?.key === "jetbrains.jetpass.group-read";
-
-                    const hasPermissionForProject =
-                        item.projects?.some((project: any) => project.id === fetchIssueProjectId.id) ?? false;
-
-                    return hasPermissionKey && (hasPermissionForProject || item.projects === null);
-                });
-
-                setHasPermission(hasGroupReadPermission);
-            });
-        });
+        void canReadGroups().then(setHasPermission);
     }, []);
 
     if (hasPermission === null) {

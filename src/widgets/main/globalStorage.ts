@@ -1,4 +1,4 @@
-import YTApp, {host} from "./youTrackApp.ts";
+import YTApp, {host} from "../../lib/youTrackApp.ts";
 import {ReminderData} from "./types.ts";
 
 export async function saveReminder(data: ReminderData, issueId?: string) {

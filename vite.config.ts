@@ -17,6 +17,7 @@ export default defineConfig(({mode}) => {
                     fileName: "backend.js"
                 },
                 rollupOptions: {
+                    external: [/^@jetbrains\/youtrack-scripting-api/],
                     output: {
                         entryFileNames: "backend.js",
                         dir: "build"
@@ -42,7 +43,8 @@ export default defineConfig(({mode}) => {
                     {src: "./onScheduleMailScheduler.js", dest: "."},
                     {src: "./onChangeIssueResolved.js", dest: "."},
                     {src: "./onChangeIssueRemoved.js", dest: "."},
-                    {src: "./aiTools/*", dest: "."}
+                    {src: "./aiTools/*", dest: "."},
+                    {src: "./testReminderSetup/*", dest: "."}
                 ]
             })
         ],
@@ -62,11 +64,6 @@ export default defineConfig(({mode}) => {
                     main: 'src/widgets/main/index.html',
                     reminder_settings: 'src/widgets/reminder_settings/index.html'
                 }
-            }
-        },
-        esbuild: {
-            supported: {
-                "top-level-await": true
             }
         },
     };

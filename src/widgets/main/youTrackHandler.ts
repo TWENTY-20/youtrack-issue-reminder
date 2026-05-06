@@ -1,4 +1,4 @@
-import { host } from "./youTrackApp.ts";
+import { host } from "../../lib/youTrackApp.ts";
 
 export async function getUserTimeZone(userId: string) {
     const timeZoneResponse = await host.fetchYouTrack<{timezone: {id: string}}>(`users/${userId}/profiles/general?fields=timezone(id,presentation,offset)`);
@@ -36,6 +36,14 @@ export const fetchGroupUsers = async (groupId: string): Promise<any[]> => {
     }
 };
 
+export const canReadGroups = async (): Promise<boolean> => {
+    try {
+        await host.fetchYouTrack<any[]>('groups?fields=id&$top=1');
+        return true;
+    } catch {
+        return false;
+    }
+};
 
 export const fetchPermissionsCache = async (): Promise<any[]> => {
     try {

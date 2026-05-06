@@ -11,5 +11,21 @@ body.plugin {
     outline: none !important;
 }
 
+.ring-input-input::placeholder,
+.ring-input::placeholder,
+input::placeholder,
+textarea::placeholder {
+    color: var(--ring-secondary-color);
+    opacity: 1;
+}
+
+.ring-select-buttonValueEmpty.ring-select-buttonValueEmpty {
+    color: var(--ring-secondary-color);
+}
+
+.datepicker-empty .ring-date-picker-anchor {
+    color: var(--ring-secondary-color);
+}
+
 
 

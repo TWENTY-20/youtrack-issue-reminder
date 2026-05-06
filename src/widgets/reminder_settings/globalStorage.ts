@@ -1,5 +1,5 @@
-import YTApp, {host} from "./youTrackApp.ts";
 import {ReminderData} from "./types.ts";
+import {host} from "../../lib/youTrackApp.ts";
 
 export async function fetchReminders(): Promise<ReminderData[]> {
     try {

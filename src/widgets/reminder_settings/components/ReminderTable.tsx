@@ -6,8 +6,8 @@ import Toggle from "@jetbrains/ring-ui-built/components/toggle/toggle";
 import {updateReminders} from "../../main/globalStorage.ts";
 import {useState} from "react";
 import pencilIcon from "@jetbrains/icons/pencil";
-import YTApp, {host} from "../youTrackApp.ts";
 import {ReminderData} from "../types.ts";
+import {host} from "../../../lib/youTrackApp.ts";
 
 export default function ReminderTable({
                                           reminders,

@@ -44,7 +44,7 @@ function getSearchExpression() {
     if (resultArray.length === 0) return emptyResultQuery;
 
     const issueIds = [...new Set(resultArray.map((issue) => issue.id))];
-    return issueIds.join(", ");
+    return 'issue ID: ' + issueIds.join(", ");
 }
 
 exports.rule = entities.Issue.onSchedule({
@@ -143,6 +143,12 @@ function getTranslation(ctx, key, language) {
 function sendMail(ctx, user, reminder, recipients) {
     const issue = entities.Issue.findById(reminder.issueId);
     const userEntity = entities.User.findByLogin(user);
+
+    if (!userEntity || !userEntity.email) {
+        console.warn(`Skipping reminder ${reminder.uuid}: user ${user} has no email`);
+        return;
+    }
+
     const userEmail = userEntity.email;
     let userLanguage = userEntity.language;
 
@@ -208,7 +214,11 @@ function sendMail(ctx, user, reminder, recipients) {
         body: text
     };
 
-    notifications.sendEmail(message, issue);
+    try {
+        notifications.sendEmail(message, issue);
+    } catch (e) {
+        console.error(`sendEmail failed for ${userEmail} on ${issue && issue.id}: ${e && e.message}`);
+    }
     //console.log(`Email sent to ${user} (${userEmail}) for reminder: ${reminder.subject}`);
 }
 

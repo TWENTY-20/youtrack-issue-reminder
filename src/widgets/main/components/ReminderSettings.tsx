@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {fetchReminders, removeReminder, updateReminders} from "../globalStorage.ts";
 import { GroupTagDTO, ReminderData, UserTagDTO } from "../types.ts";
-import YTApp, {host} from "../youTrackApp.ts";
+import YTApp, {host} from "../../../lib/youTrackApp.ts";
 import Button from "@jetbrains/ring-ui-built/components/button/button";
 import pencilIcon from "@jetbrains/icons/pencil";
 import groupIcon from "@jetbrains/icons/group";

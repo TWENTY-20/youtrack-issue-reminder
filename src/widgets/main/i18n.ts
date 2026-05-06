@@ -1,6 +1,6 @@
 import i18next, { ResourceLanguage } from "i18next";
 import { initReactI18next } from "react-i18next";
-import YTApp, { host } from "./youTrackApp.ts";
+import YTApp, { host } from "../../lib/youTrackApp.ts";
 import English from "../../locales/en.json";
 
 let translations;

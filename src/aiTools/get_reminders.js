@@ -39,7 +39,6 @@ function getAllReminders() {
             const reminders = JSON.parse(project.extensionProperties.reminderShortData || '[]');
             resultArray.push(...reminders);
         });
-        console.log("All reminder", resultArray);
         return resultArray;
     } catch (error) {
         return undefined

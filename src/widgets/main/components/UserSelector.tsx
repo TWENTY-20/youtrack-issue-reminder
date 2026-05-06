@@ -1,6 +1,6 @@
 import {useEffect, useState, useMemo} from "react";
 import Select from "@jetbrains/ring-ui-built/components/select/select";
-import YTApp, {host} from "../youTrackApp.ts";
+import YTApp, {host} from "../../../lib/youTrackApp.ts";
 import Tag from "@jetbrains/ring-ui-built/components/tag/tag";
 import {Size} from "@jetbrains/ring-ui-built/components/input/input";
 import {ControlsHeight} from "@jetbrains/ring-ui-built/components/global/controls-height";
