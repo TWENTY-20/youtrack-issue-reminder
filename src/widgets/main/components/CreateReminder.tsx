@@ -333,12 +333,12 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
                 {touched.subject && errors.subject && (
                     <div className="col-span-12 -mt-3">
-                        <div className="text-[#d36e6d] text-xs">{errors.subject}</div>
+                        <div className="text-(--ring-error-color)  text-xs">{errors.subject}</div>
                     </div>
                 )}
 
                 <div className="col-span-6">
-                    <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.date")}</label>
+                    <label className="text-(--ring-secondary-color) text-xs mb-1">{t("createReminder.labels.date")}</label>
                     <ControlsHeightContext.Provider value={ControlsHeight.L}>
                         <DatePicker
                             size={Size.FULL}
@@ -353,12 +353,12 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         />
                     </ControlsHeightContext.Provider>
                     {touched.date && errors.date && (
-                        <div className="text-[#d36e6d] text-xs mt-1">{errors.date}</div>
+                        <div className="text-(--ring-error-color) text-xs mt-1">{errors.date}</div>
                     )}
                 </div>
 
                 <div className="col-span-6">
-                    <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.time")}</label>
+                    <label className="text-(--ring-secondary-color) text-xs mb-1">{t("createReminder.labels.time")}</label>
                     <Select
                         size={Size.FULL}
                         height={ControlsHeight.L}
@@ -397,7 +397,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         }).filter((item): item is { label: string; key: string; value: string } => Boolean(item))}
                     />
                     {touched.time && errors.time && (
-                        <div className="text-[#d36e6d] text-xs mt-1">{errors.time}</div>
+                        <div className="text-(--ring-error-color) text-xs mt-1">{errors.time}</div>
                     )}
                 </div>
 
@@ -444,7 +444,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 {showEndRepeat && (
                     <>
                         <div className="col-span-6">
-                            <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.endRepeatDate")}</label>
+                            <label className="text-(--ring-secondary-color) text-xs mb-1">{t("createReminder.labels.endRepeatDate")}</label>
                             <ControlsHeightContext.Provider value={ControlsHeight.L}>
                                 <DatePicker
                                     size={Size.FULL}
@@ -460,7 +460,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                             </ControlsHeightContext.Provider>
                         </div>
                         <div className="col-span-6">
-                            <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.placeholders.endRepeatTime")}</label>
+                            <label className="text-(--ring-secondary-color) text-xs mb-1">{t("createReminder.placeholders.endRepeatTime")}</label>
                             <Select
                                 size={Size.FULL}
                                 height={ControlsHeight.L}
@@ -500,7 +500,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         </div>
                         {touched.endRepeatFields && errors.endRepeatFields && (
                             <div className="col-span-12 -mt-3">
-                                <div className="text-[#d36e6d] text-xs">{errors.endRepeatFields}</div>
+                                <div className="text-(--ring-error-color) text-xs">{errors.endRepeatFields}</div>
                             </div>
                         )}
                     </>
@@ -523,7 +523,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                     ) : (
                         <Tooltip title={t("groupSelector.tooltip.noPermission")}>
                             <div className="flex flex-col">
-                                <label className="text-[#9ea0a9] text-xs mb-1">{t("groupSelector.labels.addGroups")}</label>
+                                <label className="text-(--ring-secondary-color) text-xs mb-1">{t("groupSelector.labels.addGroups")}</label>
                                 <Select
                                     size={Size.FULL}
                                     height={ControlsHeight.L}
@@ -540,7 +540,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
                 {touched.selectedUsersOrGroups && errors.selectedUsersOrGroups && (
                     <div className="col-span-12 -mt-6">
-                        <div className="text-[#d36e6d] text-xs">{errors.selectedUsersOrGroups}</div>
+                        <div className="text-(--ring-error-color) text-xs">{errors.selectedUsersOrGroups}</div>
                     </div>
                 )}
 
@@ -558,12 +558,12 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
                 {touched.message && errors.message && (
                     <div className="col-span-12 -mt-3">
-                        <div className="text-[#d36e6d] text-xs">{errors.message}</div>
+                        <div className="text-(--ring-error-color) text-xs">{errors.message}</div>
                     </div>
                 )}
 
                 <div className={"col-span-12 flex flex-col"}>
-                    <label className="text-[#9ea0a9] text-xs mb-1">{t("createReminder.labels.permissions")}</label>
+                    <label className="text-(--ring-secondary-color) text-xs mb-1">{t("createReminder.labels.permissions")}</label>
                     <Checkbox
                         checked={onlyCreatorCanEdit}
                         onChange={handleOnlyCreatorChange}

@@ -98,7 +98,7 @@ export default function ReminderTable({
                                     href={reminder.issueUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={"text-[#95b6f8]"}
+                                    className={"text-(--ring-link-color)"}
                                 >
                                     {reminder.issueId}
                                 </a>

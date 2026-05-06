@@ -69,7 +69,7 @@ export default function GroupSelector({
     return (
         <div>
             <div className="flex flex-col">
-                <label className="text-[#9ea0a9] text-xs mb-1">{t("groupSelector.labels.addGroups")}</label>
+                <label className="text-(--ring-secondary-color) text-xs mb-1">{t("groupSelector.labels.addGroups")}</label>
                 <Select
                     size={Size.FULL}
                     height={ControlsHeight.L}

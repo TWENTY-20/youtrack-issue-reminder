@@ -333,14 +333,14 @@ export default function ReminderSettings({ onEditReminder }) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center w-full gap-4 text-sm text-gray-600">
+                                            <div className="flex items-center w-full gap-4 text-sm text-(--ring-secondary-color)">
                                                 {reminder.selectedUsers.length > 0 && (
                                                     <div className="flex items-center">
                                                         <div className="flex -space-x-2">
                                                             {reminder.selectedUsers.slice(0, 2).map((user: UserTagDTO, index) => (
                                                                 <div
                                                                     key={user.key}
-                                                                    className="relative w-6 h-6 rounded-full bg-gray-300 shrink-0"
+                                                                    className="relative w-6 h-6 rounded-full bg-(--ring-secondary-background-color) shrink-0"
                                                                     style={{ zIndex: 10 - index }}
                                                                 >
                                                                     <img
@@ -362,7 +362,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                                         .map((user: UserTagDTO) => user.label)
                                                                         .join(", ")}
                                                                 >
-                                                                    <span className="flex items-center justify-center w-6 h-6 text-xs font-medium text-gray-600 bg-gray-200 rounded-full cursor-pointer">
+                                                                    <span className="flex items-center justify-center w-6 h-6 text-xs font-medium text-(--ring-secondary-color) bg-(--ring-secondary-background-color)  rounded-full cursor-pointer">
                                                                         +{reminder.selectedUsers.length - 2}
                                                                     </span>
                                                                 </Tooltip>
@@ -375,7 +375,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                         {reminder.selectedGroups.slice(0, 1).map((group: GroupTagDTO) => (
                                                             <div
                                                                 key={group.key}
-                                                                className="flex items-center gap-1 px-2 py-1 rounded-md dark:text-white bg-neutral-200 dark:bg-neutral-700"
+                                                                className="flex items-center gap-1 px-2 py-1 rounded-md text-(--ring-text-color) bg-(--ring-secondary-background-color)"
                                                             >
                                                                 <Icon glyph={groupIcon} className="ring-icon" />
                                                                 {group.label}
@@ -388,7 +388,7 @@ export default function ReminderSettings({ onEditReminder }) {
                                                                     .map((group: GroupTagDTO) => group.label)
                                                                     .join(", ")}
                                                             >
-                                                                <span className="text-gray-500">
+                                                                <span className="text-(--ring-secondary-color)">
                                                                     +{reminder.selectedGroups.length - 1} {t("reminderSettings.messages.moreGroups")}
                                                                 </span>
                                                             </Tooltip>

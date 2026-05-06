@@ -47,7 +47,7 @@ export default function RepeatScheduleSelector({ onChange, editingReminder }: { 
     return (
         <div className="grid grid-cols-12 gap-4">
             <div className="col-span-6">
-                <label className="text-[#9ea0a9] text-xs mb-1">{t("repeatScheduleSelector.labels.interval")}</label>
+                <label className="text-(--ring-secondary-color) text-xs mb-1">{t("repeatScheduleSelector.labels.interval")}</label>
                 <Input
                     type="number"
                     min={0}
@@ -60,7 +60,7 @@ export default function RepeatScheduleSelector({ onChange, editingReminder }: { 
             </div>
 
             <div className="col-span-6">
-                <label className="text-[#9ea0a9] text-xs mb-1">{t("repeatScheduleSelector.labels.timeframe")}</label>
+                <label className="text-(--ring-secondary-color) text-xs mb-1">{t("repeatScheduleSelector.labels.timeframe")}</label>
                 <Select
                     data={repeatTimeframes}
                     selected={repeatTimeframes.find(tf => tf.key === repeatTimeframe) || repeatTimeframes[0]}

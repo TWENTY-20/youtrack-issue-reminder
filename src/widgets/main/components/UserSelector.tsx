@@ -84,7 +84,7 @@ export default function UserSelector({ onChange, editingReminder }: { onChange: 
     return (
         <div>
             <div className="flex flex-col">
-                <label className="text-[#9ea0a9] text-xs mb-1">{t("userSelector.labels.addUsers")}</label>
+                <label className="text-(--ring-secondary-color) text-xs mb-1">{t("userSelector.labels.addUsers")}</label>
                 <Select
                     size={Size.FULL}
                     height={ControlsHeight.L}
