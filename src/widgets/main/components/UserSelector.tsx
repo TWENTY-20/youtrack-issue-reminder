@@ -10,7 +10,7 @@ import useFetchPaginated from "../util/useFetchPaginated.tsx";
 import {useDebounceCallback} from "usehooks-ts";
 
 export default function UserSelector({ onChange, editingReminder }: { onChange: (users: UserTagDTO[]) => void; editingReminder?: ReminderData | null; }) {
-    const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers || []);
+    const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers ?? []);
     const { t } = useTranslation();
 
     const PAGE_SIZE = 50;
@@ -54,7 +54,7 @@ export default function UserSelector({ onChange, editingReminder }: { onChange: 
             }
         };
 
-        fetchCurrentUser();
+        void fetchCurrentUser();
     }, [t, onChange, editingReminder]);
 
     const handleUserChange = (selected: UserTagDTO | null) => {
@@ -71,7 +71,7 @@ export default function UserSelector({ onChange, editingReminder }: { onChange: 
         onChange(updatedUsers);
     };
 
-    const onFilter = async (input: string) => {
+    const onFilter = (input: string) => {
         debouncedSetQuery(input.trim());
     };
 

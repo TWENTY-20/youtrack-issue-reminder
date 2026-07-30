@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Input, { Size } from "@jetbrains/ring-ui-built/components/input/input";
 import Select from "@jetbrains/ring-ui-built/components/select/select";
 import { ControlsHeight } from "@jetbrains/ring-ui-built/components/global/controls-height";
@@ -24,10 +24,6 @@ export default function RepeatScheduleSelector({ onChange, editingReminder }: { 
 
     const [repeatInterval, setRepeatInterval] = useState<number>(defaultInterval);
     const [repeatTimeframe, setRepeatTimeframe] = useState<string>(defaultTimeframe);
-
-    useEffect(() => {
-        onChange({ interval: repeatInterval, timeframe: repeatTimeframe });
-    }, [repeatInterval, repeatTimeframe]);
 
     const handleIntervalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(event.target.value, 10);
@@ -63,7 +59,7 @@ export default function RepeatScheduleSelector({ onChange, editingReminder }: { 
                 <label className="text-(--ring-secondary-color) text-xs mb-1">{t("repeatScheduleSelector.labels.timeframe")}</label>
                 <Select
                     data={repeatTimeframes}
-                    selected={repeatTimeframes.find(tf => tf.key === repeatTimeframe) || repeatTimeframes[0]}
+                    selected={repeatTimeframes.find(tf => tf.key === repeatTimeframe) ?? repeatTimeframes[0]}
                     onChange={handleTimeframeChange}
                     size={Size.FULL}
                     height={ControlsHeight.L}

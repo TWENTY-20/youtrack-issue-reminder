@@ -1,41 +1,54 @@
 import {ReminderData} from "./types.ts";
 import {host} from "../../lib/youTrackApp.ts";
 
+export interface IssueReminders {
+    issueId: string;
+    reminders: ReminderData[];
+}
+
 export async function fetchReminders(): Promise<ReminderData[]> {
     try {
-        const result = await host.fetchApp("backend/fetchReminders", {query: {issueId: YTApp.entity.id}});
+        const response = await host.fetchApp<{ result: ReminderData[] | null }>(
+            "backend/fetchReminders",
+            { query: { issueId: YTApp.entity.id } },
+        );
 
-        return result.result || [];
+        return response.result ?? [];
     } catch (error) {
         console.error("Error fetching reminders:", error);
         return [];
     }
 }
 
-export async function fetchAllReminders(): Promise<{ issueId: string; reminders: any[] }[]> {
+
+export async function fetchAllReminders(): Promise<IssueReminders[]> {
     try {
-        const result = await host.fetchApp("backend/fetchAllReminders", { method: "GET" });
+        const response = await host.fetchApp<{ result: string[] | null }>(
+            "backend/fetchAllReminders",
+            { method: "GET" },
+        );
 
-        if (result.result && Array.isArray(result.result)) {
-            const remindersPromises = result.result.map(async (issue: any) => {
-                try {
-                    const reminders = await host.fetchApp("backend/fetchReminders", {
-                        query: { issueId: issue },
-                    });
-
-                    return { issueId: issue, reminders: reminders.result || [] };
-                } catch (error) {
-                    console.error(`Fehler beim Abrufen von Erinnerungen für Issue ${issue}:`, error);
-                    return { issueId: issue, reminders: [] };
-                }
-            });
-
-            return await Promise.all(remindersPromises);
-        } else {
+        if (!Array.isArray(response.result)) {
             return [];
         }
+
+        return await Promise.all(response.result.map(fetchRemindersForIssue));
     } catch (error) {
         console.error("Fehler beim Abrufen aller Issues-Erinnerungen:", error);
         return [];
+    }
+}
+
+async function fetchRemindersForIssue(issueId: string): Promise<IssueReminders> {
+    try {
+        const response = await host.fetchApp<{ result: ReminderData[] | null }>(
+            "backend/fetchReminders",
+            { query: { issueId } },
+        );
+
+        return { issueId, reminders: response.result ?? [] };
+    } catch (error) {
+        console.error(`Fehler beim Abrufen von Erinnerungen für Issue ${issueId}:`, error);
+        return { issueId, reminders: [] };
     }
 }

@@ -14,10 +14,9 @@ import {fetchGroups, fetchGroupUsers, getUserTimeZone} from "../youTrackHandler.
 import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
 import {ReminderDeleteDialog} from "./ReminderDeleteDialog.tsx";
 import Loader from "@jetbrains/ring-ui-built/components/loader/loader";
+import {canModifyReminder} from "../../../lib/reminderPermissions.ts";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-export default function ReminderSettings({ onEditReminder }) {
+export default function ReminderSettings({ onEditReminder }: { onEditReminder: (reminder: ReminderData) => void }) {
     const [reminders, setReminders] = useState<ReminderData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [_, setAlert] = useState({ show: false, isClosing: false, message: "" });
@@ -41,15 +40,13 @@ export default function ReminderSettings({ onEditReminder }) {
 
                 let isPartOfGroups = false;
 
-                for (const group of reminder.selectedGroups) {
+                for (const groupTag of reminder.selectedGroups) {
                     const groups = await fetchGroups();
-                    const groupMatch = groups?.find((g: { name: any; }) => g.name === group.label);
+                    const groupMatch = groups.find((group) => group.name === groupTag.label);
 
                     if (groupMatch) {
                         const groupUsers = await fetchGroupUsers(groupMatch.id);
-                        const userInGroup = groupUsers?.some(
-                            (user: { login: string }) => user.login === currentUserLogin
-                        );
+                        const userInGroup = groupUsers.some((user) => user.login === currentUserLogin);
 
                         if (userInGroup) {
                             isPartOfGroups = true;
@@ -68,7 +65,7 @@ export default function ReminderSettings({ onEditReminder }) {
         });
 
         void getUserTimeZone(YTApp.me.id).then(setTimeZone);
-    }, []);
+    }, [currentUserLogin]);
 
     const formatDate = (dateStr: string | undefined): string => {
         if (!dateStr) return t("reminderSettings.errors.date");
@@ -128,7 +125,7 @@ export default function ReminderSettings({ onEditReminder }) {
                     const offsetString = timeZonePart?.value?.replace("GMT", "") ?? "0";
                     const parsed = parseInt(offsetString, 10);
                     return isNaN(parsed) ? 0 : parsed * 60;
-                } catch (err) {
+                } catch {
                     console.warn("Fallback to offset 0 for timeZone:", timeZone);
                     return 0;
                 }
@@ -286,17 +283,15 @@ export default function ReminderSettings({ onEditReminder }) {
                 </div>
                 <div className="col-span-12">
                     <ul className="space-y-4">
-                        {reminders.map((reminder, index) => {
+                        {reminders.map((reminder) => {
                             const isCreator = reminder.creatorLogin === currentUserLogin;
-                            const isAllowedUser = reminder.selectedUsers.some(user => user.login === currentUserLogin);
-
-                            const canEditOrDelete =
-                                reminder.onlyCreatorCanEdit ? isCreator : reminder.allAssigneesCanEdit ? (isCreator || isAllowedUser) : false;
+                            const isAllowedUser = reminder.selectedUsers.some((user) => user.login === currentUserLogin);
+                            const canEditOrDelete = canModifyReminder(reminder, isCreator, isAllowedUser);
 
                             const showTimeZoneTooltip = !areTimeZonesSame(reminder.timezone, timeZone);
 
                             return (
-                                <li key={index} className="flex flex-col gap-2">
+                                <li key={reminder.uuid} className="flex flex-col gap-2">
                                     <div className="flex gap-4 border border-[#9ea0a9] p-4 rounded-md shadow-sm items-center">
                                         <div className={"flex w-full flex-col"}>
                                             <div className="flex items-center mb-2">
@@ -307,7 +302,9 @@ export default function ReminderSettings({ onEditReminder }) {
                                                     <div>
                                                         <Toggle
                                                             checked={reminder.isActive}
-                                                            onChange={(e) => handleToggle(reminder.uuid, e.target.checked)}
+                                                            onChange={(e) => {
+                                                                void handleToggle(reminder.uuid, e.target.checked);
+                                                            }}
                                                             className="ring-btn-small ring-btn-primary ring-btn-icon-only m-0 mb-1"
                                                             disabled={!canEditOrDelete}
                                                         />
@@ -426,7 +423,9 @@ export default function ReminderSettings({ onEditReminder }) {
                 isOpen={isDeleteModalOpen}
                 title={t("reminderSettings.messages.confirmDeleteTitle")}
                 message={t("reminderSettings.messages.confirmDeleteMessage")}
-                onConfirm={confirmDelete}
+                onConfirm={() => {
+                    void confirmDelete();
+                }}
                 onCancel={cancelDelete}
             />
         </div>

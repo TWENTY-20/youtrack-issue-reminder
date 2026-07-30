@@ -1,4 +1,4 @@
-import {defineConfig} from "vite";
+    import {defineConfig} from "vite";
 import react from "@vitejs/plugin-react";
 import {viteStaticCopy} from "vite-plugin-static-copy";
 import tailwindcss from "@tailwindcss/vite";
@@ -80,6 +80,7 @@ export default defineConfig(({mode}) => {
                 external: ['@jetbrains/ring-ui/components/select/select.css'],
                 input: {
                     main: 'src/widgets/main/index.html',
+                    // eslint-disable-next-line camelcase
                     reminder_settings: 'src/widgets/reminder_settings/index.html'
                 }
             }

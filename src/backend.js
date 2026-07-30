@@ -7,7 +7,6 @@ const languages = new Map()
 languages.set("de", German)
 //languages.set("en", English)
 
-// eslint-disable-next-line no-undef,@typescript-eslint/no-unsafe-member-access
 exports.httpHandler = {
     endpoints: [
         {
