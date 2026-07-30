@@ -15,7 +15,7 @@ export default function GroupSelector({
     onChange: (groups: any[]) => void;
     editingReminder?: ReminderData | null;
 }) {
-    const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
+    const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups ?? []);
     const { t } = useTranslation();
 
     const PAGE_SIZE = 50;
@@ -62,7 +62,7 @@ export default function GroupSelector({
         }
     };
 
-    const onFilter = async (input: string) => {
+    const onFilter = (input: string) => {
         debouncedSetQuery(input.trim());
     };
 

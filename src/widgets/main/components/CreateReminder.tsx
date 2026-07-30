@@ -17,23 +17,23 @@ import Select, {SelectItem} from "@jetbrains/ring-ui-built/components/select/sel
 import Tooltip from "@jetbrains/ring-ui-built/components/tooltip/tooltip";
 import DatePicker from "@jetbrains/ring-ui-built/components/date-picker/date-picker";
 
-type CreateReminderProps = {
+interface CreateReminderProps {
     editingReminder?: ReminderData | null;
     onCancelEdit: () => void;
     onReminderCreated: () => void;
     cameFromReminderTable?: boolean;
     hasGroupPermission?: boolean | null;
-};
+}
 
-// @ts-ignore
+// eslint-disable-next-line complexity
 export default function CreateReminder({editingReminder, onCancelEdit, onReminderCreated, cameFromReminderTable = false, hasGroupPermission = true}: CreateReminderProps) {
     const [subject, setSubject] = useState(editingReminder?.subject || "");
     const [date, setDate] = useState(editingReminder?.date || "");
     const [time, setTime] = useState(editingReminder?.time || "");
     const [message, setMessage] = useState(editingReminder?.message || "");
-    const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers || []);
-    const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups || []);
-    const [repeatSchedule, setRepeatSchedule] = useState<RepeatSchedule>(() => editingReminder?.repeatSchedule || { interval: 0, timeframe: "day" });
+    const [selectedUsers, setSelectedUsers] = useState<UserTagDTO[]>(editingReminder?.selectedUsers ?? []);
+    const [selectedGroups, setSelectedGroups] = useState<GroupTagDTO[]>(editingReminder?.selectedGroups ?? []);
+    const [repeatSchedule, setRepeatSchedule] = useState<RepeatSchedule>(() => editingReminder?.repeatSchedule ?? { interval: 0, timeframe: "day" });
     const [resetKey, setResetKey] = useState(0);
     const [onlyCreatorCanEdit, setOnlyCreatorCanEdit] = useState(editingReminder?.onlyCreatorCanEdit ?? true);
     const [allAssigneesCanEdit, setAllAssigneesCanEdit] = useState(editingReminder?.allAssigneesCanEdit ?? false);
@@ -44,29 +44,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
     const [showEndRepeat, setShowEndRepeat] = useState(false);
     const [endRepeatDate, setEndRepeatDate] = useState(editingReminder?.endRepeatDate || "");
     const [endRepeatTime, setEndRepeatTime] = useState(editingReminder?.endRepeatTime || "");
-
-
-    const issueId = editingReminder?.issueId || YTApp.entity.id;
-
-    useEffect(() => {
-        void fetchIssueProjectId(issueId).then(result => {
-            setProjectName(result.name)
-        })
-        void fetchIssueUrl(issueId).then(result => {
-            setIssueUrl(result)
-        })
-        if (editingReminder) {
-            setSubject(editingReminder.subject || "");
-            setDate(editingReminder.date || "");
-            setTime(editingReminder.time || "");
-            setMessage(editingReminder.message || "");
-            setOnlyCreatorCanEdit(editingReminder.onlyCreatorCanEdit ?? true);
-            setAllAssigneesCanEdit(editingReminder.allAssigneesCanEdit ?? false);
-        } else {
-            handleCancel();
-        }
-    }, [editingReminder]);
-
     const [touched, setTouched] = useState({
         subject: false,
         date: false,
@@ -75,20 +52,22 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         selectedUsersOrGroups: false,
         endRepeatFields: false,
     });
+    const [today] = useState(() => new Date().toLocaleDateString("sv-SE"));
 
     const { t } = useTranslation();
 
-    const checkMissingEmails = async () => {
-        const usersWithoutEmails = [...selectedUsers.filter(user => !user.email)];
+    const issueId = editingReminder?.issueId || YTApp.entity.id;
 
-        for (const group of selectedGroups) {
-            const groupUsers = await fetchGroupUsers(group.key);
-            const missingEmailsInGroup = groupUsers?.filter((user: { email: string | null }) => !user.email) || [];
-            usersWithoutEmails.push(...missingEmailsInGroup);
-        }
-
-        return removeDuplicateUsersByLogin(usersWithoutEmails);
-    };
+    useEffect(() => {
+        void fetchIssueProjectId(issueId).then((project) => {
+            if (project) {
+                setProjectName(project.name);
+            }
+        });
+        void fetchIssueUrl(issueId).then((url) => {
+            setIssueUrl(url ?? "");
+        });
+    }, [issueId]);
 
     const removeDuplicateUsersByLogin = (users: UserTagDTO[]): UserTagDTO[] => {
         const seenLogins = new Set<string>();
@@ -99,6 +78,20 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
             }
             return false;
         });
+    };
+
+    const checkMissingEmails = async () => {
+        const usersWithoutEmails = [...selectedUsers.filter(user => !user.email)];
+
+        for (const group of selectedGroups) {
+            const groupUsers = await fetchGroupUsers(group.key);
+            const missingEmailsInGroup: UserTagDTO[] = groupUsers
+                .filter((user) => !user.email)
+                .map((user) => ({ key: user.id, label: user.name, login: user.login, email: "" }));
+            usersWithoutEmails.push(...missingEmailsInGroup);
+        }
+
+        return removeDuplicateUsersByLogin(usersWithoutEmails);
     };
 
     const handleRepeatChange = (value: RepeatSchedule) => {
@@ -127,7 +120,77 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         };
     };
 
-    const handleSubmit = async (event: React.FormEvent) => {
+    const handleCancel = () => {
+        setSubject("");
+        setDate("");
+        setTime("");
+        setMessage("");
+        setEndRepeatDate("");
+        setEndRepeatTime("");
+        setSelectedUsers([]);
+        setSelectedGroups([]);
+        setRepeatSchedule({ interval: 0, timeframe: "day" });
+        setOnlyCreatorCanEdit(true);
+        setAllAssigneesCanEdit(false);
+        setResetKey((prevKey) => prevKey + 1);
+        setTouched({
+            subject: false,
+            date: false,
+            time: false,
+            message: false,
+            selectedUsersOrGroups: false,
+            endRepeatFields: false,
+        });
+    };
+
+    const handleSubmitSecond = async () => {
+
+        setShowEmailWarningDialog(false)
+
+        const uuid = uuidv4();
+        const timeZone = editingReminder?.timezone || await getUserTimeZone(YTApp.me.id);
+
+        const formData: ReminderData = {
+            subject,
+            date,
+            time,
+            repeatSchedule,
+            selectedUsers,
+            selectedGroups,
+            message,
+            issueId,
+            uuid,
+            isActive: true,
+            timezone: timeZone,
+            creatorLogin: editingReminder?.creatorLogin || YTApp.me.login,
+            creatorName: editingReminder?.creatorName || YTApp.me.name,
+            onlyCreatorCanEdit,
+            allAssigneesCanEdit,
+            project: projectName,
+            issueUrl: issueUrl,
+            endRepeatDate: endRepeatDate || null,
+            endRepeatTime: endRepeatTime || null,
+        };
+
+
+        try {
+            if (editingReminder) {
+                await removeReminder(editingReminder.uuid, issueId);
+            }
+            await saveReminder(formData, issueId);
+
+            onReminderCreated();
+
+            handleCancel();
+            if (editingReminder) {
+                onCancelEdit();
+            }
+        } catch (error) {
+            console.error(t("createReminder.errors.submitError"), error);
+        }
+    }
+
+    const handleSubmit = async (event: React.SyntheticEvent) => {
         event.preventDefault();
 
         setTouched({
@@ -186,76 +249,6 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         }
     };
 
-    const handleSubmitSecond = async () => {
-
-        setShowEmailWarningDialog(false)
-
-        const uuid = uuidv4();
-        const timeZone = editingReminder?.timezone || await getUserTimeZone(YTApp.me.id);
-
-        const formData: ReminderData = {
-            subject,
-            date,
-            time,
-            repeatSchedule,
-            selectedUsers,
-            selectedGroups,
-            message,
-            issueId,
-            uuid,
-            isActive: true,
-            timezone: timeZone,
-            creatorLogin: editingReminder?.creatorLogin || YTApp.me.login,
-            creatorName: editingReminder?.creatorName || YTApp.me.name,
-            onlyCreatorCanEdit,
-            allAssigneesCanEdit,
-            project: projectName,
-            issueUrl: issueUrl,
-            endRepeatDate: endRepeatDate || null,
-            endRepeatTime: endRepeatTime || null,
-        };
-
-
-        try {
-            if (editingReminder) {
-                await removeReminder(editingReminder.uuid, issueId);
-            }
-            await saveReminder(formData, issueId);
-
-            onReminderCreated();
-
-            await handleCancel();
-            if (editingReminder) {
-                onCancelEdit();
-            }
-        } catch (error) {
-            console.error(t("createReminder.errors.submitError"), error);
-        }
-    }
-
-    const handleCancel = async () => {
-        setSubject("");
-        setDate("");
-        setTime("");
-        setMessage("");
-        setEndRepeatDate("");
-        setEndRepeatTime("");
-        setSelectedUsers([]);
-        setSelectedGroups([]);
-        setRepeatSchedule({ interval: 0, timeframe: "day" });
-        setOnlyCreatorCanEdit(true);
-        setAllAssigneesCanEdit(false);
-        setResetKey((prevKey) => prevKey + 1);
-        setTouched({
-            subject: false,
-            date: false,
-            time: false,
-            message: false,
-            selectedUsersOrGroups: false,
-            endRepeatFields: false,
-        });
-    };
-
     const handleOnlyCreatorChange = () => {
         setOnlyCreatorCanEdit(true);
         setAllAssigneesCanEdit(false);
@@ -312,6 +305,34 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
         }
     };
 
+    const buildUntilPart = (): string => {
+        if (!endRepeatDate && !endRepeatTime) {
+            return "";
+        }
+        return t("repeatScheduleSelector.reminder.until", {
+            endDate: endRepeatDate,
+            endTime: endRepeatTime,
+        });
+    };
+
+    const buildRepeatText = (): string => {
+        if (repeatSchedule.interval === 0) {
+            return t("repeatScheduleSelector.reminder.once");
+        }
+
+        const untilPart = buildUntilPart();
+
+        if (repeatSchedule.interval === 1) {
+            return t(`repeatScheduleSelector.reminder.recurring.one.${repeatSchedule.timeframe}`, { untilPart });
+        }
+
+        return t("repeatScheduleSelector.reminder.recurring.default", {
+            interval: repeatSchedule.interval,
+            timeframe: t(`repeatScheduleSelector.timeframes.${repeatSchedule.timeframe}s`),
+            untilPart,
+        });
+    };
+
     return (
         <div>
             <div className="grid grid-cols-12 w-full h-full gap-4">
@@ -339,19 +360,19 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
 
                 <div className="col-span-6">
                     <label className="text-(--ring-secondary-color) text-xs mb-1">{t("createReminder.labels.date")}</label>
-                    <ControlsHeightContext.Provider value={ControlsHeight.L}>
+                    <ControlsHeightContext value={ControlsHeight.L}>
                         <DatePicker
                             size={Size.FULL}
                             date={date || null}
                             className={!date ? "datepicker-empty" : ""}
-                            minDate={new Date().toLocaleDateString("sv-SE")}
+                            minDate={today}
                             datePlaceholder={t("createReminder.placeholders.date")}
                             clear
                             onChange={(d: Date | null | undefined) => {
                                 handleDateAndTimeChange(d ? d.toLocaleDateString("sv-SE") : "", setDate, time, setTime);
                             }}
                         />
-                    </ControlsHeightContext.Provider>
+                    </ControlsHeightContext>
                     {touched.date && errors.date && (
                         <div className="text-(--ring-error-color) text-xs mt-1">{errors.date}</div>
                     )}
@@ -363,7 +384,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                         size={Size.FULL}
                         height={ControlsHeight.L}
                         selected={time ? { label: time, key: time, value: time } : null}
-                        onChange={(selected: SelectItem<{ label: any; key: any; value: any; }> | null) => setTime(selected?.value || "")}
+                        onChange={(selected: SelectItem<{ label: string; key: string; value: string }> | null) => setTime(selected?.value ?? "")}
                         filter
                         data={Array.from({ length: 96 }, (_, i) => {
                             const totalMinutes = i * 15;
@@ -402,41 +423,13 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 </div>
 
                 <p className="text-sm col-span-12 text-(--ring-secondary-color)">
-                    {repeatSchedule.interval === 0 ? (
-                        t("repeatScheduleSelector.reminder.once")
-                    ) : (
-                        repeatSchedule.interval === 1
-                            ? t(`repeatScheduleSelector.reminder.recurring.one.${repeatSchedule.timeframe}`, {
-                                untilPart: endRepeatDate || endRepeatTime
-                                    ? t("repeatScheduleSelector.reminder.until", {
-                                        endDate: endRepeatDate || "",
-                                        endTime: endRepeatTime || ""
-                                    })
-                                    : ""
-                            })
-                            : t("repeatScheduleSelector.reminder.recurring.default", {
-                                interval: repeatSchedule.interval,
-                                timeframe: t(
-                                    `repeatScheduleSelector.timeframes.${repeatSchedule.timeframe}${
-                                        repeatSchedule.interval > 1 ? "s" : ""
-                                    }`
-                                ),
-                                untilPart: endRepeatDate || endRepeatTime
-                                    ? t("repeatScheduleSelector.reminder.until", {
-                                        endDate: endRepeatDate || "",
-                                        endTime: endRepeatTime || ""
-                                    })
-                                    : ""
-                            })
-                    )}
+                    {buildRepeatText()}
                 </p>
 
                 <div className="col-span-12">
                     <RepeatScheduleSelector
                         key={resetKey}
-                        onChange={(value) => {
-                            handleRepeatChange(value)
-                        }}
+                        onChange={handleRepeatChange}
                         editingReminder={editingReminder}
                     />
                 </div>
@@ -445,19 +438,19 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                     <>
                         <div className="col-span-6">
                             <label className="text-(--ring-secondary-color) text-xs mb-1">{t("createReminder.labels.endRepeatDate")}</label>
-                            <ControlsHeightContext.Provider value={ControlsHeight.L}>
+                            <ControlsHeightContext value={ControlsHeight.L}>
                                 <DatePicker
                                     size={Size.FULL}
                                     date={endRepeatDate || null}
                                     className={!endRepeatDate ? "datepicker-empty" : ""}
-                                    minDate={date || new Date().toLocaleDateString("sv-SE")}
+                                    minDate={date || today}
                                     datePlaceholder={t("createReminder.placeholders.endRepeatDate")}
                                     clear
                                     onChange={(d: Date | null | undefined) =>
                                         handleDateAndTimeChange(d ? d.toLocaleDateString("sv-SE") : "", setEndRepeatDate, endRepeatTime, setEndRepeatTime)
                                     }
                                 />
-                            </ControlsHeightContext.Provider>
+                            </ControlsHeightContext>
                         </div>
                         <div className="col-span-6">
                             <label className="text-(--ring-secondary-color) text-xs mb-1">{t("createReminder.placeholders.endRepeatTime")}</label>
@@ -580,7 +573,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                     <Button danger onClick={handleCancelButtonClick}>
                         {editingReminder ? t("createReminder.actions.cancelEdit") : t("createReminder.actions.cancelCreate")}
                     </Button>
-                    <Button primary onClick={handleSubmit}>
+                    <Button primary onClick={(event) => { void handleSubmit(event); }}>
                         {editingReminder ? t("createReminder.actions.saveEdit") : t("createReminder.actions.submit")}
                     </Button>
                 </div>
@@ -590,7 +583,7 @@ export default function CreateReminder({editingReminder, onCancelEdit, onReminde
                 title={t("createReminder.messages.confirmCreateTitle")}
                 message={t("createReminder.messages.confirmCreateMessage")}
                 usersWithoutEmail={usersWithoutEmail}
-                onConfirm={handleSubmitSecond}
+                onConfirm={() => { void handleSubmitSecond(); }}
                 onCancel={cancelCreate}
             />
         </div>

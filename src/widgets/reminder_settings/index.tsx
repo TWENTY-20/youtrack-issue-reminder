@@ -6,7 +6,7 @@ import "./index.css";
 import "@jetbrains/ring-ui-built/components/style.css";
 
 const root = ReactDOM.createRoot(
-    document.getElementById("root") as HTMLElement
+    document.getElementById("root")!
 );
 root.render(
     <React.StrictMode>

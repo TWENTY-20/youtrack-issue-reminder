@@ -8,6 +8,7 @@ import {useState} from "react";
 import pencilIcon from "@jetbrains/icons/pencil";
 import {ReminderData} from "../types.ts";
 import {host} from "../../../lib/youTrackApp.ts";
+import {canModifyReminder} from "../../../lib/reminderPermissions.ts";
 
 export default function ReminderTable({
                                           reminders,
@@ -15,9 +16,9 @@ export default function ReminderTable({
                                           onEditClick,
                                           isAdminView = false
                                       }: {
-    reminders: any[];
-    onDeleteClick: (reminder: any) => void;
-    onEditClick: (reminder: any) => void;
+    reminders: ReminderData[];
+    onDeleteClick: (reminder: ReminderData) => void;
+    onEditClick: (reminder: ReminderData) => void;
     isAdminView?: boolean;
 }) {
     const [_, setAlert] = useState({ show: false, isClosing: false, message: "" });
@@ -77,7 +78,7 @@ export default function ReminderTable({
                         title: t("reminderTable.columns.project"),
                         className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
-                            const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
+                            const reminder = reminders.find((entry) => entry.uuid === row.id);
                             if (!reminder) return null;
                             return (
                                 <span style={{ fontWeight: "bold" }}>
@@ -91,7 +92,7 @@ export default function ReminderTable({
                         title: t("reminderTable.columns.issue"),
                         className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
-                            const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
+                            const reminder = reminders.find((entry) => entry.uuid === row.id);
                             if (!reminder) return null;
                             return (
                                 <a
@@ -110,7 +111,7 @@ export default function ReminderTable({
                         title: t("reminderTable.columns.subject"),
                         className: "w-2/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
-                            const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
+                            const reminder = reminders.find((entry) => entry.uuid === row.id);
                             if (!reminder) return null;
                             return (
                                 <span
@@ -146,10 +147,10 @@ export default function ReminderTable({
                         title: t("reminderTable.columns.members"),
                         className: "w-2/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
-                            const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
+                            const reminder = reminders.find((entry) => entry.uuid === row.id);
                             if (!reminder) return null;
 
-                            const members = (reminder.selectedUsers || []).map((user: { label: any }) => user.label);
+                            const members = reminder.selectedUsers.map((user) => user.label);
                             const displayedMembers = members.length > 4 ? [...members.slice(0, 4), "..."] : members;
 
                             return displayedMembers.join(", ");
@@ -160,10 +161,10 @@ export default function ReminderTable({
                         title: t("reminderTable.columns.groups"),
                         className: "w-2/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
-                            const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
+                            const reminder = reminders.find((entry) => entry.uuid === row.id);
                             if (!reminder) return null;
 
-                            const groups = (reminder.selectedGroups || []).map((group: { label: any }) => group.label);
+                            const groups = reminder.selectedGroups.map((group) => group.label);
                             const displayedGroups = groups.length > 4 ? [...groups.slice(0, 4), "..."] : groups;
 
                             return displayedGroups.join(", ");
@@ -174,21 +175,19 @@ export default function ReminderTable({
                         title: t("reminderTable.columns.status"),
                         className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
-                            const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
+                            const reminder = reminders.find((entry) => entry.uuid === row.id);
                             if (!reminder) return null;
 
                             const isCreator = isAdminView || reminder.creatorLogin === currentUserLogin;
-                            const isAllowedUser = isAdminView || reminder.selectedUsers.some((user: { login: any }) => user.login === currentUserLogin);
-                            const canToggle = reminder.onlyCreatorCanEdit
-                                ? isCreator
-                                : reminder.allAssigneesCanEdit
-                                    ? isCreator || isAllowedUser
-                                    : false;
+                            const isAllowedUser = isAdminView || reminder.selectedUsers.some((user) => user.login === currentUserLogin);
+                            const canToggle = canModifyReminder(reminder, isCreator, isAllowedUser);
 
                             return (
                                 <Toggle
                                     checked={reminder.isActive}
-                                    onChange={(e) => handleToggleForTable(reminder.uuid, e.target.checked, reminder.issueId)}
+                                    onChange={(e) => {
+                                        void handleToggleForTable(reminder.uuid, e.target.checked, reminder.issueId);
+                                    }}
                                     className={"ring-btn-small ring-btn-primary ring-btn-icon-only mb-4"}
                                     disabled={!canToggle}
                                 />
@@ -200,16 +199,12 @@ export default function ReminderTable({
                         title: t("reminderTable.columns.actions"),
                         className: "w-1/12 text-ellipsis overflow-hidden max-w-44",
                         getValue: (row) => {
-                            const reminder = reminders.find((rem: { uuid: string | number }) => rem.uuid === row.id);
+                            const reminder = reminders.find((entry) => entry.uuid === row.id);
                             if (!reminder) return null;
 
                             const isCreator = isAdminView || reminder.creatorLogin === currentUserLogin;
-                            const isAllowedUser = isAdminView || reminder.selectedUsers.some((user: { login: any; }) => user.login === currentUserLogin);
-                            const canEditOrDelete = reminder.onlyCreatorCanEdit
-                                ? isCreator
-                                : reminder.allAssigneesCanEdit
-                                    ? isCreator || isAllowedUser
-                                    : false;
+                            const isAllowedUser = isAdminView || reminder.selectedUsers.some((user) => user.login === currentUserLogin);
+                            const canEditOrDelete = canModifyReminder(reminder, isCreator, isAllowedUser);
 
                             return (
                                 <div className={"flex gap-2"}>
@@ -234,7 +229,7 @@ export default function ReminderTable({
                         },
                     }
                 ]}
-                data={reminders.map((reminder: ReminderData) => ({
+                data={reminders.map((reminder) => ({
                     id: reminder.uuid || "",
                     project: reminder.project || t("reminderTable.messages.unknownProject"),
                     issue: reminder.issueId || t("reminderTable.messages.unknownIssue"),

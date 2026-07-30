@@ -32,7 +32,6 @@
     ]
   },
   "include": [
-    "src/**/*",
-    "../../../../../Library/Caches/JetBrains/WebStorm2024.2/javascript/typings/node/22.5.3/node_modules/@types/node/globals.d.ts"
+    "src/**/*"
   ]
 }

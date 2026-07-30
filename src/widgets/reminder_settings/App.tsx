@@ -1,5 +1,5 @@
 import ReminderTable from "./components/ReminderTable.tsx";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {t} from "i18next";
 import {ReminderData} from "./types.ts";
 import {removeReminder} from "../main/globalStorage.ts";
@@ -24,7 +24,7 @@ export default function App() {
 
     const currentUserLogin = YTApp.me.login;
 
-    const fetchReminders = async () => {
+    const fetchReminders = useCallback(async () => {
         setIsLoading(true);
         const fetchedReminders: ReminderData[] = [];
         const issues = await fetchAllReminders();
@@ -56,32 +56,29 @@ export default function App() {
                 }
             }
 
-            const canEditOrDelete = reminder.onlyCreatorCanEdit
-                ? isCreator
-                : reminder.allAssigneesCanEdit
-                    ? isCreator || isPartOfUsers || isPartOfGroups
-                    : false;
-
             if (isCreator || isPartOfUsers || isPartOfGroups) {
-                filteredReminders.push({ ...reminder, canEditOrDelete } as ReminderData & { canEditOrDelete: boolean });
+                filteredReminders.push(reminder);
             }
         }
 
         setReminders(filteredReminders);
         setAllReminders(fetchedReminders);
         setIsLoading(false);
-    };
+    }, [currentUserLogin]);
 
     useEffect(() => {
-        void fetchPermissionsCache().then(result => {
-            const hasAdminPermission = result.some((item: any) => {
-                return (item.permission?.key === "jetbrains.jetpass.low-level" || item.permission?.key === "jetbrains.jetpass.low-level-read") && item.global;
-            });
-            setHasAdminPermission(hasAdminPermission);
+        void fetchPermissionsCache().then((entries) => {
+            const isLowLevelAdmin = entries.some(
+                (entry) =>
+                    (entry.permission.key === "jetbrains.jetpass.low-level" ||
+                        entry.permission.key === "jetbrains.jetpass.low-level-read") &&
+                    entry.global
+            );
+            setHasAdminPermission(isLowLevelAdmin);
         });
         void canReadGroups().then(setHasGroupPermission);
         void fetchReminders();
-    }, []);
+    }, [fetchReminders]);
 
     const handleDeleteClick = (reminder: ReminderData) => {
         setReminderToDelete(reminder);
@@ -141,6 +138,7 @@ export default function App() {
             >
                 <div className="flex">
                     <button
+                        type="button"
                         className={`px-4 cursor-pointer py-2 ${activeTab === "filtered" ? "border-b-2 border-blue-500" : ""}`}
                         onClick={() => {
                             setActiveTab("filtered");
@@ -152,6 +150,7 @@ export default function App() {
 
                     {hasAdminPermission && (
                         <button
+                            type="button"
                             className={`px-4 cursor-pointer py-2 ${activeTab === "all" ? "border-b-2 border-blue-500" : ""}`}
                             onClick={() => {
                                 setActiveTab("all");
@@ -165,7 +164,9 @@ export default function App() {
 
                 <Button
                     className="px-4 py-2 text-blue-500 hover:underline cursor-pointer flex items-center"
-                    onClick={fetchReminders}
+                    onClick={ () => {
+                        void fetchReminders()
+                    }}
                     icon={refreshIcon}
                     title={t("reminderTable.refreshButton.tooltip")}
                 >
@@ -179,7 +180,7 @@ export default function App() {
                         editingReminder={editingReminder}
                         cameFromReminderTable={true}
                         onCancelEdit={handleCancelEdit}
-                        onReminderCreated={fetchReminders}
+                        onReminderCreated={() => { void fetchReminders() }}
                         hasGroupPermission={hasGroupPermission}
                     />
                 </div>
@@ -208,7 +209,7 @@ export default function App() {
                     isOpen={isDeleteModalOpen}
                     title={t("reminderSettings.messages.confirmDeleteTitle")}
                     message={t("reminderSettings.messages.confirmDeleteMessage")}
-                    onConfirm={confirmDelete}
+                    onConfirm={() => { void confirmDelete() }}
                     onCancel={cancelDelete}
                 />
             )}

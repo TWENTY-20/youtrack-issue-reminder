@@ -3,12 +3,13 @@ import { initReactI18next } from "react-i18next";
 import YTApp, { host } from "../../lib/youTrackApp.ts";
 import English from "../../locales/en.json";
 
-let translations;
+let translations: ResourceLanguage | undefined;
 if (YTApp.locale !== "en") {
-    translations = await host.fetchApp(`backend/translate?lang=${YTApp.locale}`, {}).then(({ translation }: {
-        translation: ResourceLanguage
-    }) => translation).catch(() => {
-    });
+    const response = await host
+        .fetchApp<{ translation: ResourceLanguage }>(`backend/translate?lang=${YTApp.locale}`, {})
+        .catch(() => undefined);
+
+    translations = response?.translation;
 }
 
 await i18next

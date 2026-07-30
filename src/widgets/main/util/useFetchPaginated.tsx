@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {host} from "../../../lib/youTrackApp.ts";
 
-export default function useFetchPaginated<T>(url: string, query: string = '', pageSize: number = 10, fetchInitial = true) {
+export default function useFetchPaginated<T>(url: string, query = '', pageSize = 10, fetchInitial = true) {
     const [pages, setPages] = useState<T[][]>([])
     const [loading, setLoading] = useState(false)
     const [hasNextPage, setHasNextPage] = useState(true)
@@ -24,7 +24,7 @@ export default function useFetchPaginated<T>(url: string, query: string = '', pa
 
     }, [url, paginationQuery, setLoading, pageSize, contentQuery, hasNextPage])
 
-    const init = useCallback(async (query: string = '') => {
+    const init = useCallback(async (query = '') => {
         setContentQuery(query)
         setLoading(true)
         setHasNextPage(true)
@@ -51,7 +51,7 @@ export default function useFetchPaginated<T>(url: string, query: string = '', pa
             setPages(newPages)
             setLoading(false)
         })
-    }, [skip, contentQuery])
+    }, [url, contentQuery, skip, pageSize])
 
     const setQuery = useCallback((query: string) => {
         void init(query)
@@ -59,6 +59,7 @@ export default function useFetchPaginated<T>(url: string, query: string = '', pa
 
     useEffect(() => {
         if (fetchInitial) void fetchNextPage()
+        // eslint-disable-next-line @eslint-react/exhaustive-deps
     }, []);
 
     return {

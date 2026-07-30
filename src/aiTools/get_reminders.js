@@ -40,7 +40,7 @@ function getAllReminders() {
             resultArray.push(...reminders);
         });
         return resultArray;
-    } catch (error) {
+    } catch {
         return undefined
     }
 }

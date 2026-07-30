@@ -47,11 +47,14 @@ export async function updateReminders(reminderId: string, updates: Partial<Remin
 
 export async function fetchReminders(issueId?: string): Promise<ReminderData[]> {
     try {
-        const idToFetch = issueId || YTApp.entity.id;
+        const idToFetch = issueId ?? YTApp.entity.id;
 
-        const result = await host.fetchApp("backend/fetchReminders", {query: {issueId: idToFetch}});
+        const response = await host.fetchApp<{ result: ReminderData[] | null }>(
+            "backend/fetchReminders",
+            { query: { issueId: idToFetch } },
+        );
 
-        return result.result || [];
+        return response.result ?? [];
     } catch (error) {
         console.error("Error fetching reminders:", error);
         return [];
@@ -60,9 +63,12 @@ export async function fetchReminders(issueId?: string): Promise<ReminderData[]> 
 
 export async function fetchRemindersProject(project?: string): Promise<ReminderData[]> {
     try {
-        const result = await host.fetchApp("backend/fetchRemindersProject", {query: {projectName: project}});
+        const response = await host.fetchApp<{ result: ReminderData[] | null }>(
+            "backend/fetchRemindersProject",
+            { query: { projectName: project } },
+        );
 
-        return result.result || [];
+        return response.result ?? [];
     } catch (error) {
         console.error("Error fetching reminders:", error);
         return [];
@@ -176,18 +182,19 @@ async function setReminderBoolProject(hasActiveReminders: boolean | null, projec
     }
 }
 
-export async function fetchIssueUrl(issueId?: string): Promise<any> {
+export async function fetchIssueUrl(issueId?: string): Promise<string | undefined> {
     try {
-        const idToFetch = issueId || YTApp.entity.id;
+        const idToFetch = issueId ?? YTApp.entity.id;
 
-        const result = await host.fetchApp("backend/fetchIssueUrl", {
+        const response = await host.fetchApp<{ result: string }>("backend/fetchIssueUrl", {
             method: "GET",
-            query: {issueId: idToFetch},
+            query: { issueId: idToFetch },
         });
 
-        return result.result || [];
+        return response.result;
     } catch (error) {
-        console.error("Error fetching all reminders:", error);
+        console.error("Error fetching issue url:", error);
+        return undefined;
     }
 }
 
