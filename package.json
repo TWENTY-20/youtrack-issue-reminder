@@ -14,7 +14,7 @@
     "@jetbrains/ring-ui-built": "^7.0.132",
     "@jetbrains/youtrack-scripting": "^0.2.1",
     "@jetbrains/youtrack-scripting-api": "^2022.1.46592",
-    "i18next": "^26.5.11",
+    "i18next": "^27.0.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-i18next": "^17.1.9",
